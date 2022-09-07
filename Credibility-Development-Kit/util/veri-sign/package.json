@@ -1,0 +1,24 @@
+{
+  "name": "veri-sign",
+  "version": "0.1.0",
+  "description": "use this module to sign and verify your data, based on X509 certificates",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "example_sign": "node ./examples/sign_interactive.js",
+    "example_verify": "node ./examples/verify_interactive.js"
+  },
+  "author": "localhorst87",
+  "license": "CC-BY-4.0",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "prompt-sync": "^4.2.0",
+    "sinon": "^14.0.0"
+  },
+  "dependencies": {
+    "ajv": "^8.10.0",
+    "ajv-keywords": "^5.1.0",
+    "fs": "^0.0.1-security"
+  }
+}
