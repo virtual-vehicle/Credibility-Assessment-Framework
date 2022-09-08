@@ -40,14 +40,14 @@ function sign(contentToSign, privateKey, keySpecification) {
     signObject.end();
     const signature = signObject.sign(privateKeyObject, SIGNATURE_ENCODING);
 
-    const signedDocument = {
+    const signedStatement = {
         content: contentToSign,
         signature: signature,
         hash_algorithm: HASH_FUNCTION,
         signature_encoding: SIGNATURE_ENCODING
     };
     
-    return JSON.stringify(signedDocument);
+    return JSON.stringify(signedStatement);
 }
 
 /**
@@ -55,23 +55,23 @@ function sign(contentToSign, privateKey, keySpecification) {
  * holder of the given certificate 
  *
  * @author   localhorst87
- * @param    {String}           signedDocument          The signed document as a string, as it was returned by the "sign" function
+ * @param    {String}           signedStatement         The signed statement as a string, as it was returned by the "sign" function
  * @param    {String|Buffer}    x509Certificate         A PEM or DER encoded X509 Certificate. If PEM is used, a utf-8 encoded string must be passed,
  *                                                      if DER is used a Buffer must be passed.
  * @return   {ResLog}                                   returns true/false w.r.t. the validity of the signature for the data and public key
 */
-function verify(signedDocument, x509Certificate) {
-    if(typeof(signedDocument) != "string") {
+function verify(signedStatement, x509Certificate) {
+    if(typeof(signedStatement) != "string") {
         return {
             result: false,
-            log: "signedDocument must be stringified"
+            log: "signedStatement must be stringified JSON"
         };
     }
     
-    if(!helper.isDocumentStructureValid(signedDocument)) {
+    if(!helper.isDocumentStructureValid(signedStatement)) {
         return {
             result: false,
-            log: "signedDocument structure is not valid"
+            log: "signedStatement structure is not valid"
         };
     }
 
@@ -83,14 +83,23 @@ function verify(signedDocument, x509Certificate) {
         }
     }
 
-    signedDocument = JSON.parse(signedDocument);
+    try {
+        signedStatement = JSON.parse(signedStatement);
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "Could not parse the signed statement (" + err + ")"
+        };
+    }
+
     let x509Object = new crypto.X509Certificate(x509Certificate);
     let publicKey = x509Object.publicKey;
 
-    const verifyObject = crypto.createVerify(signedDocument.hash_algorithm);
-    verifyObject.update(signedDocument.content);
+    const verifyObject = crypto.createVerify(signedStatement.hash_algorithm);
+    verifyObject.update(signedStatement.content);
     verifyObject.end();
-    const verification = verifyObject.verify(publicKey, signedDocument.signature, signedDocument.signature_encoding);
+    const verification = verifyObject.verify(publicKey, signedStatement.signature, signedStatement.signature_encoding);
     
     if(verification == true) {
         return {

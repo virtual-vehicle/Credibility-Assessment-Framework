@@ -194,7 +194,7 @@ describe("verify", () => {
     
             expect(resLog).to.deep.equal({
                 result: false,
-                log: "signedDocument structure is not valid"
+                log: "signedStatement structure is not valid"
             })
         });
 
@@ -207,7 +207,7 @@ describe("verify", () => {
     
             expect(resLog).to.deep.equal({
                 result: false,
-                log: "signedDocument must be stringified"
+                log: "signedStatement must be stringified JSON"
             })
         });
 
