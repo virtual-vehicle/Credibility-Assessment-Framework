@@ -1,4 +1,4 @@
-const { it, describe, afterEach } = require("mocha");
+const { it, describe } = require("mocha");
 const { expect } = require("chai");
 const FileSync = require("fs");
 const verisign = require("../.");
