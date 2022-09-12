@@ -7,7 +7,7 @@ A collection of metrics that can be used for assessing the credibility of simula
 ---
 ## `verifyExpertStatement`
 
-*Can be used for checking if a given statement has been signed by the expert that is identified by an X509 certificate*
+*Can be used for checking if a given statement has been signed by the expert, who is identified by an X509 certificate*
 
 ## Domains:
 Can be used Domain-independent
@@ -60,7 +60,7 @@ The expert is giving a statement about code review steps:
 ```
 We try to verify the statement with the following certificates:
 
-```javascript
+```
 // x509_john_doe_2022.pem
 
 -----BEGIN CERTIFICATE-----
@@ -70,7 +70,7 @@ ltREsqyrgXMibih7xDCXyZyInzl33U9pFd8hi0gi81MC7jU=
 -----END CERTIFICATE-----
 ```
 
-```javascript
+```
 // x509_john_doe_2019.pem
 
 -----BEGIN CERTIFICATE-----
