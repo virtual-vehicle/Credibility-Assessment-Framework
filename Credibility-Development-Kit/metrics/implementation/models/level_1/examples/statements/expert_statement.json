@@ -1,0 +1,6 @@
+{
+    "content": "Performed static code review, as part of the Software Quality Assurance, according to best practices and IEEE 730. As a result, the code is free of deficiencies and errors.",
+    "signature": "228a34af805238b515321feba4d3bf7d1833ff4eea1dfb4b768008124489c86b7f574f1d41ec467f824044188643d313e644aa8ddf5da62efad600e08fb28593e86bade25bf0c27df3af6d7e0256f96ccefc6de5a8fb19929c88c974901e54ad85fbf98542fd88f58ac0bb620c99ddf6ef8f44ea4a5192d0289430af2ae32c925a619ccb2d4d0ab50ee1bc49e557f6a5c04b2c24e07b988e89827d8cfadd53600500d8fd503ad62cc0548fdead5001cc4f139c8c5d015ed1f143414adf52234a78102b1715e15369c72bee43883b939a836c9feeba164a2c507db466354d1735f5ec1de15d7699018ab36e82472890cdf4a1c22e957d4b8b18d62682cd8bebbd",
+    "hash_algorithm": "SHA256",
+    "signature_encoding": "hex"
+}
