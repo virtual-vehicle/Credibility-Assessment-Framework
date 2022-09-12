@@ -1,4 +1,4 @@
-const FileSync = require("fs");
+const fs = require("fs");
 const prompt = require("prompt-sync")();
 const verisign = require("./..");
 
@@ -18,7 +18,7 @@ let privateKey, keySpecification;
 if (privateKeyChoice == "0")
     return;
 else if (privateKeyChoice == "1") {
-    privateKey = FileSync.readFileSync("./examples/keystore/pem_encrypted/private.pem", "utf8");
+    privateKey = fs.readFileSync("./examples/keystore/pem_encrypted/private.pem", "utf8");
     keySpecification = {
         format: "pem",
         isEncrypted: true,
@@ -26,7 +26,7 @@ else if (privateKeyChoice == "1") {
     };
 }
 else if (privateKeyChoice == "2") {
-    privateKey = FileSync.readFileSync("./examples/keystore/jwk/private.jwk", "utf8");
+    privateKey = fs.readFileSync("./examples/keystore/jwk/private.jwk", "utf8");
     privateKey = JSON.parse(privateKey);
     keySpecification = {
         format: "jwk",
@@ -34,7 +34,7 @@ else if (privateKeyChoice == "2") {
     };
 }
 else if (privateKeyChoice == "3") {
-    privateKey = FileSync.readFileSync("./examples/keystore/der_pkcs8/private.der");
+    privateKey = fs.readFileSync("./examples/keystore/der_pkcs8/private.der");
     keySpecification = {
         format: "der",
         type: "pkcs8",
@@ -55,6 +55,6 @@ console.log(`signedStatement = ${signedStatement}\n`);
 
 const filename = prompt("Enter a filename for saving the statement (without extension): ");
 const path = "./examples/signed_statements/" + filename + ".json";
-FileSync.writeFileSync(path, signedStatement);
+fs.writeFileSync(path, signedStatement);
 
 console.log(`statement saved under ${path}`);

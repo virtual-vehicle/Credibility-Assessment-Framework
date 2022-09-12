@@ -1,10 +1,10 @@
-const FileSync = require("fs");
+const fs = require("fs");
 const prompt = require("prompt-sync")();
 const verisign = require("./..");
 
 // ------------ Choose statement --------------
 
-let files = FileSync.readdirSync('./examples/signed_statements/');
+let files = fs.readdirSync('./examples/signed_statements/');
 
 if (files.length == 0) {
     console.log("no expert statements available. Create one using 'npm run example_sign'");
@@ -21,14 +21,14 @@ const chosenFileNo = prompt("");
 if(chosenFileNo == "x")
     return;
 
-const chosenStatement = FileSync.readFileSync('./examples/signed_statements/' + files[Number(chosenFileNo)], "utf8");
+const chosenStatement = fs.readFileSync('./examples/signed_statements/' + files[Number(chosenFileNo)], "utf8");
 
 console.log("\nchosen statement:\n")
 console.log(chosenStatement);
 
 // ------------ Choose Certificate --------------
 
-let certs = FileSync.readdirSync('./examples/certificates/');
+let certs = fs.readdirSync('./examples/certificates/');
 
 console.log("\nchoose a certificate to verify the statement:");
 for (let i = 0; i < certs.length; i++) {
@@ -47,7 +47,7 @@ if (certName.slice(-3) != "der") {
     encoding = "utf8"
 }
 
-const chosenCert = FileSync.readFileSync('./examples/certificates/' + certName, encoding);
+const chosenCert = fs.readFileSync('./examples/certificates/' + certName, encoding);
 
 // ------------ Verify statement --------------
 

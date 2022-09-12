@@ -95,12 +95,12 @@ For further explanation, see the reference.
 Sign expert statement:
 
 ```javascript
-const FileSync = require("fs");
+const fs = require("fs");
 const verisign = require("./");
 
 // create inputs
 const statement = "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148";
-const privateKey = FileSync.readFileSync("./examples/keystore/pem_encrypted/private.pem", "utf8");
+const privateKey = fs.readFileSync("./examples/keystore/pem_encrypted/private.pem", "utf8");
 const keySpecification = {
     format: "pem",
     isEncrypted: true,
@@ -109,19 +109,19 @@ const keySpecification = {
 
 // sign statement and store
 const signedStatement = verisign.sign(statement, privateKey, keySpecification);
-FileSync.writeFileSync("./examples/signed_statements/req.json", signedStatement);
+fs.writeFileSync("./examples/signed_statements/req.json", signedStatement);
 ```
 
 Verify expert statement:
 
 ```javascript
-const FileSync = require("fs");
+const fs = require("fs");
 const verisign = require("./");
 
 // get inputs
-const signedStatement = FileSync.readFileSync("./examples/signed_statements/req.json", "utf8");
-const certificate_1 = FileSync.readFileSync("./examples/keystore/pem_encrypted/cert.pem", "utf8");
-const certificate_2 = FileSync.readFileSync("./examples/keystore/der_pkcs8/cert.der");
+const signedStatement = fs.readFileSync("./examples/signed_statements/req.json", "utf8");
+const certificate_1 = fs.readFileSync("./examples/keystore/pem_encrypted/cert.pem", "utf8");
+const certificate_2 = fs.readFileSync("./examples/keystore/der_pkcs8/cert.der");
 
 // verify signed statement
 console.log(verisign.verify(signedStatement, certificate_1)); // should be valid
