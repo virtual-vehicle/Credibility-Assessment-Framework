@@ -3,6 +3,7 @@
 A collection of metrics that can be used for assessing the credibility of simulation model implementation, according to Credibility Level 1:
 
 * [`verifyExpertStatement`](#verifyexpertstatement): Can be used for checking if a given statement has been signed by the expert that is identified by an X509 certificate[^1]
+* [`verifySystemStructure`](#verifysystemstructure): Static code check, if a system structure (including all components, connectors and connections of the system) is well-defined
 
 ---
 ## `verifyExpertStatement`
@@ -82,7 +83,7 @@ stEAxvDWkktb
 
 ```javascript
 const fs = require("fs");
-const metrics = require("./");
+const metrics = require(".");
 
 const expertStatement = fs.readFileSync("./examples/statements/expert_statement.json", "utf8");
 const cert2019 = fs.readFileSync("./examples/certificates/x509_john_doe_2019.pem", "utf8");
@@ -97,12 +98,127 @@ const result2019 = metrics.verifyExpertStatement(expertStatement, cert2019);
 // { result: false, log: 'The expert statement could not be proven valid (X509 certificate expired)' }
 ```
 
-For observing some examples, see [here](./examples/examples.js), or use
+For observing some examples, see [here](./examples/examples_verify_expert_statement.js), or use
 
 ```
-npm run example
+npm run example-expert-statement
+```
+
+from a terminal, for running the examples. 
+
+---
+## `verifySystemStructure`
+
+*Static code check, if a representation of a system structure (including all components, connectors and connections of the system) is well-defined. That means it verifies if all subsystems are uniquely identifiable, if all required inputs are connected unambigouosly, if the data types of the connected element's connectors are consistent and if each element a connection references to is exactly available once in a subsystem*
+
+## Domains:
+Can be used Domain-independent
+
+## Models:
+Is independent with respect to the underlying models that compose the system model
+
+## Usage:
+This quality metric belongs to the category of static code checks. The input to this function represents a generic data structure, that can be translated from a System Structure Definition (SSD) file. SSD is specified as a standard within the Modelica SSP[^2]. 
+The metric checks if the system representation is well-defined and can be implemented in general, which means, the quality criterion follows boolean logic (either it is well-defined or not). However, the quality criterion can be softened by defining input connectors that do not need a connection (e.g., because the input uses default values). In the following snippet the the input "supply_voltage" of the component "pressure_sensor" does not require to be connected:
+
+```javascript
+let systemStructure = "...";
+let noConnectionNeeded = JSON.stringify([
+    {
+        "subsystem": ["seat", "surface"],
+        "element": "pressure_sensor",
+        "name": "supply_voltage",
+        "kind": "input",
+        "type": "Real"
+    }
+]);
+
+let result = verifySystemStructure(systemStructure, noConnectionNeeded);
+```
+## Examples:
+
+Consider the following example of a simple system model of a DC motor:
+
+![system model example](./docs/system_model_example.png "System Model example")
+
+The system has been translated from the SSD standard format and results in the [following generic data structure](./examples/system_structures/dc_motor_example.json "System Structure example").
+
+```javascript
+const fs = require("fs");
+const metrics = require(".");
+
+const systemStructure = fs.readFileSync("./examples/system_structures/dc_motor_example.json", "utf8");
+
+const result = metrics.verifySystemStructure(systemStructure);
+// will return 
+// { result: true, log: 'system structure is well-defined' }
+```
+
+If we change for instance the type of the output connector "phi" of the mechanical model to "Integer" like given in the following
+```javascript
+{
+    "subsystem": ["dc_motor_system", "dc_motor"],
+    "element": "mechanics",
+    "name": "phi",
+    "kind": "output",
+    "type": "Integer"
+}
+```
+the check will return a negative result, as the types of the associated connection are no longer consistent:
+```javascript
+const fs = require("fs");
+const metrics = require(".");
+
+const systemStructure = fs.readFileSync("./examples/system_structures/dc_motor_example_type_inconsistent.json", "utf8");
+
+const result = metrics.verifySystemStructure(systemStructure);
+// will return 
+// { result: false, log: 'data types for the Connectors of the following Connection are not equal: {"subsystem":["dc_motor_system","dc_motor"],"element_start":"mechanics","name_start":"phi","element_end":"electrics","name_end":"phi"}' }
+```
+
+If we skip an input connection, for example the following connection
+```javascript
+{
+    "subsystem": ["dc_motor_system", "dc_motor"],
+    "element_start": "",
+    "name_start": "U_0",
+    "element_end": "electrics",
+    "name_end": "U_0"
+}
+```
+the check will return a negative result, as well, unless we don't declare the destination of the connection to not require a connection:
+
+```javascript
+const fs = require("fs");
+const metrics = require(".");
+
+const systemStructure = fs.readFileSync("./examples/system_structures/dc_motor_example_input_not_connected.json", "utf8");
+const inputNotRequired = JSON.stringify([
+    {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "electrics",
+        "name": "U_0",
+        "kind": "input",
+        "type": "Real"
+    }
+]);
+
+const result1 = metrics.verifySystemStructure(systemStructure);
+// will return 
+// { result: false, log: 'The following input connector is not connected: {"subsystem":["dc_motor_system","dc_motor"],"element":"electrics","name":"U_0","kind":"input","type":"Real"}' }
+
+const result2 = metrics.verifySystemStructure(systemStructure, inputNotRequired);
+// will return 
+// { result: false, log: 'system structure is well-defined' }
+```
+
+For observing some examples, see [here](./examples/examples_verify_system_structure.js), or use
+
+```
+npm run example-system-structure
 ```
 
 from a terminal, for running the examples. 
 
 [^1]: https://www.itu.int/rec/T-REC-X.509/en
+[^2]: https://ssp-standard.org/publications/SSP10/SystemStructureAndParameterization10.pdf

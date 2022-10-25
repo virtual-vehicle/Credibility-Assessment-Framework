@@ -1,5 +1,6 @@
 const fs = require("fs");
 const metrics = require("..");
+const prompt = require("prompt-sync")();
 
 // load expert statement
 const expertStatement = fs.readFileSync("./examples/statements/expert_statement.json", "utf8");
@@ -30,17 +31,29 @@ console.log("verification of expertStatement with certificate x509_john_doe_2019
 console.log(result2019);
 console.log("\n------------------------------------------------------------------------------------\n");
 
+console.log("\n");
+prompt("Press the 'Enter' key for the next example");
+
 console.log("verification of expertStatement with certificate x509_john_doe_2022.pem: \n");
 console.log(result2022);
 console.log("\n------------------------------------------------------------------------------------\n");
+
+console.log("\n");
+prompt("Press the 'Enter' key for the next example");
 
 console.log("verification of expertStatement with certificate x509_other.der: \n");
 console.log(resultOther);
 console.log("\n------------------------------------------------------------------------------------\n");
 
+console.log("\n");
+prompt("Press the 'Enter' key for the next example");
+
 console.log("tweak expert statement: \n");
 console.log(tweakedStatement);
 console.log("\n------------------------------------------------------------------------------------\n");
+
+console.log("\n");
+prompt("Press the 'Enter' key for the next example");
 
 console.log("verification of tweakedStatement with certificate x509_john_doe_2019.pem: \n");
 console.log(resultTweaked);

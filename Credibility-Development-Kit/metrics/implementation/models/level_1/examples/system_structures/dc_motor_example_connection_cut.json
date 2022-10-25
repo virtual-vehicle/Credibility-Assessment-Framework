@@ -1,0 +1,120 @@
+{
+    "elements": [{
+        "name": "dc_motor_system",
+        "type": "System",
+        "source": "",
+        "subsystem": []
+    }, {
+        "name": "battery",
+        "type": "Component",
+        "source": "./res/battery.fmu",
+        "subsystem": ["dc_motor_system"]
+    }, {
+        "name": "dc_motor",
+        "type": "System",
+        "source": "",
+        "subsystem": ["dc_motor_system"]
+    }, {
+        "name": "electrics",
+        "type": "Component",
+        "source": "./res/dc_motor_electrics.fmu",
+        "subsystem": ["dc_motor_system", "dc_motor"]
+    }, {
+        "name": "mechanics",
+        "type": "Component",
+        "source": "./res/dc_motor_mechanics.fmu",
+        "subsystem": ["dc_motor_system", "dc_motor"]
+    }],
+    "connectors": [{
+        "subsystem": ["dc_motor_system"],
+        "element": "battery",
+        "name": "U_bat",
+        "kind": "output",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system"],
+        "element": "dc_motor",
+        "name": "U_0",
+        "kind": "input",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system"],
+        "element": "dc_motor",
+        "name": "rot_speed",
+        "kind": "output",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "electrics",
+        "name": "U_0",
+        "kind": "input",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "electrics",
+        "name": "phi",
+        "kind": "input",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "electrics",
+        "name": "w",
+        "kind": "input",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "electrics",
+        "name": "T_el",
+        "kind": "output",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "mechanics",
+        "name": "T_mot",
+        "kind": "input",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "mechanics",
+        "name": "phi",
+        "kind": "output",
+        "type": "Real"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element": "mechanics",
+        "name": "w",
+        "kind": "output",
+        "type": "Real"
+    }],
+    "connections": [{
+        "subsystem": ["dc_motor_system"],
+        "element_start": "battery",
+        "name_start": "U_bat",
+        "element_end": "dc_motor",
+        "name_end": "U_0"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element_start": "electrics",
+        "name_start": "T_el",
+        "element_end": "mechanics",
+        "name_end": "T_mot"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element_start": "mechanics",
+        "name_start": "w",
+        "element_end": "electrics",
+        "name_end": "w"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element_start": "mechanics",
+        "name_start": "phi",
+        "element_end": "electrics",
+        "name_end": "phi"
+    }, {
+        "subsystem": ["dc_motor_system", "dc_motor"],
+        "element_start": "mechanics",
+        "name_start": "w",
+        "element_end": "",
+        "name_end": "rot_speed"
+    }]
+}
