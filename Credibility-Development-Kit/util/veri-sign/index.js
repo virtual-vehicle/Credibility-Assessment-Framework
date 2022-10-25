@@ -1,14 +1,14 @@
 const crypto = require('crypto');
 const helper = require('./helper');
-const Types = require('../../types');
+const Types = require('./types/types');
 
  /**
  * @module util/sign-data
  */
 
  /**
- * @typedef {import('../../types').ResultLog} ResultLog
- * @typedef {import('../../types').KeySpec} KeySpec
+ * @typedef {import('./types/types').ResultLog} ResultLog
+ * @typedef {import('./types/types').KeySpec} KeySpec
  */
 
 exports.sign = sign;
@@ -58,7 +58,7 @@ function sign(contentToSign, privateKey, keySpecification) {
  * @param    {String}           signedStatement         The signed statement as a string, as it was returned by the "sign" function
  * @param    {String|Buffer}    x509Certificate         A PEM or DER encoded X509 Certificate. If PEM is used, a utf-8 encoded string must be passed,
  *                                                      if DER is used a Buffer must be passed.
- * @return   {ResLog}                                   returns true/false w.r.t. the validity of the signature for the data and public key
+ * @return   {ResultLog}                                   returns true/false w.r.t. the validity of the signature for the data and public key
 */
 function verify(signedStatement, x509Certificate) {
     if(typeof(signedStatement) != "string") {
