@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" name="dc_motor_system" generationTool="Model.CONNECT" generationDateAndTime="2022-07-28T07:52:45Z" xsi:schemaLocation="http://ssp-standard.org/SSP1/SystemStructureDescription http://ssp-standard.org/SSP1/SSP/1.0/SystemStructureDescription.xsd">
+  <ssd:System name="dc_motor_system">
+    <ssd:Elements>
+      <ssd:Component name="battery" type="application/x-fmu-sharedlibrary" source="./res/battery.fmu">
+        <ssd:Connectors>
+          <ssd:Connector name="U_suppl" kind="output">
+            <ssc:Real/>
+          </ssd:Connector>
+        </ssd:Connectors>
+      </ssd:Component>
+      <ssd:System name="dc_motor">
+        <ssd:Connectors>
+          <ssd:Connector name="U_0" kind="input">
+            <ssc:Real/>
+          </ssd:Connector>
+          <ssd:Connector name="rot_speed" kind="output">
+            <ssc:Real/>
+          </ssd:Connector>
+        </ssd:Connectors>
+        <ssd:ElementGeometry x1="-39.34617997075493" y1="-12.970852414604504" x2="-3.34617997075493" y2="23.029147585395492"/>
+        <ssd:Elements>
+          <ssd:Component name="electrics" type="application/x-fmu-sharedlibrary" source="./res/dc_motor_electrics.fmu">
+            <ssd:Connectors>
+              <ssd:Connector name="U_suppl" kind="input">
+                <ssc:Real/>
+              </ssd:Connector>
+              <ssd:Connector name="phi" kind="input">
+                <ssc:Real/>
+              </ssd:Connector>
+              <ssd:Connector name="w" kind="input">
+                <ssc:Real/>
+              </ssd:Connector>
+              <ssd:Connector name="M_el" kind="output">
+                <ssc:Real/>
+              </ssd:Connector>
+            </ssd:Connectors>
+          </ssd:Component>
+          <ssd:Component name="mechanics" type="application/x-fmu-sharedlibrary" source="./res/dc_motor_mechanics.fmu">
+            <ssd:Connectors>
+              <ssd:Connector name="M_el" kind="input">
+                <ssc:Real/>
+              </ssd:Connector>
+              <ssd:Connector name="phi" kind="output">
+                <ssc:Real/>
+              </ssd:Connector>
+              <ssd:Connector name="w" kind="output">
+                <ssc:Real/>
+              </ssd:Connector>
+            </ssd:Connectors>
+          </ssd:Component>
+        </ssd:Elements>
+        <ssd:Connections>
+          <ssd:Connection startElement="electrics" startConnector="M_el" endElement="mechanics" endConnector="M_el"/>
+          <ssd:Connection startElement="mechanics" startConnector="w" endElement="electrics" endConnector="w">
+          </ssd:Connection>
+          <ssd:Connection startElement="mechanics" startConnector="phi" endElement="electrics" endConnector="phi">
+          </ssd:Connection>
+          <ssd:Connection startConnector="U_0" endElement="electrics" endConnector="U_suppl">
+          </ssd:Connection>
+          <ssd:Connection startConnector="w" startElement="mechanics" endConnector="rot_speed">
+          </ssd:Connection>
+        </ssd:Connections>
+      </ssd:System>
+    </ssd:Elements>
+    <ssd:Connections>
+      <ssd:Connection startElement="battery" startConnector="U_suppl" endElement="dc_motor" endConnector="U_0">
+      </ssd:Connection>
+    </ssd:Connections>
+  </ssd:System>
+</ssd:SystemStructureDescription>

@@ -1,0 +1,24 @@
+{
+  "name": "ssd-adapter",
+  "version": "1.0.0",
+  "description": "adapter for translating *.ssd files into a generic structure to be used in implementation metrics",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "example": "node ./examples/example.js",
+    "test": "mocha --reporter spec"
+  },
+  "author": "localhorst87",
+  "license": "CC-BY-4.0",
+  "dependencies": {
+    "fast-xml-parser": "^4.0.1",
+    "fs": "0.0.1-security",
+    "libxmljs2-xsd": "^0.28.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "sinon": "^14.0.0",
+    "prompt-sync": "^4.2.0"
+  }
+}
