@@ -1,0 +1,26 @@
+{
+  "name": "signal",
+  "version": "0.1.0",
+  "description": "wrapper for signal data for uniform and reproducable signal processing",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "example": "node ./examples/example.js"
+  },
+  "keywords": [
+    "signal",
+    "processing"
+  ],
+  "author": "localhorst87",
+  "license": "CC-BY-4.0",
+  "dependencies": {
+    "mathjs": "^10.4.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2",
+    "sinon": "^13.0.1",
+    "fs": "^0.0.1-security",
+    "prompt-sync": "^4.2.0"
+  }
+}
