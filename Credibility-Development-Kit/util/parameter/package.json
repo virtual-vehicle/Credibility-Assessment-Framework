@@ -1,0 +1,24 @@
+{
+  "name": "parameter",
+  "version": "0.1.0",
+  "description": "utilities for simulation parameters",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [
+    "parameter",
+    "uncertainty"
+  ],
+  "author": "localhorst87",
+  "license": "CC-BY-4.0",
+  "dependencies": {
+    "mathjs": "^10.4.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "fs": "^0.0.1-security",
+    "mocha": "^9.2.2",
+    "prompt-sync": "^4.2.0"
+  }
+}
