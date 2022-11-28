@@ -57,7 +57,7 @@
   * ParameterSampling type defintion
   * @typedef {Object} ParameterSampling
   * @property {string[]} names
-  * @property {number[][]} values
+  * @property {number[][][]} values
   * @property {string[]} units
   */
 

@@ -754,14 +754,15 @@ function createSamples(parameters, config) {
 
     let samples = []
 
-    for (let xA of samplesAleatory) {
-        for (let xE of samplesEpistemic) {
-            samples.push(xA.concat(xE).concat(samplesDiscrete));
+    for (let xA of samplesEpistemic) {
+        samples.push([]);
+        for (let xE of samplesAleatory) {
+            samples[samples.length - 1].push(xA.concat(xE).concat(samplesDiscrete));
         }
     }
 
     // align parameter order with order of generated samples
-    parameters = parametersAleatory.concat(parametersEpistemic).concat(parametersDiscrete);
+    parameters = parametersEpistemic.concat(parametersAleatory).concat(parametersDiscrete);
 
     return {
         names: parameters.map(par => par.name),

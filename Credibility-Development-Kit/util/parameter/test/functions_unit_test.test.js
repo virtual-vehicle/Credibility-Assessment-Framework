@@ -47,7 +47,7 @@ describe('createSamples', () => {
         it('single parameter, no. of samples not given => expect 5 default samples', () => {
             let sampling = createSamples(aleatoryParameter1, {method: "equally_spaced"});
 
-            expect(sampling.values.length).to.equal(5);
+            expect(sampling.values[0].length).to.equal(5);
         });
 
     });
@@ -56,13 +56,13 @@ describe('createSamples', () => {
 
         it('valid call => expect valid return structure', () => {
             let sampling = createSamples(aleatoryParameter1, {
-                samples: 10, 
+                samples: 10,
                 method: "equally_spaced"
             });
 
             expect(sampling.names).to.deep.equal([aleatoryParameter1.name]);
             expect(sampling.units).to.deep.equal([aleatoryParameter1.unit]);
-            expect(sampling.values.length).to.equal(10);
+            expect(sampling.values[0].length).to.equal(10);
         });
 
         it('method equally-spaced => expect correct values', () => {
@@ -71,7 +71,7 @@ describe('createSamples', () => {
                 method: "equally_spaced"
             });
 
-            let samplingOrdered = sampling.values.sort((a,b) => a-b)
+            let samplingOrdered = sampling.values[0].sort((a,b) => a-b)
 
             // 10 samples equally-spaced vector: [0.05, 0.15, 0.25, ..., 0.95]
             let expectedValuesOrdered = [
@@ -97,7 +97,7 @@ describe('createSamples', () => {
                 method: "monte_carlo"
             });
 
-            expect(sampling.values.every(val => {
+            expect(sampling.values[0].every(val => {
                 return val[0] >= aleatoryParameter1.limits[0] && val[0] <= aleatoryParameter1.limits[1]
             })).to.be.true;             
         });
@@ -112,10 +112,11 @@ describe('createSamples', () => {
                 method: "monte_carlo"
             });
 
+            expect(sampling.values.length).to.equal(1);
             expect(sampling.names).to.deep.equal([aleatoryParameter1.name, aleatoryParameter2.name]);
             expect(sampling.units).to.deep.equal([aleatoryParameter1.unit, aleatoryParameter2.unit]);
-            expect(sampling.values.length).to.equal(10);
-            expect(sampling.values[0].length).to.equal(2);
+            expect(sampling.values[0].length).to.equal(10);
+            expect(sampling.values[0][0].length).to.equal(2);
         });
 
         it('epistemic uncertainties => expect valid return structure', () => {
@@ -124,10 +125,11 @@ describe('createSamples', () => {
                 method: "monte_carlo"
             });
 
+            expect(sampling.values.length).to.equal(10);
             expect(sampling.names).to.deep.equal([epistemicParameter1.name, epistemicParameter2.name]);
             expect(sampling.units).to.deep.equal([epistemicParameter1.unit, epistemicParameter2.unit]);
-            expect(sampling.values.length).to.equal(10);
-            expect(sampling.values[0].length).to.equal(2);
+            expect(sampling.values[0].length).to.equal(1);
+            expect(sampling.values[0][0].length).to.equal(2);
         });
 
         it('aleatory and epistemic uncertainties => expect valid return structure', () => {
@@ -138,8 +140,9 @@ describe('createSamples', () => {
                 method_epistemic: "monte_carlo"
             });
 
-            expect(sampling.values.length).to.equal(80);
-            expect(sampling.values[0].length).to.equal(3);
+            expect(sampling.values.length).to.equal(8);
+            expect(sampling.values[0].length).to.equal(10);
+            expect(sampling.values[0][0].length).to.equal(3);
         });
 
         it('aleatory, epistemic and discrete uncertainties => expect valid return structure', () => {
@@ -150,8 +153,9 @@ describe('createSamples', () => {
                 method_epistemic: "monte_carlo"
             });
 
-            expect(sampling.values.length).to.equal(35);
-            expect(sampling.values[0].length).to.equal(4);
+            expect(sampling.values.length).to.equal(7); // number of epistemic 
+            expect(sampling.values[0].length).to.equal(5); // number of aleatory
+            expect(sampling.values[0][0].length).to.equal(4); // number of parameters
         });
 
     });

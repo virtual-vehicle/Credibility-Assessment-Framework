@@ -378,10 +378,12 @@ samples = createSamples(epistemicParameter1, {
 // {
 //     names: [ 'vehicle mass m'],
 //     units: [ 'kg' ],
-//     values: [ [ 1750 ], [ 1600 ], [ 1550 ], [ 1800 ], [ 1700 ], [ 1650 ] ]
+//     values: [ [[1750]], [[1600]] [[1550]], [[1800]], [[1700]], [[1650]] ]
 // }
 ```
-The parameter values are always shuffled, using *equally_spaced* as sampling method, to avoid correlation with other parameters, when combined.
+The dimension of the values property is as follows: \[nE, nR, nP\], with nE is indicating the number of interrelated experiments, nR the number of runs per experiment and nP the total number of parameters; where nE depends on the number of parameters with epistemic uncertainties and nR depends on the number of parameters with aleatory uncertainties.
+
+The parameter values are always shuffled, when using *equally_spaced* as sampling method, to avoid correlation with other parameters, when combined.
 
 When passing a parameter with aleatory uncertainty, the sampling works different. Sampling is done for the cumulated probability first (sampling from 0 to 1) and then transfered to the the parameter values (e.g., by applying the inverse cumulated probability function), as illustrated in the following picture:
 
@@ -397,7 +399,7 @@ samples = createSamples(aleatoryParameter1, {
 // {
 //   names: [ 'spring stiffness constant c' ],
 //   units: [ 'N/cm' ]
-//   values: [ [ 39.69 ], [ 39.85 ], [ 39.49 ], [ 41.17 ], [ 41.97 ], [ 39.8 ] ],
+//   values: [ [[39.69]], [[39.85]], [[39.49]], [[41.17]], [[41.97]], [[39.8]] ],
 // }
 ```
 
@@ -414,13 +416,15 @@ samples = createSamples([aleatoryParameter1, aleatoryParameter2], {
 //   names: [ 'spring stiffness constant c', 'operating temperature' ],
 //   units: [ 'N/cm', 'degC' ],
 //   values: [
-//     [ 39.8, 17.4 ],
-//     [ 39.36, 22.4 ],
-//     [ 41.27, 27.9 ],
-//     [ 38.73, 11.8 ],
-//     [ 40.64, 36.2 ],
-//     [ 40.2, 3.4 ]
+//   [
+//     [ 40.64, 3.4 ],
+//     [ 39.36, 27.9 ],
+//     [ 40.2, 11.8 ],
+//     [ 39.8, 22.4 ],
+//     [ 41.27, 17.4 ],
+//     [ 38.73, 36.2 ]
 //   ]
+// ]
 // }
 ```
 The correct assignment of values to parameters can be read from the names property (in this example the first value of a parameter combination refers to the spring stiffness, the second to the operating temperature).
@@ -437,27 +441,34 @@ samples = createSamples([epistemicParameter1, aleatoryParameter1, aleatoryParame
 
 // {
 //   names: [
+//     'vehicle mass m'
 //     'spring stiffness constant c',
 //     'operating temperature',
-//     'vehicle mass m'
+//     
 //   ],
-//   units: [ 'N/cm', 'degC', 'kg' ],
+//   units: [ 'kg', 'N/cm', 'degC' ],
 //   values: [
-//     [ 39.5, 19.9, 1536 ],
-//     [ 39.5, 19.9, 1697 ],
-//     [ 39.5, 19.9, 1726 ],
-//     [ 38.82, 13.6, 1536 ],
-//     [ 38.82, 13.6, 1697 ],
-//     [ 38.82, 13.6, 1726 ],
-//     [ 40, 4.6, 1536 ],
-//     [ 40, 4.6, 1697 ],
-//     [ 40, 4.6, 1726 ],
-//     [ 41.18, 26.1, 1536 ],
-//     [ 41.18, 26.1, 1697 ],
-//     [ 41.18, 26.1, 1726 ],
-//     [ 40.5, 35, 1536 ],
-//     [ 40.5, 35, 1697 ],
-//     [ 40.5, 35, 1726 ]
+//     [
+//       [ 1631, 40, 13.6 ],
+//       [ 1631, 38.82, 26.1 ],
+//       [ 1631, 40.5, 19.9 ],
+//       [ 1631, 39.5, 35 ],
+//       [ 1631, 41.18, 4.6 ]
+//     ],
+//     [
+//       [ 1679, 40, 13.6 ],
+//       [ 1679, 38.82, 26.1 ],
+//       [ 1679, 40.5, 19.9 ],
+//       [ 1679, 39.5, 35 ],
+//       [ 1679, 41.18, 4.6 ]
+//     ],
+//     [
+//       [ 1610, 40, 13.6 ],
+//       [ 1610, 38.82, 26.1 ],
+//       [ 1610, 40.5, 19.9 ],
+//       [ 1610, 39.5, 35 ],
+//       [ 1610, 41.18, 4.6 ]
+//     ]
 //   ]
 // }
 ```
@@ -473,28 +484,35 @@ samples = createSamples([discreteParameter, epistemicParameter1, aleatoryParamet
 
 // {
 //   names: [
+//     'vehicle mass m'
 //     'spring stiffness constant c',
 //     'operating temperature',
-//     'vehicle mass m',
 //     'number of passengers'
+//     
 //   ],
-//   units: [ 'N/cm', 'degC', 'kg', '-' ],
+//   units: [ 'kg', 'N/cm', 'degC', '-' ],
 //   values: [
-//     [ 39.5, 19.9, 1536, 2 ],
-//     [ 39.5, 19.9, 1697, 2 ],
-//     [ 39.5, 19.9, 1726, 2 ],
-//     [ 38.82, 13.6, 1536, 2 ],
-//     [ 38.82, 13.6, 1697, 2 ],
-//     [ 38.82, 13.6, 1726, 2 ],
-//     [ 40, 4.6, 1536, 2 ],
-//     [ 40, 4.6, 1697, 2 ],
-//     [ 40, 4.6, 1726, 2 ],
-//     [ 41.18, 26.1, 1536, 2 ],
-//     [ 41.18, 26.1, 1697, 2 ],
-//     [ 41.18, 26.1, 1726, 2 ],
-//     [ 40.5, 35, 1536, 2 ],
-//     [ 40.5, 35, 1697, 2 ],
-//     [ 40.5, 35, 1726, 2 ]
+//     [
+//       [ 1631, 40, 13.6, 2 ],
+//       [ 1631, 38.82, 26.1, 2 ],
+//       [ 1631, 40.5, 19.9, 2 ],
+//       [ 1631, 39.5, 35, 2 ],
+//       [ 1631, 41.18, 4.6, 2 ]
+//     ],
+//     [
+//       [ 1679, 40, 13.6, 2 ],
+//       [ 1679, 38.82, 26.1, 2 ],
+//       [ 1679, 40.5, 19.9, 2 ],
+//       [ 1679, 39.5, 35, 2 ],
+//       [ 1679, 41.18, 4.6, 2 ]
+//     ],
+//     [
+//       [ 1610, 40, 13.6, 2 ],
+//       [ 1610, 38.82, 26.1, 2 ],
+//       [ 1610, 40.5, 19.9, 2 ],
+//       [ 1610, 39.5, 35, 2 ],
+//       [ 1610, 41.18, 4.6, 2 ]
+//     ]
 //   ]
 // }
 ```
