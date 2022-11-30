@@ -7,7 +7,7 @@ The Parameter package provides wrappers for simulation parameters, as well as me
 
 ## `ScalarParameter`
 
-There are three essential types of that ScalarParameters can represent, with respect to the uncertainty of the parameter's value:
+There are three essential types that a ScalarParameters can represent, with respect to the uncertainty of the parameter's value:
 
 - **discrete**: No uncertainty applied. There is absolute certainty about the parameter value as given.
     - *Example: The number of pole pairs of an electric motor. Whatever value is given to test specific designs of the motor, the parameter will not vary.*
@@ -398,8 +398,8 @@ samples = createSamples(aleatoryParameter1, {
 // samples
 // {
 //   names: [ 'spring stiffness constant c' ],
-//   units: [ 'N/cm' ]
-//   values: [ [[39.69]], [[39.85]], [[39.49]], [[41.17]], [[41.97]], [[39.8]] ],
+//   units: [ 'N/cm' ],
+//   values: [ [[39.69]], [[39.85]], [[39.49]], [[41.17]], [[41.97]], [[39.8]] ]
 // }
 ```
 
@@ -439,6 +439,7 @@ samples = createSamples([epistemicParameter1, aleatoryParameter1, aleatoryParame
     method_epistemic: "monte_carlo"
 });
 
+// samples
 // {
 //   names: [
 //     'vehicle mass m'
@@ -482,6 +483,7 @@ samples = createSamples([discreteParameter, epistemicParameter1, aleatoryParamet
     method_epistemic: "monte_carlo"
 });
 
+// samples
 // {
 //   names: [
 //     'vehicle mass m'
