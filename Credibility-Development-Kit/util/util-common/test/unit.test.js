@@ -94,8 +94,8 @@ describe('getLsd', () => {
     describe('return tests', () => {
 
         it('positive value with decimal point => expect lsd > 0', () => {
-            const lsd = util.getLsd(14.7413);
-            expect(lsd).to.equal(4);            
+            const lsd = util.getLsd(1.005);
+            expect(lsd).to.equal(3);
         });
 
         it('negative value with decimal point => expect lsd > 0', () => {
@@ -131,6 +131,11 @@ describe('getLsd', () => {
         it('bigger number => expect lsd < 0', () => {
             const lsd = util.getLsd(-7.8e+14);
             expect(lsd).to.equal(-13);
+        });
+
+        it('value is 0 => expect 0', () => {
+            const lsd = util.getLsd(0);
+            expect(lsd).to.equal(0);
         });
         
     });
@@ -175,7 +180,7 @@ describe('roundToInterval', () => {
             expect(rounded).to.equal(-7425);
         });
 
-        it('interval < 1 => to round to decimal', () => {
+        it('interval < 1 => round to decimal', () => {
             const rounded = util.roundToInterval(254.71, 0.5);
             expect(rounded).to.equal(254.5);
         });
@@ -214,7 +219,118 @@ describe('roundToInterval', () => {
             const rounded = util.roundToInterval(-2.3, 0.5);
             expect(rounded).to.equal(-2.5);
         });
+
+        it('positive number matches exactly the interval => expect no rounding', () => {
+            const rounded = util.roundToInterval(58, 1);
+            expect(rounded).to.equal(58);
+        });
+
+        it('negative number matches exactly the interval => expect no rounding', () => {
+            const rounded = util.roundToInterval(-58, 1);
+            expect(rounded).to.equal(-58);
+        });
         
+    });
+    
+});
+
+describe('floorToInterval', () => {
+
+    describe('return tests (other scope is the same as roundToInterval)', () => {
+
+        it('positive number, interval is integer => expect integer flooring', () => {
+            const rounded = util.floorToInterval(25.786, 2);
+            expect(rounded).to.equal(24);
+        });
+
+        it('negative number, interval is integer => expect integer flooring', () => {
+            const rounded = util.floorToInterval(-7421.786, 5);
+            expect(rounded).to.equal(-7425);
+        });
+
+        it('interval < 1 => floor to decimal', () => {
+            const rounded = util.floorToInterval(254.76, 0.5);
+            expect(rounded).to.equal(254.5);
+        });
+
+        it('positive number exactly between two intervals => floor to next interval', () => {
+            const rounded = util.floorToInterval(2.25, 0.5);
+            expect(rounded).to.equal(2.0);
+        });
+
+        it('positive number nearer to higher number => floor to next interval', () => {
+            const rounded = util.floorToInterval(2.3, 0.5);
+            expect(rounded).to.equal(2.0);
+        });
+
+        it('negative number nearer to higher number => floor to next interval', () => {
+            const rounded = util.floorToInterval(-2.2, 0.5);
+            expect(rounded).to.equal(-2.5);
+        });
+
+        it('negative number exactly between two intervals => floor to next interval', () => {
+            const rounded = util.floorToInterval(-2.25, 0.5);
+            expect(rounded).to.equal(-2.5);
+        });
+
+        it('positive number matches exactly the interval => expect no flooring', () => {
+            const rounded = util.floorToInterval(58, 1);
+            expect(rounded).to.equal(58);
+        });
+
+        it('positive number matches exactly the interval => expect no flooring', () => {
+            const rounded = util.floorToInterval(-58, 1);
+            expect(rounded).to.equal(-58);
+        });
+
+    });
+    
+});
+
+describe('ceilToInterval', () => {
+
+    describe('return tests (other scope is the same as roundToInterval)', () => {
+
+        it('positive number, interval is integer => expect integer ceiling', () => {
+            const rounded = util.ceilToInterval(24.786, 2);
+            expect(rounded).to.equal(26);
+        });
+
+        it('negative number, interval is integer => expect integer ceiling', () => {
+            const rounded = util.ceilToInterval(-7424.786, 5);
+            expect(rounded).to.equal(-7420);
+        });
+
+        it('interval < 1 => ceil to decimal', () => {
+            const rounded = util.ceilToInterval(254.74, 0.5);
+            expect(rounded).to.equal(255.0);
+        });
+
+        it('positive number, remainder cloaser to lower interval => ceil to next interval', () => {
+            const rounded = util.ceilToInterval(2.2, 0.5);
+            expect(rounded).to.equal(2.5);
+        });
+
+        it('negative number, remainder closer to lower interval => ceil to next interval', () => {
+            const rounded = util.ceilToInterval(-2.3, 0.5);
+            expect(rounded).to.equal(-2.0);
+        });
+
+        it('negative number exactly between two intervals => ceil to next interval', () => {
+            const rounded = util.ceilToInterval(-2.25, 0.5);
+            expect(rounded).to.equal(-2.0);
+        });
+
+        it('positive number matches exactly the interval => expect no ceiling', () => {
+            const rounded = util.ceilToInterval(58, 1);
+            expect(rounded).to.equal(58);
+        });
+
+        it('negative number matches exactly the interval => expect no ceiling', () => {
+            const rounded = util.ceilToInterval(58, 1);
+            expect(rounded).to.equal(58);
+        });
+
     });
     
 });
