@@ -14,8 +14,8 @@ To create cumulative distributions from simulation results, the function `create
 To create a distribution, either an array of discrete values can be passed to the function:
 
 ```javascript
-const discreteValues = [1036.1, 998.5, 1030.8, 1026.0, 1017.2, 1025.3, 1042.8, 992.7];
-const cumHist = createCumulativeHistogram(discreteValues);
+discreteValues = [1036.1, 998.5, 1030.8, 1026.0, 1017.2, 1025.3, 1042.8, 992.7];
+cumHist = createCumulativeHistogram(discreteValues);
 
 // cumHist
 // {
@@ -29,10 +29,10 @@ const cumHist = createCumulativeHistogram(discreteValues);
 The recommended way of using `createCumulativeHistogram`,is to use an array of [Signals](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit/util/signal) with a corresponding evaluation function that will return a number:
 
 ```javascript
-const discreteValues = [signal1, signal2, signal3, signal4, signal5]; // rotational speed of a DC motor
-const evalFn = signal => signal.value(1.0) - 1000; // the difference of the rotational speed at 1.0 seconds to 1000 rad/s
+discreteValues = [signal1, signal2, signal3, signal4, signal5]; // rotational speed of a DC motor
+evalFn = signal => signal.value(1.0) - 1000; // the difference of the rotational speed at 1.0 seconds to 1000 rad/s
 
-const cumHist = createCumulativeHistogram(discreteValues, evalFn);
+cumHist = createCumulativeHistogram(discreteValues, evalFn);
 
 // cumHist
 // {
@@ -54,8 +54,8 @@ The `createPBoxes` function expects an array of [cumulative distributions](#crea
 If only the array of cumulative distributions is passed, the minimum and maximum of random variable (i.e., the SRQ) will be chosen according to the actual occuring minimum and maximum values of all distributions. The interval will be selected automatically to the least significant digit that is occuring throughout all values.
 
 ```javascript
-const cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-const pBoxes = createPBoxes(cds);
+cds = [cumHist1, cumHist2, cumHist3, cumHist4];
+pBoxes = createPBoxes(cds);
 
 // pBoxes
 // {
@@ -73,14 +73,14 @@ The minimum, maximum and interval values can be specified optionally, by passing
 If the minimum and maximum values are specified not generously enough, it's likely that the whole range from 0 to 1 is not covered.
 
 ```javascript
-const cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-const config = {
+cds = [cumHist1, cumHist2, cumHist3, cumHist4];
+config = {
     x_min: 999,
     x_max: 1001,
     interval: 0.5
 };
 
-const pBoxes = createPBoxes(cds, config);
+pBoxes = createPBoxes(cds, config);
 
 // pBoxes
 // {
@@ -96,9 +96,9 @@ const pBoxes = createPBoxes(cds, config);
 Optionally, an offset in the form of an epistemic uncertainty can be passed to the function, to ingest other uncertainties, as for example numeric uncertainties or the model form uncertainty:
 
 ```javascript
-const cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-const offset = 1.0;
-const pBoxes = createPBoxes(cds, offset);
+cds = [cumHist1, cumHist2, cumHist3, cumHist4];
+offset = 1.0;
+pBoxes = createPBoxes(cds, offset);
 
 // pBoxes
 // {
@@ -114,9 +114,9 @@ const pBoxes = createPBoxes(cds, offset);
 Of course for a P-Box with an offset, the boundaries and interval can be given, as well. The arguments need to be passed in the following order:
 
 ```javascript
-const cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-const offset = 1.0;
-const config = {
+cds = [cumHist1, cumHist2, cumHist3, cumHist4];
+offset = 1.0;
+config = {
     x_min: 999,
     interval: 0.5
     // x_max will be determined automatically in this case!
