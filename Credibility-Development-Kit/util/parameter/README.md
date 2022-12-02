@@ -2,8 +2,8 @@
 
 The Parameter package provides wrappers for simulation parameters, as well as methods to generate samples, in case the parameter values are represented as uncertain values.
 
-* [`ScalarParameter`](#scalarparameter):
-* [`createSamples`](#createsamples):
+* [`ScalarParameter`](#scalarparameter)
+* [`createSamples`](#createsamples)
 
 ## `ScalarParameter`
 
