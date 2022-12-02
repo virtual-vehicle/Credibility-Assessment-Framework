@@ -15,6 +15,7 @@ The Signal class is a wrapper for timeseries data. It allows for uniform and rep
         - [`print`](#print)
         - [`revert`](#revert)
     - [Calculus](#calculus)
+        - [`value`](#value)
         - [`convert`](#convert)
         - [`add / subtract`](#add--subtract)
         - [`multiply / divide`](#multiply--divide)
@@ -325,6 +326,26 @@ signalStep1 = signal.revert(1); // revert to step 1
 #### **Calculus**
 
 There are some basic math operations available for Signals.
+
+#### `value`
+
+From a given time point, this method is returning the corresponding signal value. If the time does not match any value exactly, 
+linear interpolation will be used to determine the value.
+
+```javascript
+time = [0.0, 30.0, 60.0, 90.0, 120.0];
+values = [267.2, 275.2, 269.8, 271.8, 268];
+config = {
+    name: "water volume flow",
+    unit_values: "l/min",
+    precision: 4
+};
+
+flow = new Signal(time, values, config);
+
+flow.value(90.0) // 271.8
+flow.value(10.0) // 269.9 (linear interpolated)
+```
 
 #### `convert`
 

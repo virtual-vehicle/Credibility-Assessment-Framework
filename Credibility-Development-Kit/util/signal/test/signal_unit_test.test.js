@@ -1698,6 +1698,53 @@ describe("interpolate", () => {
     });
 });
 
+describe("value", () => {
+
+    let timeArray = [0.1, 0.2, 0.3, 0.4, 0.5];
+    let valueArray = [0.0, 7.9, 19.1, 14.4, 15.1];
+    let config = {
+        name: "test signal",
+        unit_time: "s",
+        unit_values: "m/s",
+        precision: 4
+    };
+
+    var signal = new Signal(timeArray, valueArray, config);
+
+    describe('valid inputs', () => {
+
+        it('valid input, time matches exactly => expect exact value', () => {
+            let value = signal.value(0.3);
+            
+            expect(value).to.equal(19.1);        
+        });
+
+        it('valid input, interpolation required => expect interpolated value', () => {
+            let value = signal.value(0.25);
+            
+            expect(value).to.equal(13.5);        
+        });
+        
+    });
+
+    describe('invalid inputs', () => {
+
+        it('argument is not given as number => expect to throw', () => {     
+            expect(() => signal.value([0.3])).to.throw()        
+        });
+
+        it('target time smaller than first time sample => expect to throw', () => {     
+            expect(() => signal.value(0.09)).to.throw()        
+        });
+
+        it('target time greater than last time sample => expect to throw', () => {     
+            expect(() => signal.value(0.51)).to.throw()        
+        });
+        
+    });
+
+});
+
 describe("multiply", () => {
     
     describe("valid operations", () => {

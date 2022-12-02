@@ -629,13 +629,13 @@ exports.Signal = class Signal {
      * @return {Signal} resulting Signal after interpolation
      */
     interpolate(targetTimeArray, method = "linear") {
-        if (typeof(method) != "string")
+        if (typeof(method) !== "string")
             throw("method argument must be a string");
-        if (method != "linear")
+        if (method !== "linear")
             throw("only linear interpolation supported to date");
         if (!Array.isArray(targetTimeArray))
             throw("target time must be an array");
-        if (targetTimeArray.length == 0)
+        if (targetTimeArray.length === 0)
             throw("target time vector must contain at least one value");
         if (targetTimeArray[0] < this.#time[0] || targetTimeArray[targetTimeArray.length - 1] > this.#time[this.length - 1])
             throw("target time array must contain only values inside the current time vector");
@@ -657,6 +657,24 @@ exports.Signal = class Signal {
                                 + String(targetTimeArray[1]) + " , ... , " + String(targetTimeArray[targetTimeArray.length-1]) + "]");
         
         return this.#returnAndKeep();
+    }
+
+    /**
+     * Returns the corresponding value for the given time point. If the time does not match
+     * any value exactly, linear interpolation will be used to determine the value.
+     * 
+     * @param {number} timePoint the time point for which the value is to be determined
+     * @returns {number} the determined value
+     */
+    value(timePoint) {
+        if (typeof(timePoint) !== "number")
+            throw("time point must be given as number");
+        if (timePoint < this.#time[0] || timePoint > this.#time[this.length - 1])
+            throw("given time point is out of range");
+        
+        const interpolatedSignal = this.interpolate([timePoint]);
+
+        return interpolatedSignal.values[0];
     }
 
     /**
