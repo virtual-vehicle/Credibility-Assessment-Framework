@@ -2,8 +2,8 @@
 
 The Uncertainty package provides methods to quantify the uncertainty behind simulation results.
 
-* [`createCumulativeHistogram`](#createcumulativehistogram):
-* [`createPBoxes`](#createpboxes):
+* [`createCumulativeHistogram`](#createcumulativehistogram)
+* [`createPBoxes`](#createpboxes)
 
 ## `createCumulativeHistogram`
 
@@ -121,7 +121,7 @@ config = {
     interval: 0.5
     // x_max will be determined automatically in this case!
 };
-const pBoxes = createPBoxes(cds, offset, config);
+pBoxes = createPBoxes(cds, offset, config);
 ```
 
 [^1]: Christopher John Roy, William L. Oberkampf (2010). A Complete Framework for Verification, Validation, and Uncertainty Quantification in Scientific Computing (Invited). *In: 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition.* Orlando, USA. DOI: 10.2514/6.2010-124
