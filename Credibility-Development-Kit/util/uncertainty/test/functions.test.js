@@ -109,6 +109,41 @@ describe('createPBoxHistogram', () => {
         unit: "km/h"
     };
 
+    var histWrong1 = {
+        type: "CDF",
+        x: [50, 52, 52, 55, 57],
+        p: [0.2, 0.4, 0.6, 1.2, 1.2], // contains values > 1 
+        unit: "km/h"
+    };
+    var histWrong2 = {
+        type: "CDF",
+        x: [50, 52, 52, 55, 57],
+        p: [0.2, 0.4, 0.2, 0.6, 1.0], // not monot. increasing
+        unit: "km/h"
+    };
+    var histWrong3 = {
+        type: "CDF",
+        x: [50, 49, 52, 55, 57], // not monot. increasing
+        p: [0.2, 0.4, 0.5, 0.6, 1.0], 
+        unit: "km/h"
+    };
+
+    describe('input checks', () => {
+
+        it('cdf contains p values > 1 => expect to throw', () => {
+            expect(() => uncertainty.createPBoxes([hist1, histWrong1])).to.throw();
+        }); 
+        
+        it('p values of cdf not monotonously increasing => expect to throw', () => {
+            expect(() => uncertainty.createPBoxes([hist1, hist2, histWrong2])).to.throw();
+        }); 
+
+        it('x values of cdf not monotonously increasing => expect to throw', () => {
+            expect(() => uncertainty.createPBoxes([hist1, hist2, histWrong3])).to.throw();
+        }); 
+        
+    });
+
     it('predefined config', () => {
         let pBoxes = uncertainty.createPBoxes([hist1, hist2], {
             x_min: 48,
@@ -177,3 +212,9 @@ describe('createPBoxHistogram', () => {
     });
 
 });
+
+describe("getAreaValidationMetric", () => {
+
+    
+
+})

@@ -23,6 +23,11 @@ Array.prototype.findLastIndex = function (fn) {
     return this.length - 1 - [...this].reverse().findIndex(fn);
 }
 
+// helper method to get difference between subsequent elements
+Array.prototype.diff = function () {
+    return this.slice(1).map((val,i) => val - this.slice(0, -1)[i])
+}
+
 /**
  * Does the actual calculation to get a cumulative histogram from concrete data samples
  * 
@@ -65,7 +70,13 @@ function checkHistogramArray(histograms) {
     if (histograms.every(el => el.x !== undefined && el.p !== undefined && el.unit !== undefined) == false)
         throw("at least one histogram has not defined a required property (x, p or unit)");
     if (histograms.map(el => el.unit).unique().length > 1)
-        throw("units of histograms are not consistent!")
+        throw("units of histograms are not consistent!");
+    if (histograms.every(el => Math.max(...el.p) <= 1) == false)
+        throw("probability values of histograms must not be greater than 1");
+    if (histograms.every(el => Math.min(...el.p.diff()) >= 0) == false)
+        throw("probability values of histograms must be monotonously increasing");
+    if (histograms.every(el => Math.min(...el.x.diff()) >= 0) == false)
+        throw("random variable values of histograms must be monotonously increasing");   
 }
 
 /**
