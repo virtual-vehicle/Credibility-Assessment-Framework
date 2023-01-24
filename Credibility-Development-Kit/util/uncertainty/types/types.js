@@ -1,7 +1,7 @@
-/**
-  * DiscreteDistribution type definition
-  * @typedef {Object} DiscreteDistribution
-  * @property {string} type Type of the distribution function ("PDF/CDF")
+/**EmpiricalDistribution
+  * EmpiricalDistribution type definition
+  * @typedef {Object} EmpiricalDistribution
+  * @property {string} type Type of the distribution function ("PDF" -> histogram / "CDF" -> cumulative distribution)
   * @property {number[]} x Samples of the random variable
   * @property {number[]} p probability for each sample (relative probability for PDF or accumulated probability for CDF)
   * @property {string} unit Unit of the random variable
@@ -10,8 +10,8 @@
 /**
   * PBoxes type definition
   * @typedef {Object} PBoxes
-  * @property {number[]} p_upper upper boundary of cumulative probabilities
-  * @property {number[]} p_lower lower boundary of cumulative probabilities
+  * @property {number[]} p_left left boundary of EDFs
+  * @property {number[]} p_right right boundary of EDFs
   * @property {number[]} x samples of the random variable
   * @property {string} unit unit of the random variable
   */
@@ -26,7 +26,7 @@
 
 module.exports = {
     /**
-     * @type {DiscreteDistribution}
+     * @type {EmpiricalDistribution}
      * @type {PBoxes}
      */
 }

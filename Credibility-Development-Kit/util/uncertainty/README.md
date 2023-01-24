@@ -2,22 +2,40 @@
 
 The Uncertainty package provides methods to quantify the uncertainty behind simulation results.
 
-* [`createCumulativeHistogram`](#createcumulativehistogram)
+As an overview, based on the nature of the inherent uncertainty, there are different possibilities of quantifying uncertainties in empirical data (e.g., simulation results or reference data) by means of cumulative probability distributions:
+
+![uncertainty representations](./docs/images/uncertainty_01.png "uncertainty representations")
+
+- If no uncertainty is present, the probability is represented by a step function from 0 to 1 (a discrete value with 100% belief).
+
+- If only epistemic uncertainties are present, the probabilities are represented by two 0-to-1 step functions, representing the lower and upper bound of all samples.
+
+- If only aleatory uncertainties are present, the data is consisting of at least two samples, resulting in a step function that jumps up by 1/n at each of the n samples (commonly known as [*Empirical Distribution Function (EDF)*](https://en.wikipedia.org/wiki/Empirical_distribution_function)).
+
+- If both aleatory and epistemic uncertainties are present, several EDFs are reduced to a probability representation of only EDFs, where the left EDF is representing the lower bound of all EDFs and the right EDF is representing the upper bound of all EDFs (commonly known as [*Probability Boxes*](https://en.wikipedia.org/wiki/Probability_box)).
+
+For creating these representations, the following utilities are provided:
+
+* [`createEmpiricalDistribution`](#createempiricaldistribution)
 * [`createPBoxes`](#createpboxes)
+* [`addUncertainty`](#adduncertainty)
+* [`addUncertainty`](#adduncertainty)
 
-## `createCumulativeHistogram`
+## `createEmpiricalDistribution`
 
-To create cumulative distributions from simulation results, the function `createCumulativeHistogram` can be used. It will generate a discrete cumulative distribution, with the intervals of the discrete values, i.e. the sorted values with associated cumulative probabilities, which can be used to generate P-Boxes.
+To create empirical distributions from simulation results, the function `createEmpiricalDistribution` can be used. It will generate a distribution function, commonly known as *Empirical Distribution Function (EDF)*, or *Cumulative Empirical Distribution Function (cEDF)*.
+
+In simulation context, EDFs can be used to characterize simulation results or reference data with pure aleatory uncertainty.
 
 ### Usage
 
-To create a distribution, either an array of discrete values can be passed to the function:
+To create an EDF, an array of discrete values can be passed to the function:
 
 ```javascript
 discreteValues = [1036.1, 998.5, 1030.8, 1026.0, 1017.2, 1025.3, 1042.8, 992.7];
-cumHist = createCumulativeHistogram(discreteValues);
+edf = createEmpiricalDistribution(discreteValues);
 
-// cumHist
+// edf
 // {
 //     type: "CDF",
 //     x: [992.7, 998.5, 1017.2, 1025.3, 1026.0, 1030.8, 1036.1, 1042.8],
@@ -26,15 +44,15 @@ cumHist = createCumulativeHistogram(discreteValues);
 // }
 ```
 
-The recommended way of using `createCumulativeHistogram`,is to use an array of [Signals](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit/util/signal) with a corresponding evaluation function that will return a number:
+The recommended way of using `createEmpiricalDistribution` is to use an array of [Signals](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit/util/signal) with a corresponding evaluation function, that will return a number:
 
 ```javascript
 discreteValues = [signal1, signal2, signal3, signal4, signal5]; // rotational speed of a DC motor
 evalFn = signal => signal.value(1.0) - 1000; // the difference of the rotational speed at 1.0 seconds to 1000 rad/s
 
-cumHist = createCumulativeHistogram(discreteValues, evalFn);
+edf = createEmpiricalDistribution(discreteValues, evalFn);
 
-// cumHist
+// edf
 // {
 //     type: "CDF",
 //     x: [-9.3, 11.2, 19.6, 27.7, 49.3],
@@ -49,79 +67,215 @@ The function is used to create [*Probability Boxes*](https://en.wikipedia.org/wi
 
 ### Usage
 
-The `createPBoxes` function expects an array of [cumulative distributions](#createcumulativehistogram), where each cumulative distribution represents simulation results, that have been parametrized with  **a single epistemic parameter combination** and **several aleatory parameter samples** (each point of the cumulative distribution represents a simulation result of a specific parameter combination of the parameters with aleatory uncertainties, i.e. one array element from the first dimension generated with the [`createSamples` function of the Parameter module](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit/util/parameter#createsamples)).
+The `createPBoxes` function expects an array of [cumulative distributions](#createempiricaldistribution), where each cumulative distribution represents empirical data (simulation results or reference data), that have been parametrized with **a single epistemic parameter combination** and **several aleatory parameter samples** (each point of the cumulative distribution represents a data sample of a specific parameter combination of the parameters with aleatory uncertainties, i.e. one array element from the first dimension generated with the [`createSamples` function of the Parameter module](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit/util/parameter#createsamples)).
 
-If only the array of cumulative distributions is passed, the minimum and maximum of random variable (i.e., the SRQ) will be chosen according to the actual occuring minimum and maximum values of all distributions. The interval will be selected automatically to the least significant digit that is occuring throughout all values.
+If only the array of cumulative distributions is passed, the returned data points will be chosen to have only significant values (only those data points where a step occurs; no redundant data):
 
 ```javascript
-cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-pBoxes = createPBoxes(cds);
+edfs = [edf1, edf2, edf3, edf4];
+pBoxes = createPBoxes(edfs);
 
 // pBoxes
 // {
-//     x: [998, 999, 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007],
-//     p_upper: [0.12, 0.34, 0.37, 0.48, 0.57, 0.71, 0.80, 0.89, 1, 1],
-//     p_lower: [0, 0, 0.14, 0.28, 0.32, 0.54, 0.63, 0.78, 0.95, 1],
+//     x: [991, 999, 1006, 1009, 1012, 1013, 1014, 1018, 1027, 1039],
+//     p_left: [0.12, 0.34, 0.37, 0.48, 0.57, 0.71, 0.85, 0.96, 1, 1],
+//     p_right: [0, 0.04, 0.14, 0.28, 0.32, 0.54, 0.63, 0.78, 0.95, 1],
 //     unit: "rad/s",
 // }
 ```
 
 ![P-Box example 1](./docs/images/pboxes_01.png "P-Box example 1")
 
-The minimum, maximum and interval values can be specified optionally, by passing these values to the function via an object.
+The minimum, maximum and interval values can be specified, optionally, by passing these values to the function via a configuration object.
 
 If the minimum and maximum values are specified not generously enough, it's likely that the whole range from 0 to 1 is not covered.
 
 ```javascript
-cds = [cumHist1, cumHist2, cumHist3, cumHist4];
+edfs = [edf1, edf2, edf3, edf4, edf5, edf6];
 config = {
     x_min: 999,
     x_max: 1001,
     interval: 0.5
 };
 
-pBoxes = createPBoxes(cds, config);
+pBoxes = createPBoxes(edfs, config);
 
 // pBoxes
 // {
 //     x: [999, 999.5, 1000, 1000.5, 1001],
-//     p_upper: [0.34, 0.35, 0.37, 0.40, 0.48],
-//     p_lower: [0, 0, 0.14, 0.21, 0.28],
+//     p_left: [0.34, 0.34, 0.37, 0.40, 0.48],
+//     p_right: [0, 0, 0.14, 0.21, 0.28],
 //     unit: "rad/s",
 // }
 ```
 
 ![P-Box example 2](./docs/images/pboxes_02.png "P-Box example 2")
 
-Optionally, an offset in the form of an epistemic uncertainty can be passed to the function, to ingest other uncertainties, as for example numeric uncertainties or the model form uncertainty:
+## `addUncertainty`
+
+This function can be used to add (epistemic) uncertainty to an EDF or P-Boxes (e.g. originating from numerical uncertainty). `addUncertainty` will always return P-Boxes.
+
+### Usage
+
+The minimum information to provide is an EDF and a numerical value for the uncertainty to add. In this case the uncertainty is added to both sides of the EDF.
 
 ```javascript
-cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-offset = 1.0;
-pBoxes = createPBoxes(cds, offset);
+edf = {
+    type: "CDF",
+    x: [992, 998, 1017, 1025, 1026, 1030, 1036, 1042],
+    p: [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+    unit: "rad/s"
+};
+
+pBoxes = addUncertainty(edf, 10);
 
 // pBoxes
 // {
-//     x: [997, 998, 999, 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008],
-//     p_upper: [0.12, 0.34, 0.37, 0.48, 0.57, 0.71, 0.80, 0.89, 1, 1, 1],
-//     p_lower: [0, 0, 0, 0, 0.14, 0.28, 0.32, 0.54, 0.63, 0.78, 0.95, 1],
-//     unit: "rad/s",
+//     x: [982, 988, 1002, 1007, 1008, 1015, 1016, 1020, 1026, 1027, 1032, 1035, 1036, 1040, 1046, 1052],
+//     p_left: [0.125, 0.25, 0.25, 0.375, 0.375, 0.5, 0.625, 0.75, 0.875, 0.875, 1, 1, 1, 1, 1, 1],
+//     p_right: [0, 0, 0.125, 0.125, 0.25, 0.25, 0.25, 0.25, 0.25, 0.375, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+//     unit: 'rad/s'
 // }
 ```
 
-![P-Box example 3](./docs/images/pboxes_03.png "P-Box example 3")
+![add uncertainty example 1](./docs/images/add_uncertainty_01.png "add uncertainty example 1")
 
-Of course for a P-Box with an offset, the boundaries and interval can be given, as well. The arguments need to be passed in the following order:
+Uncertainty can be added selectively to the left and right side, by passing an array, where the first value represents the uncertainty that will be added to the left and the second value represents the uncertainty that will be added to the right side:
 
 ```javascript
-cds = [cumHist1, cumHist2, cumHist3, cumHist4];
-offset = 1.0;
-config = {
-    x_min: 999,
-    interval: 0.5
-    // x_max will be determined automatically in this case!
+edf = {
+    type: "CDF",
+    x: [992, 998, 1017, 1025, 1026, 1030, 1036, 1042],
+    p: [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+    unit: "rad/s"
 };
-pBoxes = createPBoxes(cds, offset, config);
+
+pBoxes = addUncertainty(edf, [2, 10]);
+
+// pBoxes
+// {
+//     x: [990,  996, 1002, 1008, 1015, 1023, 1024, 1027, 1028, 1034, 1035, 1036, 1040, 1046, 1052],
+//     p_left: [0.125, 0.25, 0.25, 0.25, 0.375, 0.5, 0.625, 0.625, 0.75, 0.875, 0.875, 0.875, 1, 1, 1],
+//     p_right: [0, 0, 0.125, 0.25, 0.25, 0.25, 0.25, 0.375, 0.375, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+//     unit: 'rad/s'
+// }
 ```
 
-[^1]: Christopher John Roy, William L. Oberkampf (2010). A Complete Framework for Verification, Validation, and Uncertainty Quantification in Scientific Computing (Invited). *In: 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition.* Orlando, USA. DOI: 10.2514/6.2010-124
+![add uncertainty example 2](./docs/images/add_uncertainty_02.png "add uncertainty example 2")
+
+The same way P-Boxes can be extended by an uncertainty:
+
+```javascript
+pBoxes = {
+    x: [980, 990, 1000, 1010, 1020, 1040, 1050],
+    p_left: [0.2, 0.2, 0.6, 0.8, 1, 1, 1],
+    p_right: [0, 0.1, 0.1, 0.1, 0.5, 0.9, 1],
+    unit: "rad/s"
+};
+
+pBoxesExtended = addUncertainty(pBoxes, 10);
+
+// pBoxesExtended
+// {
+//     x: [970, 980, 990, 1000, 1010, 1020, 1030, 1050, 1060],
+//     p_left: [0.2, 0.2, 0.6, 0.8, 1, 1, 1, 1, 1],
+//     p_right: [0, 0, 0, 0.1, 0.1, 0.1, 0.5, 0.9, 1],
+//     unit: 'rad/s'
+// }
+```
+
+![add uncertainty example 3](./docs/images/add_uncertainty_03.png "add uncertainty example 3")
+
+As can be seen in the data of `pBoxesExtended`, there are redundant samples (x: 980 with p_left: 0.2 and p_right: 0 is the same sample as x: 970. The same counts for x: 1010 and x:1020). To avoid this, the third argument of the function `keepIntervals` must be set to `false`. The information degree will remain the same, but all redundant samples will drop out of the arrays:
+
+```javascript
+pBoxes = {
+    x: [980, 990, 1000, 1010, 1020, 1040, 1050],
+    p_left: [0.2, 0.2, 0.6, 0.8, 1, 1, 1],
+    p_right: [0, 0.1, 0.1, 0.1, 0.5, 0.9, 1],
+    unit: "rad/s"
+};
+
+pBoxesExtended = addUncertainty(pBoxes, 10, false);
+
+// pBoxesExtended
+// {
+//     x: [970, 990, 1000, 1010, 1030, 1050, 1060],
+//     p_left: [0.2, 0.6, 0.8, 1, 1, 1, 1],
+//     p_right: [0, 0, 0.1, 0.1, 0.5, 0.9, 1],
+//     unit: 'rad/s'
+// }
+```
+
+## `calcAreaValidationMetric`
+
+This function calculates the smallest possible areas between two distributions. A distribution to be used can be either an EDF or P-Boxes. The smallest area between these combinations is examplary depicted in the following image:
+
+![area validation metric examples](./docs/images/avm_01.png "area validation metric examples")
+
+For further information, we refer to the publication of Ferson & Oberkampf[^2].
+
+### Usage
+
+The function expects two distributions that can be either two EDFs...
+
+```javascript
+edf1 = {
+    type: "CDF",
+    x: [960, 1020],
+    p: [0.4, 1.0],
+    unit: "rad/s"
+};
+
+edf2 = {
+    type: "CDF",
+    x: [960, 970, 1020, 1030],
+    p: [0.2, 0.4, 0.9, 1.0],
+    unit: "rad/s"
+};
+
+calcAreaValidationMetric(edf1, edf2) // returns 3
+```
+
+...an EDF and a P-Boxes object...
+
+```javascript
+pBoxes = {
+    x: [940, 950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040, 1050],
+    unit: "rad/s",
+    p_left: [0, 0.2, 0.2, 0.3, 0.5, 0.8, 0.9, 1, 1, 1, 1, 1],
+    p_right: [0, 0, 0, 0, 0.1, 0.3, 0.3, 0.5, 0.7, 0.8, 1, 1]
+}
+
+edf = {
+    type: "CDF",
+    x: [960, 990, 1000, 1025, 1030, 1040],
+    p: [0.3, 0.4, 0.6, 0.7, 0.9, 1.0],
+    unit: "rad/s"
+}
+
+calcAreaValidationMetric(pBoxes, edf) // returns 1.5
+```
+
+...or two P-Boxes objects:
+
+```javascript
+pBoxesSim = {
+    x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
+    p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
+    p_right: [0, 0, 0, 0.1, 0.1, 0.1, 0.5, 0.8, 0.8, 1],
+    unit: "rad/s",
+};
+
+pBoxesRef = {
+    x: [960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
+    p_left: [0.1, 0.3, 0.3, 0.5, 0.8, 1, 1, 1, 1],
+    p_right: [0, 0, 0.2, 0.2, 0.2, 0.7, 0.9, 0.9, 1],
+    unit: "rad/s",
+};
+
+calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps" pBoxesRef completely
+```
+[^1]: Christopher John Roy, William L. Oberkampf (2010). "A Complete Framework for Verification, Validation, and Uncertainty Quantification in Scientific Computing" (Invited). *In: 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition.* Orlando, USA. DOI: 10.2514/6.2010-124
+
+[^2]: Scott Ferson & William L. Oberkampf, 2009. "Validation of imprecise probability models,". *International Journal of Reliability and Safety*. Inderscience Enterprises Ltd, vol. 3(1/2/3), pages 3-22.
