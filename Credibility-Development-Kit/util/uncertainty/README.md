@@ -19,7 +19,7 @@ For creating these representations, the following utilities are provided:
 * [`createEmpiricalDistribution`](#createempiricaldistribution)
 * [`createPBoxes`](#createpboxes)
 * [`addUncertainty`](#adduncertainty)
-* [`addUncertainty`](#adduncertainty)
+* [`calcAreaValidationMetric`](#calcareavalidationmetric)
 
 ## `createEmpiricalDistribution`
 
