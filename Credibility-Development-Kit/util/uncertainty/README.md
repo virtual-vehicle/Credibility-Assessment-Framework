@@ -19,7 +19,7 @@ For creating these representations, the following utilities are provided:
 * [`createEmpiricalDistribution`](#createempiricaldistribution)
 * [`createPBoxes`](#createpboxes)
 * [`addUncertainty`](#adduncertainty)
-* [`calcAreaValidationMetric`](#calcareavalidationmetric)
+* [`addUncertainty`](#adduncertainty)
 
 ## `createEmpiricalDistribution`
 
@@ -276,6 +276,42 @@ pBoxesRef = {
 
 calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps" pBoxesRef completely
 ```
+
+## `calcAreaValidationMetricNasa`
+
+This function calculates the disagreement between the left and right bounds of the two distributions. The `calcAreaValidationMetric` can be used to quantify the model form uncertainty, nevertheless, it does not cover enough area in the model form of mixed uncertainty (as can be seen from the following image):
+
+![The old AVM and Nasa-AVM](./docs/images/nasa-avm.png "The old AVM and Nasa-AVM")
+
+While the `calcAreaValidationMetric` shows `AVM=0`, the `calcAreaValidationMetricNasa` presents `AVM=13` that makes the `AVM` more meaningful in terms of the distribution disagreement. Therefore, the `calcAreaValidationMetricNasa` demonstrates a better result in case of two P-Boxes objects.
+
+### Usage
+
+The function expects two distributions that can be either two EDFs
+
+```javascript
+pBoxesSim = {
+    x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
+    p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
+    p_right: [0, 0, 0, 0.1, 0.1, 0.1, 0.5, 0.8, 0.8, 1],
+    unit: "rad/s",
+};
+
+pBoxesRef = {
+    x: [960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
+    p_left: [0.1, 0.3, 0.3, 0.5, 0.8, 1, 1, 1, 1],
+    p_right: [0, 0, 0.2, 0.2, 0.2, 0.7, 0.9, 0.9, 1],
+    unit: "rad/s",
+};
+
+calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps" pBoxesRef completely
+calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef) // returns 13
+```
+
+For further information, we refer to the publication of White & West[^3].
+
 [^1]: Christopher John Roy, William L. Oberkampf (2010). "A Complete Framework for Verification, Validation, and Uncertainty Quantification in Scientific Computing" (Invited). *In: 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition.* Orlando, USA. DOI: 10.2514/6.2010-124
 
 [^2]: Scott Ferson & William L. Oberkampf, 2009. "Validation of imprecise probability models,". *International Journal of Reliability and Safety*. Inderscience Enterprises Ltd, vol. 3(1/2/3), pages 3-22.
+
+[^3]: Laura White & Thomas West. "Area Validation Metric for Applications with Mixed Uncertainty." (2019). [Access Link](https://testscience.org/wp-content/uploads/formidable/13/White_DATAWorks2019.pdf)

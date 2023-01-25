@@ -4,6 +4,7 @@ const util = require("../util-common");
 exports.createEmpiricalDistribution = createEmpiricalDistribution;
 exports.createPBoxes = createPBoxes;
 exports.calcAreaValidationMetric = calcAreaValidationMetric;
+exports.calcAreaValidationMetricNasa = calcAreaValidationMetricNasa;
 exports.addUncertainty = addUncertainty;
 
 /**
@@ -126,6 +127,51 @@ function calcAreaValidationMetric(distributionSim, distributionRef) {
             diff = util.roundToDigit(diff, lsdX);
             avm += diff;
         } 
+    }
+
+    return avm;
+}
+
+/**
+ * Calculates the area validation metric as the outter areas between the distributions.
+ * The distributions can be either empirical distribution functions or p-boxes
+ * 
+ * @author lvtan3005
+ * @param {EmpiricalDistribution | PBoxes} distributionSim single EDF or P-Boxes from simulation data
+ * @param {EmpiricalDistribution | PBoxes} distributionRef single EDF or P-Boxes from reference data
+ * @return {number} the area validation metric
+ */
+function calcAreaValidationMetricNasa(distributionSim, distributionRef) {
+    distributionSim = helper.unifyDistribution(distributionSim);
+    distributionRef = helper.unifyDistribution(distributionRef);
+
+    let allX = distributionRef.x;
+    allX = allX.concat(distributionSim.x);
+    allX = allX.unique().sort((a,b) => a-b);    
+    let avm = 0;
+
+    const lsdX = Math.max(...distributionSim.p_right.map(v => util.getLsd(v)));
+
+    for(let [ix, x] of allX.entries()) {
+        let pidx_data = distributionSim.x.findLastIndex(el => el <= x);
+        let p_left_data = distributionSim.p_left[pidx_data] || 0;
+        let p_right_data = distributionSim.p_right[pidx_data] || 0;
+        
+        let pidx_exp = distributionRef.x.findLastIndex(el => el <= x);
+        let p_left_exp = distributionRef.p_left[pidx_exp] || 0;
+        let p_right_exp = distributionRef.p_right[pidx_exp] || 0;
+        
+        if (p_left_exp > p_left_data) {
+            diff = (p_left_exp - p_left_data) * (allX[ix+1] - allX[ix]);
+            diff = util.roundToDigit(diff, lsdX);
+            avm += diff;
+        }
+        if (p_right_exp < p_right_data) {
+            diff = (p_right_data - p_right_exp) * (allX[ix+1] - allX[ix]);
+            diff = util.roundToDigit(diff, lsdX);
+            avm += diff;
+        }
+
     }
 
     return avm;

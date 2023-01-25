@@ -323,7 +323,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s"
             };
     
-            expect(uncertainty.calcAreaValidationMetric(edf1, edf1)).to.equal(0);        
+            expect(uncertainty.calcAreaValidationMetric(edf1, edf1)).to.equal(0);     
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf1)).to.equal(0);        
+   
         });
     
         it('single value and single value, ref > sim => AVM > 0', () => {
@@ -341,7 +343,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s"
             }; 
     
-            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(10);        
+            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(10);  
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf2)).to.equal(10);        
+      
         });
     
         it('single value and single value, negative scale => AVM > 0', () => {
@@ -360,6 +364,8 @@ describe('calcAreaValidationMetric', () => {
             }; 
     
             expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(10);        
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf2)).to.equal(10);        
+
         });
     
         it('single value and single value, sim > ref => AVM > 0', () => {
@@ -377,7 +383,8 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s"
             }; 
     
-            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(20);        
+            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(20); 
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf2)).to.equal(20);        
         });
     
         it('stair function and single value', () => {
@@ -395,7 +402,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s"
             }; 
     
-            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(36);        
+            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(36);   
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf2)).to.equal(36);        
+     
         });
     
         it('stair functions with different resolution', () => {
@@ -413,7 +422,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s"
             }; 
     
-            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(3);        
+            expect(uncertainty.calcAreaValidationMetric(edf1, edf2)).to.equal(3);      
+            expect(uncertainty.calcAreaValidationMetricNasa(edf1, edf2)).to.equal(3);        
+  
         });
     
     });
@@ -436,6 +447,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxes, edf)).to.equal(0);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, edf)).to.equal(0);
+
         });
     
         it('single value edf outside p-box => expect AVM > 0', () => {
@@ -454,6 +467,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxes, edf)).to.equal(17);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, edf)).to.equal(17);
+
         });
     
         it('single value edf partly inside p-box => expect AVM > 0', () => {
@@ -472,6 +487,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxes, edf)).to.equal(5);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, edf)).to.equal(5);
+
         });
     
         it('stair function edf, partly inside p-box, finer resolution => expect AVM > 0', () => {
@@ -490,6 +507,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxes, edf)).to.equal(1.5);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, edf)).to.equal(1.5);
+
         });
         
     });
@@ -511,10 +530,12 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s",
             };
     
-            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(21);        
+            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(21);  
+            expect(uncertainty.calcAreaValidationMetricNasa(edf, pBoxes)).to.equal(47);        
+      
         });
         
-        it('reference p-box completely wraps EDF => expect AVM = 0', () => {
+        it('reference p-box completely wraps EDF => expect AVM = 0 and AVM ver 2 > 0', () => {
             const edf = {
                 type: "CDF",
                 x: [980, 1010, 1030],
@@ -529,7 +550,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s",
             };
     
-            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(0);        
+            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(0);     
+            expect(uncertainty.calcAreaValidationMetricNasa(edf, pBoxes)).to.equal(26);        
+   
         });
     
         it('reference p-box wraps EDF partly => expect AVM > 0', () => {
@@ -547,7 +570,9 @@ describe('calcAreaValidationMetric', () => {
                 unit: "rad/s",
             };
     
-            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(4);        
+            expect(uncertainty.calcAreaValidationMetric(edf, pBoxes)).to.equal(4);  
+            expect(uncertainty.calcAreaValidationMetricNasa(edf, pBoxes)).to.equal(30);        
+      
         });
     });
     
@@ -569,9 +594,11 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(0); 
+
         });
     
-        it('ref p-box wraps sim p-box completely => expect AVM = 0', () => {
+        it('ref p-box wraps sim p-box completely => expect AVM = 0 and AVM ver 2 > 0', () => {
             const pBoxesRef = {
                 x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
                 p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
@@ -587,9 +614,11 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(13); 
+
         });
     
-        it('left border of ref p-box outside, but right border inside => expect AVM = 0', () => {
+        it('left border of ref p-box outside, but right border inside => expect AVM = 0 and AVM > 0', () => {
             const pBoxesSim = {
                 x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
                 p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
@@ -605,9 +634,11 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(3); 
+
         });
     
-        it('left and right border of ref p-box outside, right border matches left border of sim => expect AVM = 0', () => {
+        it('left and right border of ref p-box outside, right border matches left border of sim => expect AVM = 0 and AVM ver 2 > 0', () => {
             const pBoxesSim = {
                 x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
                 p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
@@ -623,9 +654,11 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(3); 
+
         });
     
-        it('left border of ref p-box outside left sim border, right ref border outside right sim border => expect AVM = 0', () => {
+        it('left border of ref p-box outside left sim border, right ref border outside right sim border => expect AVM = 0 and AVM ver 2 > 0', () => {
             const pBoxesSim = {
                 x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
                 p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
@@ -641,6 +674,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(12); 
+
         });
     
         it('right border of ref p-box outside left sim border => expect AVM > 0', () => {
@@ -659,6 +694,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(2); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(6); 
+
         });
     
         it('boxes completely shifted => expect AVM > 0', () => {
@@ -677,6 +714,8 @@ describe('calcAreaValidationMetric', () => {
             };
     
             expect(uncertainty.calcAreaValidationMetric(pBoxesSim, pBoxesRef)).to.equal(8); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef)).to.equal(24); 
+
         });
     
     
@@ -705,14 +744,16 @@ describe('calcAreaValidationMetric', () => {
                 interval: 2
             }); // Maurizio: I would consider create a p-box instance directly to better control the outcome!
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [50,  51,  52,  53,  54,  56,  62],
                 p: [0.0, 0.0, 0.4, 0.6, 0.8, 1.0, 1.0],
                 unit: "km/h"
             };
     
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(1.0);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(1.0);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(1.0); 
+
         });
     
         it('Case 1', () => {
@@ -722,14 +763,16 @@ describe('calcAreaValidationMetric', () => {
                 interval: 2
             });
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [50,  51,  52,  53,  54,  56,  62],
                 p: [0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.0],
                 unit: "km/h"
             };
     
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(0.8);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(0.8);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(0.8); 
+
         });
     
         it('Case 2', () => {
@@ -740,13 +783,15 @@ describe('calcAreaValidationMetric', () => {
                 p_left: [0, 0, 0.2, 0.2, 0.4, 0.7, 0.9, 0.9, 1, 1, 1, 1]
             }
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [980],
                 p: [1.0],
                 unit: "rad/s"
             };
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(11);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(11);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(11); 
+
         });
         it('Case 3', () => {
             let pBoxes = {
@@ -756,13 +801,15 @@ describe('calcAreaValidationMetric', () => {
                 p_left: [0, 0, 0.2, 0.2, 0.4, 0.7, 0.9, 0.9, 1, 1, 1, 1]
             }
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [1020],
                 p: [1.0],
                 unit: "rad/s"
             };
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(0);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(0);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(0); 
+
         });
         it('Case 4', () => {
             let pBoxes = {
@@ -772,14 +819,15 @@ describe('calcAreaValidationMetric', () => {
                 p_left: [0, 0, 0.2, 0.2, 0.4, 0.7, 0.9, 0.9, 1, 1, 1, 1]
             }
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [1050],
                 p: [1.0],
                 unit: "rad/s"
             };
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(17);
-    
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(17);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(17); 
+
         });
         it('Case 5', () => {
             let pBoxes = {
@@ -789,13 +837,15 @@ describe('calcAreaValidationMetric', () => {
                 p_left: [0, 0, 0.2, 0.2, 0.4, 0.7, 0.9, 0.9, 1, 1, 1, 1]
             }
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [950],
                 p: [1.0],
                 unit: "rad/s"
             };
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(37);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(37);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(37); 
+
         });
         it('Case 6', () => {
             let pBoxes = {
@@ -805,13 +855,15 @@ describe('calcAreaValidationMetric', () => {
                 p_left: [0, 0.2, 0.2, 0.3, 0.5, 0.8, 0.9, 1, 1, 1, 1, 1]
             }
     
-            let edfCheck = {
+            let histCheck = {
                 type: "CDF",
                 x: [1000],
                 p: [1.0],
                 unit: "rad/s"
             };
-            expect(uncertainty.calcAreaValidationMetric(pBoxes, edfCheck)).to.equal(5);
+            expect(uncertainty.calcAreaValidationMetric(pBoxes, histCheck)).to.equal(5);
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxes, histCheck)).to.equal(5); 
+
         });
     });
     
@@ -829,8 +881,8 @@ describe('calcAreaValidationMetric', () => {
                 p_right: [ 0,   0,   0,   0, 0.1, 0.3, 0.3, 0.5, 0.8, 0.8, 1,   1],
                 p_left: [0, 0.2, 0.2, 0.3, 0.5, 1.0, 1.0,   1.0,   1,   1, 1,   1]
             }
-            let rs = uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp);
-            expect(rs).to.equal(0);
+            expect(uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp)).to.equal(0); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxData, pBoxExp)).to.equal(3); 
         })
     
         it('Case 2', () => {
@@ -846,9 +898,9 @@ describe('calcAreaValidationMetric', () => {
                 p_right: [ 0,   0,   0.4,   0.5, 1.0, 1.0, 1.0, 1.0, 1, 1, 1.0,   1],
                 p_left: [0, 0.6, 1.0, 1.0, 1.0, 1, 1,   1,   1,   1, 1,   1]
             }
-            let rs = uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp);
-            expect(rs).to.equal(12);
-    
+            expect(uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp)).to.equal(12); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxData, pBoxExp)).to.equal(27); 
+
         })
     
         it('Case 3', () => {
@@ -864,9 +916,8 @@ describe('calcAreaValidationMetric', () => {
                 p_right: [  0, 0.0, 0,   0,   0,    0   , 0,   0,   0,   1, 1,   1],
                 p_left: [0, 0.0, 0,   0,   0,    0   , 0,   0.3,   1,   1, 1,   1]
             }
-            let rs = uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp);
-            expect(rs).to.equal(9);
-    
+            expect(uncertainty.calcAreaValidationMetric(pBoxData, pBoxExp)).to.equal(9); 
+            expect(uncertainty.calcAreaValidationMetricNasa(pBoxData, pBoxExp)).to.equal(19); 
         })
     });
     
