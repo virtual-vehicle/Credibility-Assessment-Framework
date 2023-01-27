@@ -19,7 +19,9 @@ For creating these representations, the following utilities are provided:
 * [`createEmpiricalDistribution`](#createempiricaldistribution)
 * [`createPBoxes`](#createpboxes)
 * [`addUncertainty`](#adduncertainty)
-* [`addUncertainty`](#adduncertainty)
+* distribution-based validation metrics:
+    - [`calcAreaValidationMetric`](#calcareavalidationmetric)
+    - [`calcAreaValidationMetricNasa`](#calcareavalidationmetricnasa)
 
 ## `createEmpiricalDistribution`
 
@@ -279,11 +281,11 @@ calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps
 
 ## `calcAreaValidationMetricNasa`
 
-This function calculates the disagreement between the left and right bounds of the two distributions. The `calcAreaValidationMetric` can be used to quantify the model form uncertainty, nevertheless, it does not cover enough area in the model form of mixed uncertainty (as can be seen from the following image):
+This metric handles the disagreement between the left and right bounds of prediction distribution and data distribution and was proposed by NASA[^3], to compensate for the shortcomings of `calcAreaValidationMetric` in case of mixed uncertainties, as it calculates the model form uncertainty as the smallest possible area between the distributions, i.e. the area between the closest possible distributions of two P-Boxes. This may lead to underestimating the model form uncertainty in terms of bias and variance (to comprehend the latter case, see the following image):
 
-![The old AVM and Nasa-AVM](./docs/images/nasa-avm.png "The old AVM and Nasa-AVM")
+![AVM and Nasa-proposed AVM](./docs/images/nasa-avm.png "AVM and Nasa-proposed AVM")
 
-While the `calcAreaValidationMetric` shows `AVM=0`, the `calcAreaValidationMetricNasa` presents `AVM=13` that makes the `AVM` more meaningful in terms of the distribution disagreement. Therefore, the `calcAreaValidationMetricNasa` demonstrates a better result in case of two P-Boxes objects.
+While `calcAreaValidationMetric` shows a disagreement of `AVM = 0 rad/s`, `calcAreaValidationMetricNasa` presents a disagreement of `AVM = 13 rad/s` because it allows to take into account more of the potential probabilistic realizations.
 
 ### Usage
 
