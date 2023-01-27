@@ -281,7 +281,7 @@ calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps
 
 ## `calcAreaValidationMetricNasa`
 
-This metric handles the disagreement between the left and right bounds of prediction distribution and data distribution and was proposed by NASA[^3], to compensate for the shortcomings of `calcAreaValidationMetric` in case of mixed uncertainties, as it calculates the model form uncertainty as the smallest possible area between the distributions, i.e. the area between the closest possible distributions of two P-Boxes. This may lead to underestimating the model form uncertainty in terms of bias and variance (to comprehend the latter case, see the following image):
+This metric handles the disagreement between the left and right bounds of prediction distribution and data distribution and was proposed by NASA[^3], to compensate for the shortcomings of `calcAreaValidationMetric` in case of mixed uncertainties. As `calcAreaValidationMetric` calculates the model form uncertainty as the smallest possible area between the distributions, i.e. the area between the closest possible distributions of two P-Boxes, this may lead to underestimating the model form uncertainty in terms of bias and variance (to comprehend the latter case, see the following image):
 
 ![AVM and Nasa-proposed AVM](./docs/images/nasa-avm.png "AVM and Nasa-proposed AVM")
 
