@@ -1,0 +1,1756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stmd:SimulationTaskMetaData
+	xmlns:stmd="http://apps.pmsf.net/STMD/SimulationTaskMetaData"
+	xmlns:stc="http://apps.pmsf.net/SSPTraceability/SSPTraceabilityCommon"
+	xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://apps.pmsf.net/STMD/SimulationTaskMetaData https://raw.githubusercontent.com/PMSFIT/SSPTraceability/v1.0-beta2/STMD.xsd" version="0.1.0" name="Modeling Task ALKS Map" GUID="c3aea52c-2073-4fa6-977b-976286c1ac43" description="UPSIM ALKS Map Demo" author="Maurizio Ahmann" fileversion="1.0" generationTool="SETLabs STMD Writer" generationDateAndTime="2023-06-28T18:09:33.561Z">
+	<stmd:GeneralInformation>
+		<stc:DerivationChain>
+			<stc:DerivationChainEntry GUID="2c34d92b-6782-4097-991b-a2507826f948"/>
+			<stc:DerivationChainEntry GUID="f8f74fa0-10e1-4c06-9a2b-f60b286e7c1a"/>
+			<stc:DerivationChainEntry GUID="71c615bc-ba57-4173-b130-a8c5adbe5030"/>
+		</stc:DerivationChain>
+	</stmd:GeneralInformation>
+	<stmd:AnalysisPhase>
+		<stmd:AnalyzeSimulationTaskAndObjectives>
+			<stc:Input>
+				<stc:Resource kind="document" type="application/json" id="odd" description="ODD of ALKS system" source="./modeling_request/documents/odd.json"/>
+				<stc:Resource kind="document" type="application/pdf" id="unece_r157" description="UNECE Regulation No. 157" source="./modeling_request/documents/UNECE_R157.pdf"/>
+				<stc:Resource kind="document" type="application/json" id="criticality_assessment" description="Criticality Assessment of Simulation Task" source="./modeling_request/documents/criticality_assessment.json"/>
+				<stc:Resource kind="document" type="text/html" id="raa" description="guidelines for the construction of highways" source="https://www.fgsv-verlag.de/raa-richtlinien-fur-die-anlage-von-autobahnen"/>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2" description="UNECE R157, Section 5.2" source="./modeling_request/documents/requirements/unecer157/section_5_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>preamble for fulfilment of the provisions</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_1" description="UNECE R157, Section 5.2.1" source="./modeling_request/documents/requirements/unecer157/section_5_2_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding lane following</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_2" description="UNECE R157, Section 5.2.2" source="./modeling_request/documents/requirements/unecer157/section_5_2_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding side-vehicle detection</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_3_1" description="UNECE R157, Section 5.2.3.1" source="./modeling_request/documents/requirements/unecer157/section_5_2_3_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding operational velocity</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_3_2" description="UNECE R157, Section 5.2.3.2" source="./modeling_request/documents/requirements/unecer157/section_5_2_3_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding adaption to infrastructural and
+                            environmental conditions</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_3_3" description="UNECE R157, Section 5.2.3.3" source="./modeling_request/documents/requirements/unecer157/section_5_2_3_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding lead vehicle following</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="image/png" id="unecer157_5_2_3_3_table" description="UNECE R157, Section 5.2.3.3" source="./modeling_request/documents/requirements/unecer157/section_5_2_3_3_speed_distance_table.png">
+					<stc:Summary type="text/plain">
+						<stc:Content>table for minimum following distance</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_4" description="UNECE R157, Section 5.2.4" source="./modeling_request/documents/requirements/unecer157/section_5_2_4.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding stationary vehicles</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_5" description="UNECE R157, Section 5.2.5" source="./modeling_request/documents/requirements/unecer157/section_5_2_5.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding detection for collision risks</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_5_1" description="UNECE R157, Section 5.2.5.1" source="./modeling_request/documents/requirements/unecer157/section_5_2_5_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding full-braking lead vehicle</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_5_2" description="UNECE R157, Section 5.2.5.2" source="./modeling_request/documents/requirements/unecer157/section_5_2_5_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding cutting-in-vehicles</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_5_2_5_3" description="UNECE R157, Section 5.2.5.3" source="./modeling_request/documents/requirements/unecer157/section_5_2_5_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding unobstructed crossing pedestrians</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_7_1_1" description="UNECE R157, Section 7.1.1" source="./modeling_request/documents/requirements/unecer157/section_7_1_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding forward detection range</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_7_1_2" description="UNECE R157, Section 7.1.2" source="./modeling_request/documents/requirements/unecer157/section_7_1_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>requirements regarding lateral detection range</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_2_1" description="UNECE R157, Annex 4, Appendix 3, Section 2.1" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_2_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Definition traffic disturbance critical scenarios</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_2_2" description="UNECE R157, Annex 4, Appendix 3, Section 2.2" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_2_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Traffic critical scenarios list</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_2_3" description="UNECE R157, Annex 4, Appendix 3, Section 2.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_2_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Creation of traffic critical scenarios</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_1" description="UNECE R157, Annex 4, Appendix 3, Section 3.1" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Threshold for preventable/unpreventable crash scenarios</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_2" description="UNECE R157, Annex 4, Appendix 3, Section 3.2" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Avoidance capability of the driver model</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_3" description="UNECE R157, Annex 4, Appendix 3, Section 3.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Determination of conditions under which ALKS shall avoid a
+                            collision</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="image/png" id="unecer157_anx_4_app_3_sec_3_3_image_1" description="UNECE R157, Annex 4, Appendix 3, Section 3.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_3_performance_model_factors_for_vehicles.png">
+					<stc:Summary type="text/plain">
+						<stc:Content>Performance model factors</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="image/png" id="unecer157_anx_4_app_3_sec_3_3_image_2" description="UNECE R157, Annex 4, Appendix 3, Section 3.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_3_skilled_human_performance_model.png">
+					<stc:Summary type="text/plain">
+						<stc:Content>Skilled human performance model</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_4_1" description="UNECE R157, Annex 4, Appendix 3, Section 3.4.1" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_4_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Cut-in scnario parameters</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_4_2" description="UNECE R157, Annex 4, Appendix 3, Section 3.4.2" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_4_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Cut-out scenario parameters</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_3_4_3" description="UNECE R157, Annex 4, Appendix 3, Section 3.4.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_3_4_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Deceleration scenario parameters</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_4_1" description="UNECE R157, Annex 4, Appendix 3, Section 4.1" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_4_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Parameter importance for traffic critical scenarios</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_4_2" description="UNECE R157, Annex 4, Appendix 3, Section 4.2" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_4_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Additional parameters for traffic critical scenarios to
+                            operating environment</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="image/png" id="unecer157_anx_4_app_3_sec_4_1_image" description="UNECE R157, Annex 4, Appendix 3, Section 4.2" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_4_2_additional_parameters.png">
+					<stc:Summary type="text/plain">
+						<stc:Content>Additional parameters table</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_4_app_3_sec_4_3" description="UNECE R157, Annex 4, Appendix 3, Section 4.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_4_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Parameters for the three types of scenarios</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="image/png" id="unecer157_anx_4_app_3_sec_4_3_image" description="UNECE R157, Annex 4, Appendix 3, Section 4.3" source="./modeling_request/documents/requirements/unecer157/annex_4_appendix_3_section_4_3_scenarios.png">
+					<stc:Summary type="text/plain">
+						<stc:Content>Traffic critical scenario illustration</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_1" description="UNECE R157, Annex 5, Section 3.1.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, activation of ALKS</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_2" description="UNECE R157, Annex 5, Section 3.1.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, side effects</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_3" description="UNECE R157, Annex 5, Section 3.1.3" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, surface</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_4_1" description="UNECE R157, Annex 5, Section 3.1.4.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_4_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, test targets, vehicles</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_4_2" description="UNECE R157, Annex 5, Section 3.1.4.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_4_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, test targets, PTWs</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_3_1_4_3" description="UNECE R157, Annex 5, Section 3.1.4.3" source="./modeling_request/documents/requirements/unecer157/annex_5_section_3_1_4_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test conditions, test targets, pedestrians</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_1_1" description="UNECE R157, Annex 5, Section 4.1.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_1_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, lane keeping, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_1_2" description="UNECE R157, Annex 5, Section 4.1.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_1_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, lane keeping, details</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_2_1" description="UNECE R157, Annex 5, Section 4.2.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_2_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, blocked lane, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_2_2" description="UNECE R157, Annex 5, Section 4.2.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_2_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, blocked lane, details</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_3_1" description="UNECE R157, Annex 5, Section 4.3.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_3_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, following lead vehicle, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_3_2" description="UNECE R157, Annex 5, Section 4.3.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_3_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, following lead vehicle, details</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_4_1" description="UNECE R157, Annex 5, Section 4.4.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_4_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, cut-in, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_4_2" description="UNECE R157, Annex 5, Section 4.4.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_4_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, cut-in, additional information</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_4_3" description="UNECE R157, Annex 5, Section 4.4.3" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_4_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, cut-in, details</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_5_1" description="UNECE R157, Annex 5, Section 4.5.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_5_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, cut-out, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_5_2" description="UNECE R157, Annex 5, Section 4.5.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_5_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, cut-out, details</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_6_1" description="UNECE R157, Annex 5, Section 4.6.1" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_6_1.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, field-of-view, objectives</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_6_2" description="UNECE R157, Annex 5, Section 4.6.2" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_6_2.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, field-of-view, forward detection range</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_4_6_3" description="UNECE R157, Annex 5, Section 4.6.3" source="./modeling_request/documents/requirements/unecer157/annex_5_section_4_6_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Test scenarios, field-of-view, lateral detection range</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="requirement" type="application/json" id="unecer157_anx_5_sec_5_3" description="UNECE R157, Annex 5, Section 5.3" source="./modeling_request/documents/requirements/unecer157/annex_5_section_5_3.json">
+					<stc:Summary type="text/plain">
+						<stc:Content>Additional test cases</stc:Content>
+					</stc:Summary>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="engineering_task" description="engineering task from Modeling Request">
+					<stc:Content>Approval of the ALKS, according to UNECE R157.
+                        Contribute to approving the System Safety and Fail-Safe Response
+                        sub-functionality, embracing the Dynamic Driving Task.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="simulation_target" description="simulation target from Modeling Request">
+					<stc:Content>The simulation task is the execution of different ALKS scenarios
+                        under different operating conditions.
+                        The functional scenario description that has to be covered is given in UNECE
+                        R157, Annex 5 (&quot;Test Specifications for ALKS&quot;),
+                        Chapter 4 (&quot;Test scenarios to assess the performance of the system with
+                        regard to the dynamic driving task&quot;):
+                        1. Lane Keeping,
+                        2. Avoiding a collision with a road user or object blocking the lane,
+                        3. Following a lead vehicle,
+                        4. Lane change of another vehicle into lane,
+                        5. Stationary obstacle after lane change of the lead vehicle,
+                        6. Field of View test</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="simulation_objectives" description="simulation objectives from Modeling Request">
+					<stc:Content>The simulation objective is to prove robustness of the ALKS, by
+                        testing of as many concrete scenarios as possible.
+                        This is usually a combination of different factors of a scenario that cannot
+                        fully be covered by execution of real tests,
+                        neither from economic nor from realistic temporal point of view: To test the
+                        amount of required concrete scenarios, tests under real
+                        conditions are costly and it is almost impossible to meet all the different
+                        parameter variations on test tracks or in road testing.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="modeling_target" description="modeling target from Modeling Request">
+					<stc:Content>The target is to provide a Static Road Map to perform the relevant
+                        ALKS scenarios, according to the UNECE Regulation 157,
+                        given in the Simulation Service Target.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="modeling_objectives" description="modeling objectives from Modeling Request">
+					<stc:Content>Specific requirements are given within the requirements section.
+                        The templates for the relevant scenarios the map will be used for are
+                        provided as OpenSCENARIO files.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="quality_aspects" description="specific quality aspects from Modeling Request">
+					<stc:Content>The model must fulfill quality requirements according to
+                        Credibility Level 2.</stc:Content>
+				</stc:Resource>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="interpretation_modeling_objectives_targets" description="interpretation of modeling targets and objectives">
+					<stc:Content>The foundation of the simulation the map is provided for is the
+                        UNECE R157: This regulation specifies high-level requirements that a
+                        manufacturer
+                        needs to fulfill for an approval of Level-3 Automotive Lane Keeping Systems.
+                        The scope of the simulation is to approve the &quot;dynamic driving
+                        task&quot; sub-functionality that can be tested by implementing the given
+                        logical
+                        scenarios to &quot;assess the performance of the system with regard to the
+                        dynamic driving task&quot; (UNECE R157, Annex 5, Section 4).
+                        The map should be provided for simulating these scenarios. The concrete
+                        scenario implementations are provided as OpenSCENARIO files.
+                        Therefore, the map must fulfill the boundary conditions and integration
+                        requirements of these scenarios.
+                        Further, it must be checked if one map for all scenarios is sufficient or if
+                        only parts of a extensive map can be used for execution of specific
+                        given scenarios.Keeping that in mind, we should generally consider providing
+                        specific maps for specific scenarios, as it is likely that the
+                        customer will use a lot of variation for the scenarios.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="context_boundaries" description="context and boundary conditions">
+					<stc:Content>There are specific entities that serve as boundary conditions and
+                        context for the map to provide.
+                        These are:
+                        - The requirements of the UNECE Regulation No. 157
+                        - The given ODD of the system-under-test
+                        - The given functional and conrete scenarios
+                        - The target simulation environment of the customers</stc:Content>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="document" type="text/markdown" id="product_description_revised" description="revised product description">
+					<stc:Content>The maps will be provided for virtual testing of the dynamic
+                        driving task of a Level-3 Automated Lane Keeping System.
+                        The (high-level-) requirements of the dynamic driving task are defined in
+                        the UNECE Regulation No. 157. Following these
+                        requirements, the dynamic driving task comprises requirements for
+                        longitudinal and lateral control of the vehicle. Some relevant
+                        assumptions following from these requirements for the provision of maps for
+                        virtual testing are:
+                        - The system shall keep the vehicle inside its lane of travel and ensure
+                        that the vehicle does not cross any lane marking (Section 5.2.1)
+                        - The system shall aim to keep the vehicle in a stable lateral position
+                        inside the lane (Section 5.2.1)
+                        - The maximum speed up to which the system is permitted to operate is 60
+                        km/h (Section 5.2.3.1)
+                        - The activated system shall adapt the vehicle speed to infrastructural and
+                        environmental conditions, e.g. narrow curve radii (Section 5.2.3.2)
+                        - The activated system shall avoid a collision with a cutting-in vehicle
+                        (Section 5.2.5.2)</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="product_environment_revised" description="revised product environment">
+					<stc:Content>The ODD of the system specifies the scope of the map to use.
+                        Relevant elements of the driveable are for the map provision are:
+                        - motorways and radial roads only
+                        - minimum curve radius 500 m
+                        - only divided roads
+                        - no pavements and barriers on the edge
+                        - 2 or more lanes avaiable
+                        - minimum lane width 3.0 m
+                        - traffic lanes only
+                        - right-hand-traffic
+                        - edge must be indicated with line markings (also temporary possible)
+                        - only uniform surface
+                        - no potholes and swells
+                        - cracks and ruts possible
+                        - only dry roads
+                        - only grade separated intersections
+                        - only bridges as special structures
+                        - road signage allowed</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="modeling_target_analyzed" description="analyzed modeling target">
+					<stc:Content>The target is to provide OpenDRIVE maps for the simulation of six
+                        different (logical) traffic scenarios, derived from the
+                        UNECE Regulation No. 157, Annex 5 (&quot;Test Specifications for
+                        ALKS&quot;), Chapter 4 (&quot;Test scenarios to assess the performance
+                        of the system with regard to the dynamic driving task&quot;):
+                        1. Lane Keeping,
+                        2. Avoiding a collision with a road user or object blocking the lane,
+                        3. Following a lead vehicle,
+                        4. Lane change of another vehicle into lane,
+                        5. Stationary obstacle after lane change of the lead vehicle,
+                        6. Field of View test
+
+                        The scenarios are given as functional scenarios with a respective concrete
+                        scenario (using default parameters).
+                        The format of the scenarios is the OpenSCENARIO standard in Version 1.0.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="modeling_objectives_analyzed" description="analyzed modeling objectives">
+					<stc:Content>The objectives of the map provision focus on some critical aspects:
+                        1. The map must be integrated into the scenarios the customer has provided
+                        2. The map must be executable in the target environment of the customer
+                        3. The map must include the features, given in the ODD description of the
+                        customer&apos;s SUT</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/markdown" id="model_quality_aspects_specific" description="specific quality aspects for model">
+					<stc:Content>The criticality assessment of the simulation task has resulted in
+                        the required Credibility Level 2.
+                        Therefore, level-1 and level-2-metrics from the Credibility Development Kit
+                        need to be used. We will apply the specific metrics,
+                        derived for OpenDRIVE maps.</stc:Content>
+				</stc:Resource>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="modeling objectives references">
+					<stc:Locator xlink:type="locator" xlink:href="#interpretation_modeling_objectives_targets" xlink:label="targets_objectives_interpretation" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_1" xlink:label="unece_scenario_1_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_2" xlink:label="unece_scenario_1_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_2_1" xlink:label="unece_scenario_2_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_2_2" xlink:label="unece_scenario_2_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_3_1" xlink:label="unece_scenario_3_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_3_2" xlink:label="unece_scenario_3_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_1" xlink:label="unece_scenario_4_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_2" xlink:label="unece_scenario_4_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_3" xlink:label="unece_scenario_4_03" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_5_1" xlink:label="unece_scenario_5_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_5_2" xlink:label="unece_scenario_5_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_1" xlink:label="unece_scenario_6_01" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_2" xlink:label="unece_scenario_6_02" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_3" xlink:label="unece_scenario_6_03" xlink:role="functional-requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_1_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_1_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_2_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_2_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_3_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_3_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_4_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_4_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_4_03" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_5_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_5_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_6_01" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_6_02" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="targets_objectives_interpretation" xlink:to="unece_scenario_6_03" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling context and boundaries references">
+					<stc:Locator xlink:type="locator" xlink:href="#context_boundaries" xlink:label="context_boundaries" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#odd" xlink:label="odd" xlink:role="constraint"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unece_r157" xlink:label="unece_r157" xlink:role="regulation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_objectives" xlink:label="modeling_objectives" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="odd" xlink:to="context_boundaries" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="unece_r157" xlink:to="context_boundaries" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_objectives" xlink:to="context_boundaries" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="revised product description sources">
+					<stc:Locator xlink:type="locator" xlink:href="#product_description_revised" xlink:label="product_desc" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#engineering_task" xlink:label="eng_task" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#simulation_target" xlink:label="simulation_targets" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#simulation_objectives" xlink:label="simulation_obj" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_target" xlink:label="modeling_targets" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_objectives" xlink:label="modeling_obj" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unece_r157" xlink:label="unece_r157" xlink:role="regulation"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="eng_task" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="simulation_targets" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="simulation_obj" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="modeling_targets" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="modeling_obj" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_desc" xlink:to="unece_r157" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="revised product environment sources">
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="product_env" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#odd" xlink:label="odd" xlink:role="constraint"/>
+					<stc:Arc xlink:type="arc" xlink:from="product_env" xlink:to="odd" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="analyzed modeling target sources">
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_target_analyzed" xlink:label="modeling_target" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_target" xlink:label="modeling_targets_input" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#simulation_target" xlink:label="simulation_targets_input" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#simulation_objectives" xlink:label="simulation_objectives_input" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_target" xlink:to="modeling_targets_input" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_target" xlink:to="simulation_targets_input" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_target" xlink:to="simulation_objectives_input" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="analyzed modeling objectives sources">
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_objectives_analyzed" xlink:label="modeling_objectives_analyzed" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#simulation_objectives" xlink:label="simulation_objectives_input" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_objectives" xlink:label="modeling_ojectives_input" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#odd" xlink:label="odd" xlink:role="constraint"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_objectives_analyzed" xlink:to="simulation_objectives_input" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_objectives_analyzed" xlink:to="modeling_ojectives_input" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="modeling_objectives_analyzed" xlink:to="odd" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="analyzed modeling objectives sources and reference">
+					<stc:Locator xlink:type="locator" xlink:href="#model_quality_aspects_specific" xlink:label="quality_aspects_specific" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#quality_aspects" xlink:label="quality_aspects_input" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/main/Credibility-Development-Kit" xlink:label="cdk" xlink:role="source-code-repository"/>
+					<stc:Arc xlink:type="arc" xlink:from="quality_aspects_specific" xlink:to="quality_aspects_input" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="cdk" xlink:to="quality_aspects_specific" xlink:arcrole="specifies"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:AnalyzeSimulationTaskAndObjectives>
+		<stmd:VerifyAnalysis>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#interpretation_modeling_objectives_targets"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#context_boundaries"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_description_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_environment_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_target_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#model_quality_aspects_specific"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="analysis_verification_procedure" description="procedure for verification of modeling task and objectives analysis">
+					<stc:Content>Face validation by a domain expert.</stc:Content>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="document" type="text/markdown" id="analysis_verification_output" description="expert statment for verification of modeling task and objectives analysis">
+					<stc:Content>All inputs that have been provided by the customer were analysed
+                        thoroughly.
+                        For the analysis of the modeling task and objectives, especially the
+                        requirements of the UNECE Regulation
+                        No. 157, the given ODD of the system-under-test, the given functional and
+                        conrete scenarios, as well as
+                        the target simulation environment specifiction of the customer were taken
+                        into account.
+                        The results of the analysis are linked in detail to comprehend how the
+                        results were derived.</stc:Content>
+				</stc:Resource>
+			</stc:Output>
+		</stmd:VerifyAnalysis>
+		<stc:LifeCycleInformation>
+			<stc:Drafted date="2023-03-31T07:15:00Z">
+				<stc:Responsible organization="3D Mapping Solutions GmbH" name="Sebastian Tuttas"/>
+			</stc:Drafted>
+			<stc:Defined date="2023-04-17T12:29:00+02:00">
+				<stc:Responsible organization="3D Mapping Solutions GmbH" name="Sebastian Tuttas"/>
+			</stc:Defined>
+		</stc:LifeCycleInformation>
+	</stmd:AnalysisPhase>
+	<stmd:RequirementsPhase>
+		<stmd:DefineModelRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_01" description="map format" source="./modeling_request/documents/requirements/model_01.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_02" description="ODD compliancy" source="./modeling_request/documents/requirements/model_02.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_04" description="curvatures" source="./modeling_request/documents/requirements/model_04.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_05" description="road geometries" source="./modeling_request/documents/requirements/model_05.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_06" description="number of lanes" source="./modeling_request/documents/requirements/model_06.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_07" description="lane width" source="./modeling_request/documents/requirements/model_07.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_08" description="y-split integration" source="./modeling_request/documents/requirements/model_08.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_09" description="highway access integration" source="./modeling_request/documents/requirements/model_09.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_10" description="highway exit intergration" source="./modeling_request/documents/requirements/model_10.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_11" description="faded lane markings" source="./modeling_request/documents/requirements/model_11.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_12" description="erased lane markings" source="./modeling_request/documents/requirements/model_12.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_15" description="modelling approach curved roads" source="./modeling_request/documents/requirements/model_15.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_16" description="additional info regarding modelling approach" source="./modeling_request/documents/requirements/model_16.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_17" description="map derivation method" source="./modeling_request/documents/requirements/model_17.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_18" description="additional information regarding map derivation" source="./modeling_request/documents/requirements/model_18.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_description_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_environment_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_target_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="model_requirements_procedure" description="procedure to derive model requirements">
+					<stc:Content>All requirements that have been provided by the customer will be
+                        considered as hard requirements, unless not stated differently (e.g. by
+                        requirement type &quot;information&quot;).
+                        Taking the ODD of the SUT and the customer requirements into account,
+                        further detailed requirements have been derived, especially regarding the
+                        features that need to be modelled.</stc:Content>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_19" description="structurally separated roads" source="./documents/requirements/model_19.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_20" description="right-hand traffic" source="./documents/requirements/model_20.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_21" description="included lane types" source="./documents/requirements/model_21.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_22" description="line marking" source="./documents/requirements/model_22.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_23" description="bridges" source="./documents/requirements/model_23.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_m_24" description="road signage" source="./documents/requirements/model_24.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_04"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_05"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_06"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_07"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_08"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_09"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_10"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_11"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_12"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_15"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_16"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_17"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_18"/>
+			</stc:Output>
+			<stc:Rationale>
+				<stc:Resource kind="rationale" type="text/xml" id="credibility-model-requirements">
+					<stc:Content>
+						<cdk:Credibility>
+							<cdk:Evidence level="1">
+								<cdk:Metric subset="automated_driving/opendrive" function="checkSingleSemantics" version="1.0">
+									<cdk:Test id="semantic-check-m01">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M01.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m02">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M02.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m04">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M04.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m05">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M05.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m06">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M06.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m07">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M07.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m08">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M08.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m09">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M09.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m10">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M10.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m11">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M11.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m12">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M12.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m15">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M15.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+									<cdk:Test id="semantic-check-m17">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/single_semantic_check_M17.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+								</cdk:Metric>
+								<cdk:Metric subset="automated_driving/opendrive" function="checkCollectionSemantics" version="1.0">
+									<cdk:Test id="semantic-check-model-requirement-collection">
+										<cdk:FunctionArgument name="signedExpertStatement" type="application/json" source="./rationales/requirements/models/semantic_check_model_collection.json"></cdk:FunctionArgument>
+										<cdk:FunctionArgument name="x509Certificate" type="text/plain" source="./rationales/cert_ahmann.crt"></cdk:FunctionArgument>
+									</cdk:Test>
+								</cdk:Metric>
+							</cdk:Evidence>
+						</cdk:Credibility>
+					</stc:Content>
+					<stc:Classification type="credibility_assessment"/>
+				</stc:Resource>
+			</stc:Rationale>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_01 (model format)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="req_model_format" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="req_environment_target" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_i_01" xlink:label="req_integration_scenario_format" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="https://www.asam.net/standards/detail/opendrive" xlink:label="opendrive_standard" xlink:role="standard"/>
+					<stc:Locator xlink:type="locator" xlink:href="https://carla.readthedocs.io/en/latest/python_api/#carlamap" xlink:label="carla_supporting_format" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_5" xlink:role="evaluation"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_format" xlink:to="req_environment_target" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_format" xlink:to="req_integration_scenario_format" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_format" xlink:to="carla_supporting_format" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="opendrive_standard" xlink:to="req_model_format" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_format" xlink:to="label_5" xlink:arcrole="validated-by"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_02 (ODD compliancy)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_odd" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_04 (curvature)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_04" xlink:label="req_model_curvatures" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_3_1_2" xlink:label="unece_source_1" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_1" xlink:label="unece_source_2" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_curvatures" xlink:to="unece_source_1" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_curvatures" xlink:to="unece_source_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_05 (road geometries)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_05" xlink:label="req_model_geometries" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_2_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_geometries" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_06 (number of lanes)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_06" xlink:label="req_model_number_lanes" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_2_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_number_lanes" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_07 (lane widths)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_07" xlink:label="req_model_lane_width" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_4_2" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_lane_width" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_08 (Y-split)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_08" xlink:label="req_model_ysplit" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_5_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_ysplit" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_09 (highway access)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_09" xlink:label="req_model_highway_access" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_5_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_highway_access" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_10 (highway exit)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_10" xlink:label="req_model_highway_exit" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_5_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_highway_exit" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_11 (faded markings)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_11" xlink:label="req_model_faded_markings" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_5_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_faded_markings" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_11 (erased markings)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_12" xlink:label="req_model_erased_markings" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_5_3" xlink:label="unece_source" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_erased_markings" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_15 (curve modeling approach)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_15" xlink:label="req_model_approach_curves" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_16" xlink:label="req_model_info_approach_curves" xlink:role="extended-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="https://www.asam.net/standards/detail/opendrive" xlink:label="opendrive_standard" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="opendrive_standard" xlink:to="req_model_approach_curves" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_info_approach_curves" xlink:to="req_model_approach_curves" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_17 (map derivation)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_17" xlink:label="req_model_map_derivation" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_18" xlink:label="req_model_info_map_derivation" xlink:role="extended-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unece_r157" xlink:label="unece" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_map_derivation" xlink:to="unece" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_info_map_derivation" xlink:to="req_model_map_derivation" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_19 (divided roads)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_19" xlink:label="req_model_divided_roads" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_divided_roads" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_divided_roads" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_20 (right-hand traffic)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_20" xlink:label="req_model_right_hand_traffic" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_right_hand_traffic" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_right_hand_traffic" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_21 (lane types)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_21" xlink:label="req_model_lane_types" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_lane_types" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_lane_types" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_22 (line markings edge)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_22" xlink:label="req_model_edge_markings" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_edge_markings" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_edge_markings" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_23 (bridges)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_23" xlink:label="req_model_bridges" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_bridges" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_bridges" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement M_24 (road signage)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_24" xlink:label="req_model_signage" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_signage" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_model_signage" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineModelRequirements>
+		<stmd:DefineParameterRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_01" description="minimum road length" source="./modeling_request/documents/requirements/parameter_01.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_02" description="minimum lane width" source="./modeling_request/documents/requirements/parameter_02.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_03" description="road markings color" source="./modeling_request/documents/requirements/parameter_03.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_04" description="lane markings color" source="./modeling_request/documents/requirements/parameter_04.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_05" description="number of driving lanes" source="./modeling_request/documents/requirements/parameter_05.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_description_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_environment_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_target_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="parameter_requirements_procedure" description="procedure to derive parameter requirements">
+					<stc:Content>All requirements that have been provided by the customer will be
+                        considered as hard requirements, unless not stated differently (e.g. by
+                        requirement type &quot;information&quot;).
+                        To define further requirements for with respect to the parameters, the ODD
+                        of the SUT, as well as scientific publications have been taken into account
+                        (e.g. for deciding
+                        which friction coefficient to use for the road).</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="application/pdf" id="peak_traction_reference" description="overview of typical peak fractions of different roads" source="https://www.fzd.tu-darmstadt.de/media/fachgebiet_fzd/previous_design/publikationen_3/dissertationen_3/2004_Klempau_Dissertation.pdf">
+					<stc:Annotations>
+						<ssc:Annotation type="text/plain">
+							<stc:Content>see &quot;Abbildung 14&quot; on page 16</stc:Content>
+						</ssc:Annotation>
+					</stc:Annotations>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_08" description="minimum curve radii" source="./documents/requirements/parameter_08.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_09" description="peak traction" source="./documents/requirements/parameter_09.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_10" description="peak traction definition" source="./documents/requirements/parameter_10.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_03"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_04"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_05"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_01 (track length)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_01" xlink:label="req_parameters_length" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_5_2_3_1" xlink:label="unece_source_1" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_2" xlink:label="unece_source_2" xlink:role="functional-requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_length" xlink:to="unece_source_1" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_length" xlink:to="unece_source_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_02 (lane width)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_02" xlink:label="req_parameters_lane_width" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#raa" xlink:label="highway_width_guideline" xlink:role="regulation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="analyzed_odd" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_width" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_width" xlink:to="analyzed_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_width" xlink:to="highway_width_guideline" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_03 (road markings color)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_03" xlink:label="req_parameters_road_markings_color" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_4_2" xlink:label="unece_source" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="analyzed_odd" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_road_markings_color" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_road_markings_color" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_road_markings_color" xlink:to="analyzed_odd" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_04 (lane markings color)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_04" xlink:label="req_parameters_lane_markings_color" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_4_2" xlink:label="unece_source" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="analyzed_odd" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_markings_color" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_markings_color" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_lane_markings_color" xlink:to="analyzed_odd" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_05 (number of lanes)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_05" xlink:label="req_parameters_number_lanes" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_4_app_3_sec_2_2" xlink:label="unece_source" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="analyzed_odd" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_number_lanes" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_number_lanes" xlink:to="unece_source" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_number_lanes" xlink:to="analyzed_odd" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_08 (minimal curve radius)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_08" xlink:label="req_parameters_curve_radius" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_curve_radius" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_curve_radius" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement P_09 (traction)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_09" xlink:label="req_parameters_peak_traction" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_02" xlink:label="req_model_odd" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="odd_analyzed" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#peak_traction_reference" xlink:label="traction_values_roads" xlink:role="scientific-publication"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_peak_traction" xlink:to="req_model_odd" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_parameters_peak_traction" xlink:to="odd_analyzed" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="traction_values_roads" xlink:to="req_parameters_peak_traction" xlink:arcrole="specifies"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineParameterRequirements>
+		<stmd:DefineSimulationEnvironmentRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_e_01" description="target simulation tool" source="./modeling_request/documents/requirements/environment_01.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="environment_requirements_procedure" description="procedure to derive environment requirements">
+					<stc:Content>The customer requirement regarding the target tool for the map will
+                        be considered as hard requirement. Additional system requirements are
+                        derived from
+                        the documentation of the target simulation tool.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/html" id="carla_0911_docs" description="CARLA 0.9.11 documentation" source="https://carla.readthedocs.io/en/0.9.11"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0912_docs" description="CARLA 0.9.12 documentation" source="https://carla.readthedocs.io/en/0.9.12"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0913_docs" description="CARLA 0.9.13 documentation" source="https://carla.readthedocs.io/en/0.9.13"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0914_docs" description="CARLA 0.9.14 documentation" source="https://carla.readthedocs.io/en/0.9.14"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0911_system_requirements_windows" description="CARLA 0.9.11 system requirements Windows" source="https://carla.readthedocs.io/en/0.9.11/build_windows"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0912_system_requirements_windows" description="CARLA 0.9.12 system requirements Windows" source="https://carla.readthedocs.io/en/0.9.12/build_windows"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0913_system_requirements_windows" description="CARLA 0.9.13 system requirements Windows" source="https://carla.readthedocs.io/en/0.9.13/build_windows"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0914_system_requirements_windows" description="CARLA 0.9.14 system requirements Windows" source="https://carla.readthedocs.io/en/0.9.14/build_windows"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0911_system_requirements_linux" description="CARLA 0.9.11 system requirements Linux" source="https://carla.readthedocs.io/en/0.9.11/build_linux"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0912_system_requirements_linux" description="CARLA 0.9.12 system requirements Linux" source="https://carla.readthedocs.io/en/0.9.12/build_linux"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0913_system_requirements_linux" description="CARLA 0.9.13 system requirements Linux" source="https://carla.readthedocs.io/en/0.9.13/build_linux"/>
+				<stc:Resource kind="document" type="text/html" id="carla_0914_system_requirements_linux" description="CARLA 0.9.14 system requirements Linux" source="https://carla.readthedocs.io/en/0.9.14/build_linux"/>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="requirement" type="application/json" id="req_e_02" description="simulation tool system requirements for Windows" source="./documents/requirements/environment_02.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_e_03" description="simulation tool system requirements for Linux" source="./documents/requirements/environment_03.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_e_04" description="TCP port reserving" source="./documents/requirements/environment_04.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_e_05" description="information regarding default TCP ports" source="./documents/requirements/environment_05.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_01"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement E_01 (target environment)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="req_environment_target" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_docs" xlink:label="carla_docs_0911" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0912_docs" xlink:label="carla_docs_0912" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0913_docs" xlink:label="carla_docs_0913" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0914_docs" xlink:label="carla_docs_0914" xlink:role="vendor-documentation"/>
+					<stc:Arc xlink:type="arc" xlink:from="carla_docs_0911" xlink:to="req_environment_target" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="carla_docs_0912" xlink:to="req_environment_target" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="carla_docs_0913" xlink:to="req_environment_target" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="carla_docs_0914" xlink:to="req_environment_target" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement E_02 (system properties Windows)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_02" xlink:label="info_system_properties_win" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="req_environment_target" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_system_requirements_windows" xlink:label="carla_sys_req_0911_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0912_system_requirements_windows" xlink:label="carla_sys_req_0912_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0913_system_requirements_windows" xlink:label="carla_sys_req_0913_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0914_system_requirements_windows" xlink:label="carla_sys_req_0914_win" xlink:role="vendor-documentation"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_win" xlink:to="req_environment_target" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_win" xlink:to="carla_sys_req_0911_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_win" xlink:to="carla_sys_req_0912_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_win" xlink:to="carla_sys_req_0913_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_win" xlink:to="carla_sys_req_0914_win" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement E_03 (system properties Linux)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_03" xlink:label="info_system_properties_lnx" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="req_environment_target" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_system_requirements_linux" xlink:label="carla_sys_req_0911_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0912_system_requirements_linux" xlink:label="carla_sys_req_0912_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0913_system_requirements_linux" xlink:label="carla_sys_req_0913_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0914_system_requirements_linux" xlink:label="carla_sys_req_0914_linux" xlink:role="vendor-documentation"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_lnx" xlink:to="req_environment_target" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_lnx" xlink:to="carla_sys_req_0911_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_lnx" xlink:to="carla_sys_req_0912_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_lnx" xlink:to="carla_sys_req_0913_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_system_properties_lnx" xlink:to="carla_sys_req_0914_linux" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement E_04 (TCP ports)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_04" xlink:label="requirement_tcp_ports" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_05" xlink:label="info_default_ports" xlink:role="extended-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="req_environment_target" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_system_requirements_windows" xlink:label="carla_sys_req_0911_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0912_system_requirements_windows" xlink:label="carla_sys_req_0912_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0913_system_requirements_windows" xlink:label="carla_sys_req_0913_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0914_system_requirements_windows" xlink:label="carla_sys_req_0914_win" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_system_requirements_linux" xlink:label="carla_sys_req_0911_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0912_system_requirements_linux" xlink:label="carla_sys_req_0912_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0913_system_requirements_linux" xlink:label="carla_sys_req_0913_linux" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0914_system_requirements_linux" xlink:label="carla_sys_req_0914_linux" xlink:role="vendor-documentation"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="req_environment_target" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="info_default_ports" xlink:to="requirement_tcp_ports" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0911_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0912_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0913_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0914_win" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0911_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0912_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0913_linux" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="requirement_tcp_ports" xlink:to="carla_sys_req_0914_linux" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineSimulationEnvironmentRequirements>
+		<stmd:DefineSimulationIntegrationRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_06" description="relative accuracy" source="./modeling_request/documents/requirements/parameter_06.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_p_07" description="absolute accuracy" source="./modeling_request/documents/requirements/parameter_07.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_i_01" description="OpenSCENARIO compatibility" source="./modeling_request/documents/requirements/integration_01.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_i_02" description="provision of scenario specific maps" source="./modeling_request/documents/requirements/integration_02.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_i_03" description="scenario integration test tool" source="./modeling_request/documents/requirements/integration_03.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_target_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="integration_requirements_procedure" description="procedure to derive integration requirements">
+					<stc:Content>The customer requirement regarding the integration of the map and
+                        scenarios will be considered as hard requirements. To derive further
+                        requirements, the
+                        scenarios, including its parameter range have been analyzed and taken into
+                        account.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="document" type="text/html" id="esmini" description="link to esmini" source="https://github.com/esmini/esmini"/>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="requirement" type="application/json" id="req_i_04" description="scenario parameter range consideration" source="./documents/requirements/integration_04.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_i_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_i_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_i_03"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_06"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_07"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement I_01 (scenario format)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_i_01" xlink:label="req_integration_scenario_format" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_target_analyzed" xlink:label="modeling_target_analyzed" xlink:role="analysis"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_objectives_analyzed" xlink:label="modeling_objectives_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_scenario_format" xlink:to="modeling_target_analyzed" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_scenario_format" xlink:to="modeling_objectives_analyzed" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_scenario_format" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement I_02 (number of maps)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_i_02" xlink:label="req_integration_number_maps" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_number_maps" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement I_03 (scenario integration verification)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_i_03" xlink:label="req_integration_scenario_proof" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#esmini" xlink:label="esmini" xlink:role="source-code-repository"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_scenario_proof" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="esmini" xlink:to="req_integration_scenario_proof" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement I_04 (parameter range)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_i_04" xlink:label="req_integration_parameter_range" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#modeling_target_analyzed" xlink:label="modeling_target_analyzed" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_parameter_range" xlink:to="modeling_target_analyzed" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_integration_parameter_range" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineSimulationIntegrationRequirements>
+		<stmd:DefineTestCaseRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_t_01" description="test scenarios for map" source="./modeling_request/documents/requirements/test_01.json"/>
+				<stc:Resource kind="requirement" type="application/json" id="req_t_02" description="test scenarios for map" source="./modeling_request/documents/requirements/test_02.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#product_description_revised"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_target_analyzed"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#modeling_objectives_analyzed"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="testcase_requirements_procedure" description="procedure to derive test case requirements">
+					<stc:Content>The customer requirement regarding the test cases will be
+                        considered as hard requirements. As a test case pass criteria was missing,
+                        it will be added here.</stc:Content>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="requirement" type="application/json" id="req_t_03" description="scenario pass criteria for map" source="./documents/requirements/test_03.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_t_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_t_02"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement T_01 (test scenarios)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_1" xlink:label="unece_source_1" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_1_2" xlink:label="unece_source_2" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_2_1" xlink:label="unece_source_3" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_2_2" xlink:label="unece_source_4" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_3_1" xlink:label="unece_source_5" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_3_2" xlink:label="unece_source_6" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_1" xlink:label="unece_source_7" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_2" xlink:label="unece_source_8" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_4_3" xlink:label="unece_source_9" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_5_1" xlink:label="unece_source_10" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_5_2" xlink:label="unece_source_11" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_1" xlink:label="unece_source_12" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_2" xlink:label="unece_source_13" xlink:role="functional-requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#unecer157_anx_5_sec_4_6_3" xlink:label="unece_source_14" xlink:role="functional-requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_1" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_2" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_3" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_4" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_5" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_6" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_7" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_8" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_9" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_10" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_11" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_12" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_13" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_scenarios" xlink:to="unece_source_14" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement T_02 (starting point)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_02" xlink:label="req_test_starting_points" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_starting_points" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement T_03 (pass criteria)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_03" xlink:label="req_test_pass_criteria" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_t_01" xlink:label="req_test_scenarios" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_test_pass_criteria" xlink:to="req_test_scenarios" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineTestCaseRequirements>
+		<stmd:DefineQualityAssuranceRequirements>
+			<stc:Input>
+				<stc:Resource kind="requirement" type="application/json" id="req_q_01" description="credibility level" source="./modeling_request/documents/requirements/quality_01.json.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#model_quality_aspects_specific"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/markdown" id="quality_requirements_procedure" description="procedure to derive quality requirements">
+					<stc:Content>The customer requires fulfilling a Credibility Level 2 for this
+                        model. We have selected according metrics as further requirements and
+                        aligned the
+                        selection and its criterions with the customer.</stc:Content>
+				</stc:Resource>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_q_01"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="linkage of requirement Q_01 (credibility)">
+					<stc:Locator xlink:type="locator" xlink:href="#req_q_01" xlink:label="req_quality_credibility" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#criticality_assessment" xlink:label="criticality_assessment" xlink:role="analysis"/>
+					<stc:Arc xlink:type="arc" xlink:from="req_quality_credibility" xlink:to="criticality_assessment" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineQualityAssuranceRequirements>
+	</stmd:RequirementsPhase>
+	<stmd:DesignPhase>
+		<stmd:DefineModelDesignSpecification>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_04"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_05"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_06"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_07"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_08"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_09"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_10"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_11"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_12"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_15"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_16"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_17"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_18"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_19"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_20"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_21"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_22"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_23"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_24"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="application/pdf" id="opendrive_spec_1_4" description="OpenDRIVE V1.4 Specification" source="./documents/design_spec/OpenDRIVEFormatSpecRev1_4H.pdf"/>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_format" description="utilized modeling format">
+					<stc:Content>All maps will be released in the ASAM OpenDRIVE format and fulfill
+                        the version 1.4 of this standard.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_real_road" description="selected real road">
+					<stc:Content>Based on the requirements a fraction of the highway A9 in Germany
+                        has been selected.
+                        The snippet of this fraction is displayed in the resource
+                        #osm_snippet_kindinger_berg.
+                        The east road (driving direction towards north) of the highway will be
+                        selected for modeling, as only this road includes a Y-split.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="image/png" id="osm_snippet_kindinger_berg" description="image of selected road from OpenStreetMap" source="./documents/design_spec/OSM_kindinger_berg.png"/>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_curved_roads" description="modeling approach of curved roads">
+					<stc:Content>The planar road reference line of all road segments will be
+                        modelled according to a paramPoly3 element, according to the OpenDRIVE
+                        specification.
+
+                        The common parameter p will be in the range of [0; arcLength].
+                        &lt;planView&gt;
+                        &lt;geometry ...&gt;
+                        &lt;paramPoly3 ... pRange=&quot;arcLength&quot; /&gt;
+                        &lt;/geometry&gt;
+                        &lt;/planView&gt;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_curve_radii" description="modeling approach for providing different curve radii">
+					<stc:Content>Different curve radii will be modelled using the reference line in
+                        the planar view of the road</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_geometries" description="modeling approach for providing different geometries">
+					<stc:Content>Different road geometries will be modelled using the following
+                        approaches:
+
+                        - plan view: Using &lt;paramPoly3&gt; elements below for variation of the
+                        reference line (element path: road - planView - geometry - paramPoly3) and
+                        in addition &lt;laneOffset&gt; elements in the lane elements for shifting
+                        the lane profile (element path: road - lanes - laneOffset)
+
+                        - elevation profile: Using a 3rd order polynomial function in
+                        &lt;elevation&gt; elements for variation of the road elevation (element
+                        path: road - elevationProfile - elevation)
+
+                        - cross section: Using a 3rd order polynomial function in
+                        &lt;superelevation&gt; elements for variation of the lateral profile
+                        (element path: road - lateralProfile - superelevation)</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_appraoch_number_of_lanes" description="modeling approach for different number of lanes">
+					<stc:Content>Different number of lanes will be modelled by adding &lt;lane&gt;
+                        elements in lane groupes (left, center, right elements) for a specific lane
+                        section (element path: lanes - laneSection - left/center/right - lane).</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_lane_width" description="modeling approach for lane width">
+					<stc:Content>The lane width is modelled using a 3rd order polynomial function in
+                        &lt;width&gt; elements as child elements of &lt;lane&gt; elements (cf.
+                        designspec_model_appraoch_number_of_lanes)</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_highway_access_exit" description="modeling approach highway access and exit">
+					<stc:Content>Highway accesses and exits will be modelled using the lane types
+                        &quot;entry&quot; and &quot;exit&quot; by using the property
+                        &quot;type&quot; in the &lt;lane&gt; element.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_travel_direction" description="model approach to implement travel direction">
+					<stc:Content>Right-hand traffic is implemented by setting all &quot;id&quot;
+                        properties of &lt;lane&gt; elements to negative numbers (element path: road
+                        - lanes - right - lane).</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_separated_roads" description="modeling approach for implementing separated roads">
+					<stc:Content>Structurally separated roads are implemented by indicating guard
+                        rails. This is established using &lt;object&gt; elements and setting the
+                        property &quot;type&quot; to &quot;barrier&quot;. In addition, the
+                        &quot;name&quot; property will be set to &quot;guardRail&quot; (element
+                        path: road - objects - object).
+
+                        To avoid multiple definitions for multiple instances of guard rail, the
+                        object instance is repeated with the &lt;repeat&gt; element as child of the
+                        &lt;object&gt; element
+
+                        Example:
+                        &lt;object type=&quot;barrier&quot; name=&quot;guardRail&quot; ...&gt;
+                        &lt;repeat s=...&gt;
+                        &lt;repeat s=...&gt;
+                        ...
+                        &lt;/object&gt;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_line_markings" description="modeling approach for realising constant line markings">
+					<stc:Content>Constant line markings on the edge are implemented by adding
+                        &lt;roadMark&gt; elements (as child elements of &lt;lane&gt; elements) with
+                        &quot;type&quot; property setting to &quot;solid&quot; (element path road -
+                        lanes - center/right - lane - roadMark).
+
+                        Therefore, as for right lanes the road mark is defined for the right border,
+                        the left outer line marking is defined for the lane with the id 0 and the
+                        right outer line marking is defined for the driving lane with the lowest id.
+                        Example:
+
+                        &lt;center&gt;
+                        &lt;lane id=&quot;0&quot; ...&gt;
+                        &lt;roadMark type=&quot;solid&quot; ...&gt;
+                        &lt;/lane&gt;
+                        &lt;/center&gt;
+
+                        &lt;right&gt;
+                        ...
+                        &lt;lane id=&quot;-3&quot; type=&quot;driving&quot; ...&gt;
+                        &lt;roadMark type=&quot;solid&quot; ...&gt;
+                        &lt;/lane&gt;
+                        ...
+                        &lt;/right&gt;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_bridges" description="modeling approach for integrating bridges">
+					<stc:Content>Bridges are modelled using the &lt;bridge&gt; element as child of
+                        &lt;objects&gt; element (object path: road - objects - bridge)</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_appraoch_signage" description="modeling approach to realize road signage">
+					<stc:Content>Road signage is implemented using &lt;signal&gt; elements as child
+                        elements of &lt;road&gt; elements (object path: road - signal).</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_y_split" description="modeling approach for realising a Y-split">
+					<stc:Content>A Y-split is modelled by using &lt;junction&gt; elements. To
+                        connect the joined and split roads &lt;connection&gt; elements will be used
+                        as child elements of the &lt;junction&gt; element, according to the
+                        following schema:
+
+                        &lt;connection id=&quot;1&quot; incomingRoad=&quot;1&quot;
+                        connectingRoad=&quot;3&quot; contactPoint=&quot;start&quot;&gt;
+                        &lt;laneLink from=&quot;-4&quot; to=&quot;-2&quot; /&gt;
+                        &lt;laneLink from=&quot;-3&quot; to=&quot;-1&quot; /&gt;
+                        &lt;/connection&gt;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_model_approach_faded_erased_markings" description="modeling approach to ingest faded and erased lane markings">
+					<stc:Content>Faded and erased road markings are not supported by the OpenDRIVE
+                        standard V1.4, therefore it must be added using &lt;userData&gt; elements.
+                        The convention for ingesting these roadMark types is the following:
+                        &lt;roadMark ...&gt;
+                        &lt;userData code=&quot;markerStyle&quot; value=&quot;....&quot;&gt;
+                        &lt;/roadMark&gt;
+
+                        With the possible values: fadeout, fadein, erased.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_model_approach_material" description="modeling approach for modeling the material">
+					<stc:Content>To setup a material for the road surface of a lane, the
+                        &lt;material&gt; element can be used as a child element of a &lt;lane&gt;
+                        element (element path: road - lanes - left/center/right - lane - material).
+                        The properties to set are &quot;surface&quot;, &quot;roughness&quot;, and
+                        &quot;friction&quot;.</stc:Content>
+				</stc:Resource>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="model format">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_format" xlink:label="spec_format" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="requirement_format" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="spec_format" xlink:arcrole="describes"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_format" xlink:to="requirement_format" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="real road">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_real_road" xlink:label="spec_real_road" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#osm_snippet_kindinger_berg" xlink:label="image_real_road" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_04" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_05" xlink:label="label_3" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_06" xlink:label="label_4" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_08" xlink:label="label_5" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_09" xlink:label="label_6" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_10" xlink:label="label_7" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_17" xlink:label="label_8" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_19" xlink:label="label_9" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_20" xlink:label="label_10" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="image_real_road" xlink:to="spec_real_road" xlink:arcrole="describes"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_3" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_4" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_5" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_6" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_7" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_8" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_9" xlink:arcrole="satisfies"/>
+					<stc:Arc xlink:type="arc" xlink:from="spec_real_road" xlink:to="label_10" xlink:arcrole="satisfies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach curved roads">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_curved_roads" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_1" xlink:role="standard"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_15" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach curve radii">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_curve_radii" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_04" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_curved_roads" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_0" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach road geometries">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_geometries" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_1" xlink:role="standard"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_05" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling appraoch number of lanes">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_06" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_appraoch_number_of_lanes" xlink:label="label_3" xlink:role="design-specification"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach lane width">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_lane_width" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_07" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach highway access and exit">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_09" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_10" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_21" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_highway_access_exit" xlink:label="label_3" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_4" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_0" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_3" xlink:arcrole="constrains"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_4" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach right-hand traffic">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_travel_direction" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_19" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach separated roads">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_separated_roads" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_1" xlink:role="standard"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_20" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach constant line markings">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_line_markings" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_22" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach bridges">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_bridges" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_23" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach signage">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_appraoch_signage" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_24" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach Y-split">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_08" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_y_split" xlink:label="label_1" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_2" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_0" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_2" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="modeling approach faded and erased lane markings">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_faded_erased_markings" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_11" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_12" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_3" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_3" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="road material">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameters_traction" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_1" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineModelDesignSpecification>
+		<stmd:DefineParameterDesignSpecification>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_03"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_04"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_05"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_06"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_07"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_08"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_09"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_p_10"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#opendrive_spec_1_4"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#osm_snippet_kindinger_berg"/>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameter_road_length" description="parameter design road length">
+					<stc:Content>the total length of the road, depicted in the snippet is about 15
+                        km. The length can be varied by removing &lt;road&gt; elements from the
+                        OpenDRIVE file containing the complete road.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameter_lane_width" description="parameter design lane width">
+					<stc:Content>the lane width can not be altered immediately by setting one
+                        parameter. Instead, the lane width is a distributed parameter, expressed
+                        with a 3rd order polynom in the &lt;width&gt; element of each lane.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameter_marking_color" description="parameter design road markings">
+					<stc:Content>The parameter for setting the color of road and lane markings is
+                        distributed to specific &lt;lane&gt; elements. The color of this specific
+                        lane markings will be set by using the &quot;color&quot; arguments to
+                        &quot;standard&quot;/&quot;white&quot; and &quot;yellow&quot;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameter_number_lanes" description="parameter design number of lanes">
+					<stc:Content>Two or more driving lanes will be ingested by adding at least 2
+                        &lt;lane&gt; elements with its &quot;type&quot; property set to
+                        &quot;driving&quot;</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameter_curve_radii" description="parameter design curve radius">
+					<stc:Content>The radius of curves can be adjusted indirectly by adjusting the
+                        parametric cubic curves (&lt;paramPoly3&gt; elements) in the planar view.
+                        All curve radii in the snippet are greater than 500m.</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_parameters_traction" description="parameter design for peak traction of the road">
+					<stc:Content>The peak traction of the road can be set for each &lt;lane&gt;
+                        element of a lane section using the property &quot;friction&quot; in the
+                        &lt;material&gt; element (setting &quot;friction&quot; to 0.7...1.2).
+
+                        The &quot;surface&quot; property will be constantly set to
+                        &quot;asphalt&quot;, according to the ODD restriction.</stc:Content>
+				</stc:Resource>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="road length">
+					<stc:Locator xlink:type="locator" xlink:href="#osm_snippet_kindinger_berg" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_01" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameter_road_length" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_0" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="lane width">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameter_lane_width" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_lane_width" xlink:label="label_1" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_02" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="road and lane marking color">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_03" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_04" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameter_marking_color" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#opendrive_spec_1_4" xlink:label="label_3" xlink:role="standard"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_0" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_1" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_3" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="number of lanes">
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_05" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameter_number_lanes" xlink:label="label_1" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_appraoch_number_of_lanes" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_2" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_0" xlink:arcrole="specifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="curve radii">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameter_curve_radii" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_curve_radii" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#osm_snippet_kindinger_berg" xlink:label="label_3" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_09" xlink:label="label_3" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_3" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_3" xlink:arcrole="derived-from"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="peak traction">
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_parameters_traction" xlink:label="label_0" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_model_approach_material" xlink:label="label_1" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_p_10" xlink:label="label_2" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#product_environment_revised" xlink:label="label_3" xlink:role="constraint"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="specifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_3" xlink:to="label_0" xlink:arcrole="constrains"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineParameterDesignSpecification>
+		<stmd:DefineSimulationEnvironmentDesignSpecification>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_01"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_02"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_03"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_04"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_e_05"/>
+			</stc:Input>
+			<stc:Procedure>
+				<stc:Resource kind="document" type="text/html" id="carla_documentation_opendrive" description="CARLA documentation for loading OpenDRIVE maps" source="https://carla.readthedocs.io/en/0.9.11/adv_opendrive/#run-a-standalone-map"/>
+				<stc:Resource kind="document" type="text/html" id="carla_documentation_client" source="https://carla.readthedocs.io/en/0.9.11/python_api/#carlaclient"/>
+			</stc:Procedure>
+			<stc:Output>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_carla_client_setup" description="Instructions for running CARLA client">
+					<stc:Content>Setting up a CARLA client instance can be done by executing the
+                        following steps:
+
+                        ``` python
+                        try:
+                        sys.path.append(glob.glob(&apos;../carla/dist/carla-*%d.%d-%s.egg&apos; % (
+                        sys.version_info.major,
+                        sys.version_info.minor,
+                        &apos;win-amd64&apos; if os.name == &apos;nt&apos; else
+                        &apos;linux-x86_64&apos;))[0])
+                        except IndexError:
+                        pass
+
+                        import carla
+
+                        # indicate the host connection parameters
+                        host = &apos;localhost&apos;
+                        tcp_port = 2000
+
+                        # configure client
+                        client = carla.Client(host, tcp_port, worker_threads=1)
+                        client.set_timeout(20.0)
+                        ```</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/plain" id="designspec_carla_odr_loading_instructions" description="instructions how to load the map in CARLA">
+					<stc:Content>An OpenDRIVE map can be loaded in CARLA using the Client. The
+                        Python API can be used for this purpose.
+
+                        Instructions:
+
+                        1. Start a CARLA server
+                        2. Make sure to setup a valid instance of a CARLA Python API client
+
+                        Then, run the following commands to load the map:
+
+                        ``` python
+                        # load the opendrive file
+                        xodr_path = &apos;./path/to/odr/file.xodr&apos;
+                        xodr_file = open(xodr_path, encoding=&apos;utf-8&apos;)
+                        xodr_string = xodr_file .read()
+
+                        # load map
+                        client.generate_opendrive_world(data)
+                        ```</stc:Content>
+				</stc:Resource>
+				<stc:Resource kind="specification" type="text/markdown" id="designspec_carla_server_setup" description="Instructions for running a CARLA server">
+					<stc:Content>Make sure to provide the given minimum hardware requirements for
+                        running a CARLA server and to keep free the required TCP ports for
+                        communication with a CARLA client instance.
+
+                        Then, if CARLA is built from source, use `make launch` to start a CARLA
+                        server.
+                        Else, if CARLA is built from package, use `./CarlaUE4.sh` (Linux) or
+                        `CarlaUE4.exe` (Windows) to start a CARLA server.</stc:Content>
+				</stc:Resource>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="carla instructions">
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_02" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_03" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_carla_server_setup" xlink:label="label_2" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_0911_docs" xlink:label="label_3" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_04" xlink:label="label_4" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_carla_client_setup" xlink:label="label_5" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#designspec_carla_odr_loading_instructions" xlink:label="label_6" xlink:role="design-specification"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_documentation_opendrive" xlink:label="label_7" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#carla_documentation_client" xlink:label="label_8" xlink:role="vendor-documentation"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_e_01" xlink:label="label_9" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_2" xlink:to="label_3" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_2" xlink:arcrole="constrains"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_2" xlink:arcrole="constrains"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_4" xlink:to="label_2" xlink:arcrole="constrains"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_5" xlink:to="label_2" xlink:arcrole="requires"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_6" xlink:to="label_2" xlink:arcrole="requires"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_6" xlink:to="label_5" xlink:arcrole="requires"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_5" xlink:to="label_8" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_6" xlink:to="label_7" xlink:arcrole="derived-from"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_6" xlink:to="label_9" xlink:arcrole="specifies"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:DefineSimulationEnvironmentDesignSpecification>
+		<stc:LifeCycleInformation>
+			<stc:Drafted date="2023-04-20T16:43:00+02:00">
+				<stc:Responsible organization="3D Mapping Solutions GmbH" name="Sebastian Tuttas"/>
+			</stc:Drafted>
+		</stc:LifeCycleInformation>
+	</stmd:DesignPhase>
+	<stmd:EvaluationPhase>
+		<stmd:EvaluateSimulationResults>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#eval_01"/>
+			</stc:Input>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="testss">
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_0" xlink:role="test-case"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="verifies"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:EvaluateSimulationResults>
+		<stmd:AssureSimulationQuality>
+			<stc:Input>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#req_m_01"/>
+			</stc:Input>
+			<stc:Output>
+				<stc:Resource kind="result" type="application/json" id="eval_01" scope="global" source="sample.json"/>
+				<stc:ResourceReference xlink:type="simple" xlink:href="#eval"/>
+			</stc:Output>
+			<stc:Links>
+				<stc:Link xlink:type="extended" xlink:title="just sample">
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_0" xlink:role="verifies"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="" xlink:arcrole=""/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_1" xlink:role="verifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_0" xlink:arcrole="verifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="">
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_0" xlink:role="requirement"/>
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_1" xlink:role="verifies"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_1" xlink:to="label_0" xlink:arcrole="verifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="test-eval-01">
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_0" xlink:role="verifies"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="verifies"/>
+				</stc:Link>
+				<stc:Link xlink:type="extended" xlink:title="st">
+					<stc:Locator xlink:type="locator" xlink:href="#eval_01" xlink:label="label_0" xlink:role="verifies"/>
+					<stc:Locator xlink:type="locator" xlink:href="#req_m_01" xlink:label="label_1" xlink:role="requirement"/>
+					<stc:Arc xlink:type="arc" xlink:from="label_0" xlink:to="label_1" xlink:arcrole="verifies"/>
+				</stc:Link>
+			</stc:Links>
+		</stmd:AssureSimulationQuality>
+	</stmd:EvaluationPhase>
+	<stc:Classification type="vocabulary">
+		<stc:ClassificationEntry keyword="analysis" xlink:type="simple" xlink:href="https://pmsfit.github.io/SSPTraceability/master/#_analysisphase"/>
+		<stc:ClassificationEntry keyword="evaluation" xlink:type="simple" xlink:href="https://pmsfit.github.io/SSPTraceability/master/#_evaluationphase"/>
+		<stc:ClassificationEntry keyword="validated-by" xlink:type="simple" xlink:href="http://open-services.net/ns/rm#validatedBy"/>
+		<stc:ClassificationEntry keyword="functional-requirement" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Functional+Requirement"/>
+		<stc:ClassificationEntry keyword="requirement" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Requirement"/>
+		<stc:ClassificationEntry keyword="extended-requirement" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Extended+Requirement"/>
+		<stc:ClassificationEntry keyword="design-specification" xlink:type="simple" xlink:href="https://dbpedia.org/page/Design_specification"/>
+		<stc:ClassificationEntry keyword="data-sheet" xlink:type="simple" xlink:href="https://dbpedia.org/page/Datasheet"/>
+		<stc:ClassificationEntry keyword="regulation" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/NCIT_C68821"/>
+		<stc:ClassificationEntry keyword="constraint" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Design+Constraint"/>
+		<stc:ClassificationEntry keyword="test-case" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Test+Case"/>
+		<stc:ClassificationEntry keyword="standard" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/NCIT_C81893"/>
+		<stc:ClassificationEntry keyword="source-code-repository" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/APOLLO_SV_00000522"/>
+		<stc:ClassificationEntry keyword="vendor-documentation" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/NCIT_C115742"/>
+		<stc:ClassificationEntry keyword="scientific-publication" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/NCIT_C19026"/>
+		<stc:ClassificationEntry keyword="constrains" xlink:type="simple" xlink:href="http://open-services.net/ns/rm#constrains"/>
+		<stc:ClassificationEntry keyword="constrained-by" xlink:type="simple" xlink:href="http://open-services.net/ns/rm#constrainedBy"/>
+		<stc:ClassificationEntry keyword="derived-from" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Derive"/>
+		<stc:ClassificationEntry keyword="satisfies" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Satisfy"/>
+		<stc:ClassificationEntry keyword="is-satisfied-by" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000363"/>
+		<stc:ClassificationEntry keyword="has-implementation" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000234"/>
+		<stc:ClassificationEntry keyword="is-implementation-of" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000233"/>
+		<stc:ClassificationEntry keyword="verifies" xlink:type="simple" xlink:href="https://docs.nomagic.com/display/SYSMLP190/Verify"/>
+		<stc:ClassificationEntry keyword="specifies" xlink:type="simple" xlink:href="http://purl.obolibrary.org/obo/NCIT_C25685"/>
+		<stc:ClassificationEntry keyword="is-specified-by" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000339"/>
+		<stc:ClassificationEntry keyword="describes" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000563"/>
+		<stc:ClassificationEntry keyword="is-model-of" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000632"/>
+		<stc:ClassificationEntry keyword="manual" xlink:type="simple" xlink:href="http://semanticscience.org/resource/SIO_000161"/>
+		<stc:ClassificationEntry keyword="requires" xlink:type="simple" xlink:href="http://purl.org/dc/terms/requires"/>
+	</stc:Classification>
+	<stc:Annotations>
+		<ssc:Annotation type="text/xml">
+			<info>
+				<a>This STMD file is used for UPSIM demonstration</a>
+				<b>Another info</b>
+			</info>
+		</ssc:Annotation>
+	</stc:Annotations>
+</stmd:SimulationTaskMetaData>

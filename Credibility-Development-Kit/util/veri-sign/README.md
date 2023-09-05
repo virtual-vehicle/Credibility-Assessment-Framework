@@ -10,7 +10,7 @@ Expert statements are part of Credibility Assessments to confirm non-formal chec
 
 This module provides for a `sign` and a `verify` function:
 
-* `sign` takes any arbitrary non-formal statement, creates a signature of it by using the experts private key and wraps the signature into a well-defined structure, next to meta-data of the signature, like the hash algorithm and encoding used. This is done typically on supplier side by experts that customer and supplier agreed upon.
+* `sign` takes any arbitrary formalized statement (consisting of a result, a log, and a status response code), creates a signature of it by using the experts private key and wraps the signature into a well-defined structure, next to meta-data of the signature, like the hash algorithm and encoding used. This is done typically on supplier side by experts that customer and supplier agreed upon.
 * `verify` takes the signature-wrapped statement and verifies it against a given X509 certificate. This is typically done on customer side, with public certificates of supplier experts that customer and supplier agreed upon.
 
 ![workflow using sign and verify](./docs/workflow.png "Workflow")
@@ -20,7 +20,11 @@ This module provides for a `sign` and a `verify` function:
 Statements to sign do not need to follow any formality, except that a statement must be given as a string, as in the following simplyfied example:
 
 ```javascript
-statement = "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148";
+statement = {
+    result: true,
+    log: "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148",
+    status_code: 200
+};
 ```
 
 To sign the statement, a private key must be handed over, as well as the specification about the private key.
@@ -56,11 +60,14 @@ The key specification must contain at least the information about the format the
     passphrase: "ThisIsMySecretPassphrase"
 };
 ```
-After correctly handing over all arguments to the `sign` function, a JSON object as depicted in the following will be returned, but stringified:
+After correctly handing over all arguments to the `sign` function, a JSON object as depicted in the following will be returned (but stringified):
 
 ```javascript
 {
-    "content": "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148",
+    "content": {
+        "result": true,
+        "log": "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148",
+    },
     "signature": "00514ff050a656...b624eb92338308702b",
     "hash_algorithm": "SHA256",
     "signature_encoding": "hex"
@@ -99,7 +106,11 @@ const fs = require("fs");
 const verisign = require("./");
 
 // create inputs
-const statement = "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148";
+const statement = {
+    result: true,
+    log: "All model requirements have been checked semantically, according to ISO/IEC/IEEE 29148",
+    status_code: 200
+};
 const privateKey = fs.readFileSync("./examples/keystore/pem_encrypted/private.pem", "utf8");
 const keySpecification = {
     format: "pem",

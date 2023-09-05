@@ -1,4 +1,4 @@
-/**EmpiricalDistribution
+/**
   * EmpiricalDistribution type definition
   * @typedef {Object} EmpiricalDistribution
   * @property {string} type Type of the distribution function ("PDF" -> histogram / "CDF" -> cumulative distribution)

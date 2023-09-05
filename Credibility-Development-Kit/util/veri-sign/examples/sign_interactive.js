@@ -3,9 +3,17 @@ const prompt = require("prompt-sync")();
 const verisign = require("./..");
 
 // ------------ Create input --------------
-const statement = prompt("Enter any arbitrary statement you want to sign: ");
+const result = prompt("Enter the result of the expert check (true/false):");
+const log = prompt("Enter the log of the expert check (any arbitrary text):");
+const status_code = prompt("Enter the status response code of the expert check (100...999):");
 
-console.log(`\n expertStatement = "${statement}" \n`);
+const expertStatement = {
+    result: result == "true" ? true : false,
+    log: log,
+    status_code: Number(status_code)
+};
+
+console.log(`\n expertStatement = ${expertStatement} \n`);
 
 // ------------ Choose private key --------------
 let privateKeyChoice;
@@ -48,8 +56,8 @@ console.log(`keySpecification = ${JSON.stringify(keySpecification)}\n`);
 
 // ------------ sign statement --------------
 
-signedStatement = verisign.sign(statement, privateKey, keySpecification);
-console.log(`signedStatement = ${signedStatement}\n`);
+signedStatement = verisign.sign(expertStatement, privateKey, keySpecification);
+console.log(`signedStatement = ${signedStatement} \n`);
 
 // ------------ store statement ------------
 

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified"
+    vc:minVersion="1.1" 
+    xmlns:cdk="http://example.com/CredibilityDevelopmentKit"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    targetNamespace="http://example.com/CredibilityDevelopmentKit">
+
+    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="https://www.w3.org/XML/2008/06/xlink.xsd"/>
+    
+    <xs:element name="Credibility">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="cdk:ProcessingCommon" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="Evidence" minOccurs="1" maxOccurs="unbounded" type="cdk:EvidenceType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="EvidenceType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to collect metrics that serve as evidence for fulfilling a specific credibility 
+                level.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Metric" minOccurs="1" maxOccurs="unbounded" type="cdk:MetricType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element is used to indicate that a metric from the Credibility Development Kit is used 
+                        as supporting evidence for the corresponding credibility level.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="level" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute is used to indicate the credibility level of the metric. Must be 1,2 or 3.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:integer">
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                    <xs:enumeration value="3"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="MetricType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to define a function of the Credibility Development Kit to be used.
+                The VerificationType defines the context (subset and level) to localize the correct package.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Test" minOccurs="1" maxOccurs="unbounded" type="cdk:TestType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element is used to define one execution of the given function.                    
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="subset" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute is used to indicate the subset of the Credibility Development Kit, i.e.
+                    a subset of metrics for a specific domain or simulation type.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="function" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the name of the function from the Credibility Development Kit
+                    within the specific package.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="version" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the version of the package for unique identification of the function.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="TestType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to define one execution of a function. A TestType must contain FunctionArgument
+                elements as child elements that map                
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="FunctionArgument" minOccurs="1" maxOccurs="unbounded" type="cdk:ArgumentType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element is used to define an argument of the function defined in a parent element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies a unique identification of the test execution.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="ArgumentType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to map a file to a function argument of the function that has been
+                defined in a parent element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the name of the argument as used in the target function.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the MIME type of the file that shall be used as a function
+                    argument. The file type must be convertible to a string, i.e. no binary data should be used.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="source" type="xs:anyURI" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the source of the file that shall be used as a function argument as an 
+                    URI (cf. RFC 3986).
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:group name="ProcessingCommon">
+        <xs:choice>
+            <xs:element name="SimpleProcessing" type="cdk:SimpleProcessingType"/>
+            <xs:element name="ComplexProcessing" type="cdk:ComplexProcessingType"/>
+            <xs:element name="ScriptProcessing" type="cdk:ScriptProcessingType"/>
+        </xs:choice>
+    </xs:group>
+
+    <xs:complexType name="SimpleProcessingType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to define simple processing steps of data by using adapters or utils
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="ComplexProcessingType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to define complex processing steps of data as functional chain with 
+                multiple inputs.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:complexType name="ScriptProcessingType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to define processing steps of data using JS scripts
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>   
+
+
+</xs:schema>

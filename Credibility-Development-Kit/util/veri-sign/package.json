@@ -8,6 +8,7 @@
     "example_sign": "node ./examples/sign_interactive.js",
     "example_verify": "node ./examples/verify_interactive.js"
   },
+  "types": "./types/veri-sign.d.ts",
   "author": "localhorst87",
   "license": "CC-BY-4.0",
   "devDependencies": {
@@ -18,6 +19,8 @@
   "dependencies": {
     "ajv": "^8.10.0",
     "ajv-keywords": "^5.1.0",
+    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
     "fs": "^0.0.1-security"
   }
 }

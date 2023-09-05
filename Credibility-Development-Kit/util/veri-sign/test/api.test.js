@@ -13,10 +13,15 @@ describe("sign", () => {
                 format: "pem",
                 isEncrypted: false
             };
+            const expertStatement = {
+                result: true,
+                log: "arbitrary content",
+                status_code: 200
+            };
 
-            let signedDoc = verisign.sign("arbitrary content", privateKey, keySpec);
+            const signedDoc = verisign.sign(expertStatement, privateKey, keySpec);
 
-            expect(signedDoc).to.be.ok;                
+            expect(signedDoc).to.be.ok;
         });
 
         it("use DER Buffer as private key => expect to successfully sign", () => {
@@ -26,8 +31,13 @@ describe("sign", () => {
                 type: "pkcs8",
                 isEncrypted: false
             };
+            const expertStatement = {
+                result: true,
+                log: "arbitrary content",
+                status_code: 200
+            };
 
-            let signedDoc = verisign.sign("arbitrary content", privateKey, keySpec);
+            let signedDoc = verisign.sign(expertStatement, privateKey, keySpec);
             
             expect(signedDoc).to.be.ok;                
         });
@@ -39,8 +49,13 @@ describe("sign", () => {
                 format: "jwk",
                 isEncrypted: false
             };
+            const expertStatement = {
+                result: true,
+                log: "arbitrary content",
+                status_code: 200
+            };
 
-            let signedDoc = verisign.sign("arbitrary content", privateKey, keySpec);
+            let signedDoc = verisign.sign(expertStatement, privateKey, keySpec);
             
             expect(signedDoc).to.be.ok;                
         });
@@ -51,12 +66,17 @@ describe("sign", () => {
                 format: "pem",
                 isEncrypted: false
             };
+            const expertStatement = {
+                result: true,
+                log: "arbitrary content",
+                status_code: 200
+            };
 
-            let signedDoc = verisign.sign("arbitrary content", privateKey, keySpec);
+            let signedDoc = verisign.sign(expertStatement, privateKey, keySpec);
 
             signedDoc = JSON.parse(signedDoc);
 
-            expect(signedDoc.content).to.deep.equal("arbitrary content");
+            expect(signedDoc.content).to.deep.equal(expertStatement);
             expect(signedDoc.signature.length).to.equal(512);
         });
 
@@ -64,20 +84,44 @@ describe("sign", () => {
 
     describe("invalid inputs", () => {
 
-        it("contentToSign is empty => expect to throw", () => {
+        it("expertStatement does not fulfill schema => expect to throw", () => {
             const privateKey = FileSync.readFileSync("./test/test_data/pem/private.pem", "utf8");
             const keySpec = {
                 format: "pem",
                 isEncrypted: false
             };
+            const expertStatement = {
+                result: true,
+                status_code: 200
+            };
 
-            expect(() => verisign.sign("", privateKey, keySpec)).to.throw();
+            expect(() => verisign.sign(expertStatement, privateKey, {})).to.throw();
+        });
+
+        it("log of expertStatement is empty string => expect to throw", () => {
+            const privateKey = FileSync.readFileSync("./test/test_data/pem/private.pem", "utf8");
+            const keySpec = {
+                format: "pem",
+                isEncrypted: false
+            };
+            const expertStatement = {
+                result: true,
+                log: "",
+                status_code: 200
+            };
+
+            expect(() => verisign.sign(expertStatement, privateKey, keySpec)).to.throw();
         });
 
         it("keySpec is empty => expect to throw", () => {
             const privateKey = FileSync.readFileSync("./test/test_data/pem/private.pem", "utf8");
+            const expertStatement = {
+                result: true,
+                log: "everything good",
+                status_code: 200
+            };
 
-            expect(() => verisign.sign("arbitrary content", privateKey, {})).to.throw();
+            expect(() => verisign.sign(expertStatement, privateKey, {})).to.throw();
         });
 
         it("privateKey is empty => expect to throw", () => {
@@ -91,17 +135,13 @@ describe("sign", () => {
                 isEncrypted: false
             };
 
-            expect(() => verisign.sign("arbitrary content", privateKey, keySpec)).to.throw();
-        });
-
-        it("contentToSign is not a string => expect to throw", () => {
-            const privateKey = FileSync.readFileSync("./test/test_data/pem/private.pem", "utf8");
-            const keySpec = {
-                format: "pem",
-                isEncrypted: false
+            const expertStatement = {
+                result: true,
+                log: "everything good",
+                status_code: 200
             };
 
-            expect(() => verisign.sign(12.45, privateKey, {})).to.throw();
+            expect(() => verisign.sign(expertStatement, privateKey, keySpec)).to.throw();
         });
 
         it("privateKey is not String, Buffer and Object => expect to throw", () => {
@@ -109,14 +149,26 @@ describe("sign", () => {
                 format: "pem",
                 isEncrypted: false
             };
+
+            const expertStatement = {
+                result: true,
+                log: "everything good",
+                status_code: 200
+            };
             
-            expect(() => verisign.sign("arbitrary content", 2564468, keySpec)).to.throw();
+            expect(() => verisign.sign(expertStatement, 2564468, keySpec)).to.throw();
         });
 
         it("keySpec not as expected => expect to throw", () => {
             const privateKey = FileSync.readFileSync("./test/test_data/pem/private.pem", "utf8");
-            
-            expect(() => verisign.sign("arbitrary content", privateKey, 1)).to.throw();
+
+            const expertStatement = {
+                result: true,
+                log: "everything good",
+                status_code: 200
+            };
+
+            expect(() => verisign.sign(expertStatement, privateKey, 1)).to.throw();
         });
 
     });
@@ -128,36 +180,36 @@ describe("verify", () => {
     describe("valid inputs", () => {
 
         it("PEM certificate, valid signature => expect true", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
             const certificate = FileSync.readFileSync("./test/test_data/pem/cert.pem", "utf8");
             
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
 
             expect(resLog.result).to.be.true;
         });
 
         it("DER certificate, valid signature => expect true", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/der_pkcs8/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/der_pkcs8/signed_statement_example.json", "utf8");
             const certificate = FileSync.readFileSync("./test/test_data/der_pkcs8/cert.der");
 
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog.result).to.be.true;
         });
 
         it("valid signature, wrong certificate => expect false", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
             const certificate = FileSync.readFileSync("./test/test_data/der_pkcs8/cert.der");
 
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog.result).to.be.false;
         });
 
         it("content of signature changed afterwards => expect false", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
-            let tweakedDocument = JSON.parse(signedDocument);
-            tweakedDocument.content = "tweaked content";
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
+            let tweakedDocument = JSON.parse(signedStatement);
+            tweakedDocument.content.result = false;
             tweakedDocument = JSON.stringify(tweakedDocument);
             const certificate = FileSync.readFileSync("./test/test_data/pem/cert.pem", "utf8");
 
@@ -167,10 +219,10 @@ describe("verify", () => {
         });
 
         it("certificate expired => expect false", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem_expired/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem_expired/signed_statement_example.json", "utf8");
             const certificate = FileSync.readFileSync("./test/test_data/pem_expired/cert.pem", "utf8");
     
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog).to.deep.equal({
                 result: false,
@@ -183,14 +235,14 @@ describe("verify", () => {
     describe("invalid inputs", () => {
 
         it("signed document has invalid structure => expect to throw", () => {
-            let signedDocument = {
+            let signedStatement = {
                 doc: "arbitrary content",
                 sign: "12fgpjgop"
             };
-            signedDocument = JSON.stringify(signedDocument);
+            signedStatement = JSON.stringify(signedStatement);
             const certificate = FileSync.readFileSync("./test/test_data/pem/cert.pem", "utf8");
     
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog).to.deep.equal({
                 result: false,
@@ -199,23 +251,23 @@ describe("verify", () => {
         });
 
         it("signed document has invalid type => expect to throw", () => {
-            let signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
-            signedDocument = JSON.parse(signedDocument); // object instead of string
+            let signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
+            signedStatement = JSON.parse(signedStatement); // object instead of string
             const certificate = FileSync.readFileSync("./test/test_data/pem/cert.pem", "utf8");
    
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog).to.deep.equal({
                 result: false,
-                log: "signedStatement must be stringified JSON"
+                log: "signedStatement must be a stringified ExpertStatement JSON"
             })
         });
 
         it("PEM certificate has invalid structure => expect to throw", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
             const certificate = "-----BEGIN CERTIFICATE-----";
     
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog).to.deep.equal({
                 result: false,
@@ -224,10 +276,10 @@ describe("verify", () => {
         });
 
         it("certificate has invalid data type => expect to throw", () => {
-            const signedDocument = FileSync.readFileSync("./test/test_data/pem/signed_doc_example", "utf8");
+            const signedStatement = FileSync.readFileSync("./test/test_data/pem/signed_statement_example.json", "utf8");
             const certificate = 12;
     
-            const resLog = verisign.verify(signedDocument, certificate);
+            const resLog = verisign.verify(signedStatement, certificate);
     
             expect(resLog).to.deep.equal({
                 result: false,

@@ -19,9 +19,7 @@ For creating these representations, the following utilities are provided:
 * [`createEmpiricalDistribution`](#createempiricaldistribution)
 * [`createPBoxes`](#createpboxes)
 * [`addUncertainty`](#adduncertainty)
-* distribution-based validation metrics:
-    - [`calcAreaValidationMetric`](#calcareavalidationmetric)
-    - [`calcAreaValidationMetricNasa`](#calcareavalidationmetricnasa)
+* [`addUncertainty`](#adduncertainty)
 
 ## `createEmpiricalDistribution`
 
@@ -209,111 +207,5 @@ pBoxesExtended = addUncertainty(pBoxes, 10, false);
 // }
 ```
 
-## `calcAreaValidationMetric`
-
-This function calculates the smallest possible areas between two distributions. A distribution to be used can be either an EDF or P-Boxes. The smallest area between these combinations is examplary depicted in the following image:
-
-![area validation metric examples](./docs/images/avm_01.png "area validation metric examples")
-
-For further information, we refer to the publication of Ferson & Oberkampf[^2].
-
-### Usage
-
-The function expects two distributions that can be either two EDFs...
-
-```javascript
-edf1 = {
-    type: "CDF",
-    x: [960, 1020],
-    p: [0.4, 1.0],
-    unit: "rad/s"
-};
-
-edf2 = {
-    type: "CDF",
-    x: [960, 970, 1020, 1030],
-    p: [0.2, 0.4, 0.9, 1.0],
-    unit: "rad/s"
-};
-
-calcAreaValidationMetric(edf1, edf2) // returns 3
-```
-
-...an EDF and a P-Boxes object...
-
-```javascript
-pBoxes = {
-    x: [940, 950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040, 1050],
-    unit: "rad/s",
-    p_left: [0, 0.2, 0.2, 0.3, 0.5, 0.8, 0.9, 1, 1, 1, 1, 1],
-    p_right: [0, 0, 0, 0, 0.1, 0.3, 0.3, 0.5, 0.7, 0.8, 1, 1]
-}
-
-edf = {
-    type: "CDF",
-    x: [960, 990, 1000, 1025, 1030, 1040],
-    p: [0.3, 0.4, 0.6, 0.7, 0.9, 1.0],
-    unit: "rad/s"
-}
-
-calcAreaValidationMetric(pBoxes, edf) // returns 1.5
-```
-
-...or two P-Boxes objects:
-
-```javascript
-pBoxesSim = {
-    x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
-    p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
-    p_right: [0, 0, 0, 0.1, 0.1, 0.1, 0.5, 0.8, 0.8, 1],
-    unit: "rad/s",
-};
-
-pBoxesRef = {
-    x: [960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
-    p_left: [0.1, 0.3, 0.3, 0.5, 0.8, 1, 1, 1, 1],
-    p_right: [0, 0, 0.2, 0.2, 0.2, 0.7, 0.9, 0.9, 1],
-    unit: "rad/s",
-};
-
-calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps" pBoxesRef completely
-```
-
-## `calcAreaValidationMetricNasa`
-
-This metric handles the disagreement between the left and right bounds of prediction distribution and data distribution and was proposed by NASA[^3], to compensate for the shortcomings of `calcAreaValidationMetric` in case of mixed uncertainties. As `calcAreaValidationMetric` calculates the model form uncertainty as the smallest possible area between the distributions, i.e. the area between the closest possible distributions of two P-Boxes, this may lead to underestimating the model form uncertainty in terms of bias and variance (to comprehend the latter case, see the following image):
-
-![AVM and Nasa-proposed AVM](./docs/images/nasa-avm.png "AVM and Nasa-proposed AVM")
-
-While `calcAreaValidationMetric` shows a disagreement of `AVM = 0 rad/s`, `calcAreaValidationMetricNasa` presents a disagreement of `AVM = 13 rad/s` because it allows to take into account more of the potential probabilistic realizations.
-
-### Usage
-
-The function expects two distributions that can be either two EDFs
-
-```javascript
-pBoxesSim = {
-    x: [950, 960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
-    p_left: [0.2, 0.2, 0.3, 0.5, 0.5, 0.9, 1, 1, 1, 1],
-    p_right: [0, 0, 0, 0.1, 0.1, 0.1, 0.5, 0.8, 0.8, 1],
-    unit: "rad/s",
-};
-
-pBoxesRef = {
-    x: [960, 970, 980, 990, 1000, 1010, 1020, 1030, 1040],
-    p_left: [0.1, 0.3, 0.3, 0.5, 0.8, 1, 1, 1, 1],
-    p_right: [0, 0, 0.2, 0.2, 0.2, 0.7, 0.9, 0.9, 1],
-    unit: "rad/s",
-};
-
-calcAreaValidationMetric(pBoxesSim, pBoxesRef) // returns 0, as pBoxesSim "wraps" pBoxesRef completely
-calcAreaValidationMetricNasa(pBoxesSim, pBoxesRef) // returns 13
-```
-
-For further information, we refer to the publication of White & West[^3].
 
 [^1]: Christopher John Roy, William L. Oberkampf (2010). "A Complete Framework for Verification, Validation, and Uncertainty Quantification in Scientific Computing" (Invited). *In: 48th AIAA Aerospace Sciences Meeting Including the New Horizons Forum and Aerospace Exposition.* Orlando, USA. DOI: 10.2514/6.2010-124
-
-[^2]: Scott Ferson & William L. Oberkampf, 2009. "Validation of imprecise probability models,". *International Journal of Reliability and Safety*. Inderscience Enterprises Ltd, vol. 3(1/2/3), pages 3-22.
-
-[^3]: Laura White & Thomas West. "Area Validation Metric for Applications with Mixed Uncertainty." (2019). [Access Link](https://testscience.org/wp-content/uploads/formidable/13/White_DATAWorks2019.pdf)
