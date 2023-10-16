@@ -1,0 +1,19 @@
+{
+  "name": "metrics_systemsimulation_design_level1",
+  "version": "0.1",
+  "description": "level 1 quality metrics for design",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'Please see the tests under util/veri-sign'"
+  },
+  "author": "lvtan3005",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "dependencies": {
+    
+  }
+}
