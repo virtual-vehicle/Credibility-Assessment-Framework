@@ -3,8 +3,6 @@
 The Credibility Development Kit (CDK) is initiated in the ITEA3 project "UPSIM" as part of the Credibility Assessment Framework.
 It provides reusable, transparent quality metrics for a credibility assessment, following the SETLevel Credible Simulation Process (CSP)[^1].
 
-**_Note: Currently (September 2022), we began to transfer all local developments into this repository, in a clean, standardized way. Additional metrics and components will be published step by step._**
-
 Overall, we distinguish between 3 Credibility Levels. The CDK will provide metrics for each level for each phase and step of the CSP.
 
 Further, it will provide additional components:
