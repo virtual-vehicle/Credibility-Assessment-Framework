@@ -1,7 +1,7 @@
 {
-  "name": "cdk_implementation_models_l1",
+  "name": "cdk_implementation_l1",
   "version": "1.0.0",
-  "description": "level 1 quality metrics for simulation models",
+  "description": "level 1 quality metrics for implementation",
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",

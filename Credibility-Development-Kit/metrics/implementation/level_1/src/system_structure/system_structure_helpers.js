@@ -1,5 +1,3 @@
-const Types = require("../types/types");
-
 exports.checkPedigrees = checkPedigrees;
 exports.areInputsConnected = areInputsConnected;
 exports.areDataTypesConsistent = areDataTypesConsistent;
@@ -112,11 +110,11 @@ const ALLOWED_CONNECTIONS = [
 ];
 
 /**
- * @typedef {import('../types/types').SystemStructure} SystemStructure
- * @typedef {import('../types/types').SystemElement} SystemElement
- * @typedef {import('../types/types').Connector} Connector
- * @typedef {import('../types/types').Connection} Connection
- * @typedef {import('../types/types').ResultLog} ResultLog
+ * @typedef {import('../../types/types').SystemStructure} SystemStructure
+ * @typedef {import('../../types/types').SystemElement} SystemElement
+ * @typedef {import('../../types/types').Connector} Connector
+ * @typedef {import('../../types/types').Connection} Connection
+ * @typedef {import('../../types/types').ResultLog} ResultLog
  */
 
 /**

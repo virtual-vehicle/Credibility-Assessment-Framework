@@ -3,7 +3,7 @@ const verisign = require("../../../util/veri-sign");
 const { SIGNED_STATEMENT } = require("../../../util/veri-sign/types/schemas");
 
 /**
- * @module metrics/design/level_2
+ * @module metrics/designspecification/level_2
  */
 
 /**
@@ -20,7 +20,7 @@ const { SIGNED_STATEMENT } = require("../../../util/veri-sign/types/schemas");
  * @domain domain-independent
  * @modeltypes model type-independent
  * @level 2
- * @phase design
+ * @phase designspecification
  * @step [models, parameters, environment, test Cases, integration]
  * @param {String} namedGraph stringified JSON-LD of the named graph that shows the linkage of the design
  * @param {String} resourceIri The IRI of the design resource to be checked
@@ -40,7 +40,7 @@ const checkLinkageSyntax = linkage_check.linkageCheckSyntax
  * @domain domain-independent
  * @modeltypes model type-independent
  * @level 2
- * @phase design
+ * @phase designspecification
  * @step [models, parameters, environment, test Cases, integration]
  * @param {String} signedExpertStatement  stringified JSON implement the {@link SIGNED_STATEMENT} schema
  * @param {String|Buffer} x509Certificate PEM- or DER-encoded X509 certificate. If PEM is used, a string is expected, if DER is used, a Buffer is expected

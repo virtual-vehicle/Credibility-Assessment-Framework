@@ -1,7 +1,7 @@
 {
-  "name": "metrics_systemsimulation_design_level1",
+  "name": "cdk_designspecification_level1",
   "version": "0.1",
-  "description": "level 1 quality metrics for design",
+  "description": "level 1 quality metrics for design specification",
   "main": "index.js",
   "scripts": {
     "test": "echo 'Please see the tests under util/veri-sign'"

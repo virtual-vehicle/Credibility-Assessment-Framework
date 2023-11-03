@@ -1,0 +1,22 @@
+{
+  "name": "cdk_requirement_level3",
+  "version": "1.0.0",
+  "description": "level 3 quality metrics for requirements",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "example-expert-statement": "node ./examples/examples_verify_expert_statement.js",
+    "example-system-structure": "node ./examples/examples_verify_system_structure.js"
+  },
+  "author": "lvtan3005",
+  "license": "CC-BY-4.0",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "dependencies": {
+    "ajv": "^8.10.0",
+    "ajv-keywords": "^5.1.0"
+  }
+}

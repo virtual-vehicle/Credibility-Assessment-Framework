@@ -1,0 +1,15 @@
+{
+    "name": "cdk_implementation_l3",
+    "version": "1.0.0",
+    "description": "level 3 quality metrics for the implementation phase",
+    "main": "index.js",
+    "scripts": {
+      "test": "mocha --reporter spec"
+    },
+    "author": "localhorst87",
+    "license": "CC-BY-4.0",
+    "devDependencies": {
+      "chai": "^4.3.6",
+      "mocha": "^10.0.0"
+    }
+  }

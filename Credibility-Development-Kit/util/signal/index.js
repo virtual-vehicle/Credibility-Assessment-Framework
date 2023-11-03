@@ -360,7 +360,7 @@ exports.Signal = class Signal {
         let startIdx = this.#time.findIndex(startPredicate);
         let endIdx = this.#time.findLastIndex(endPredicate);
 
-        if (startIdx >= endIdx)
+        if (startIdx > endIdx)
             throw("slicing would result in empty vectors");
 
         this.#time = this.#time.slice(startIdx, endIdx + 1);

@@ -2,7 +2,7 @@ const verisign = require("../../../util/veri-sign");
 const { SIGNED_STATEMENT } = require("./types/schemas");
 
 /**
- * @module metrics/requirements/level_1
+ * @module metrics/designspecification/level_1
  */
 
 /**
@@ -21,7 +21,7 @@ const { SIGNED_STATEMENT } = require("./types/schemas");
  * @domain domain-independent
  * @modeltypes model type-independent
  * @level 1
- * @phase design
+ * @phase designspecification
  * @step [models, parameters, environment, test Cases, integration]
  * @param {String} signedExpertStatement  stringified JSON implement the {@link SIGNED_STATEMENT} schema
  * @param {String|Buffer} x509Certificate PEM- or DER-encoded X509 certificate. If PEM is used, a string is expected, if DER is used, a Buffer is expected

@@ -4,6 +4,7 @@ A collection of metrics that can be used for assessing the credibility of simula
 
 * [`checkExpertCodeReview`](#checkexpertcodereview): Checks if an artifact has passed the expert review (e.g., code verification) and if the signed expert statement is valid
 * [`checkSystemStructure`](#checksystemstructure): Static code check, if a system structure (including all components, connectors and connections of the system) is well-defined
+* [`checkPlausibility`](#checkplausibility): Dynamic code check, if a parameter change will be resulting in the expected behaivor of the simulation 
 
 ---
 ## `checkExpertCodeReview`
@@ -396,5 +397,32 @@ npm run example-system-structure
 ```
 
 from a terminal, for running the examples. 
+
+## `checkPlausibility`
+
+*Dynamic code check, where it is observed if a simulation behaves as expected, upon changing selected model parameters.*
+
+### I. METADATA
+---------------------------
+
+Metric properties ||
+------------------------|---------------
+Domains                 | Domain-independent
+Model types             | Model-independent
+CSP phase               | Implementation
+CSP step                | Models, Integration
+Level                   | 1
+Purpose                 | Checks, if a parameter change will be resulting in the expected behaivor of the simulation 
+Implements              | Dynamic Code Check
+Acceptance criteria     | Logic check
+
+### II. USAGE
+--------------------------- 
+
+### III. INPUTS
+---------------------------
+
+### IV. OUTPUTS
+---------------------------
 
 [^1]: https://ssp-standard.org/publications/SSP10/SystemStructureAndParameterization10.pdf

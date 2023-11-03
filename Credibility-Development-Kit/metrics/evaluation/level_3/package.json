@@ -1,6 +1,6 @@
 {
   "name": "cdk_evaluation_level3",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "level 3 metrics for evaluation",
   "main": "index.js",
   "scripts": {
