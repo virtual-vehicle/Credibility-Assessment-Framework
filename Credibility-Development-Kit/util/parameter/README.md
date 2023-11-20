@@ -69,8 +69,8 @@ parameter = new ScalarParameter(1720, {
     name: "vehicle mass",
     unit: "kg",
     interval: 1,
-    lower_limit = 1625,
-    upper_limit = 1950
+    lower_limit: 1625,
+    upper_limit: 1950
 }); // epistemic - nominal value: 1720 kg, limits: [1625, 1950] kg
 
 parameter = new ScalarParameter(20, {
@@ -93,9 +93,9 @@ If a standard deviation is added on top, the parameter represents an **aleatory 
 ```javascript
 parameter = new ScalarParameter(0.34, {
     name: "drag coefficient",
-    lower_limit = 0.32,
-    upper_limit = 0.37,
-    standard_deviation = 0.012
+    lower_limit: 0.32,
+    upper_limit:0.37,
+    standard_deviation: 0.012
 }); // aleatory - nominal value: 0.34, limits: [0.32, 0.37], stddev: 0.012
 
 parameter = new ScalarParameter(204.8, {
@@ -103,7 +103,7 @@ parameter = new ScalarParameter(204.8, {
     unit: "N/cm",
     interval: 0.1,
     tolerance_absolute: 4.4,
-    standard_deviation = 2.6
+    standard_deviation: 2.6
 }); // aleatory - nominal value: 204.8, limits: [200.4, 209.2] N/cm, stddev: 2.6 N/cm
 
 parameter = new ScalarParameter(34.84, {
@@ -111,7 +111,7 @@ parameter = new ScalarParameter(34.84, {
     unit: "N/(m/s)",
     interval: 1e-2,
     tolerance_relative: 0.025,
-    standard_deviation_factor = 2 // stddev = tolerance / stddev_factor = 0.025 * 34.84 / 2
+    standard_deviation_factor: 2 // stddev = tolerance / stddev_factor = 0.025 * 34.84 / 2
 }); // aleatory - nominal value: 34.84 Ns/m, limits: [33.97, 35.71] Ns/m, stddev: 0.436 Ns/m
 ```
 
