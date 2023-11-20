@@ -29,9 +29,14 @@ There are three essential types that a ScalarParameters can represent, with resp
 
 `new ScalarParameter(...)`
 
-To instantiate a ScalarParameter, the following arguments must be passed:
+To instantiate a ScalarParameter, the following arguments must be passed...
+
+...either:
 * a nominal value
 * a config object to further describe the parameter
+
+...or:
+* a JSON notation of the parameter, as returned with the `toJson` method of a ScalarParameter object.
 
 The `config` object must at least specify a name for the parameter:
 
@@ -366,7 +371,7 @@ discreteParameter = new ScalarParameter(2, {
 });
 ```
 To just create samples from one parameter, just pass a ScalarParameter, next to the configuration object.
-Currently, **equally_spaced** and **monte_carlo** sampling methods are available (more to be added, soon).
+Currently, **boundaries**, **equally_spaced** and **monte_carlo** sampling methods are available (more to be added, soon).
 
 ```javascript
 samples = createSamples(epistemicParameter1, {

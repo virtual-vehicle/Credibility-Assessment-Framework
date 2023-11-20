@@ -35,10 +35,10 @@ function checkSamplingInputs(parameters, config) {
         throw("sampling for discrete parameters not possible, as only one value is possible");
     if (config.samples <= 0 || config.samples_aleatory <= 0 || config.samples_epistemic <= 0)
         throw("number of samples must be greater than 0");
-    if (nOf.epistemic > 0 && nOf.aleatory > 0 && config.samples !== undefined && (config.samples_epistemic === undefined || config.samples_aleatory === undefined))
-        throw("for mixed sampling (aleatory and epistemic), number of samples must be given individually (via config.samples_aleatory and .samples_epistemic");
     if (nOf.epistemic > 0 && nOf.aleatory > 0 && config.method !== undefined && (config.method_epistemic === undefined || config.method_aleatory === undefined))    
         throw("for mixed sampling (aleatory and epistemic), sampling method must be given individually (via config.method_aleatory and .method_epistemic");
+    if (nOf.epistemic > 0 && nOf.aleatory > 0 && config.samples !== undefined && ((config.samples_epistemic === undefined && config.method_epistemic !== "boundaries") || (config.samples_aleatory === undefined && config.method_aleatory !== "boundaries")))
+        throw("for mixed sampling (aleatory and epistemic), number of samples must be given individually (via config.samples_aleatory and .samples_epistemic");
 
     // set default values if values are missing
     if (nOf.aleatory > 0 && config.samples === undefined && config.samples_aleatory === undefined)
@@ -50,16 +50,22 @@ function checkSamplingInputs(parameters, config) {
     if (nOf.epistemic > 0 && config.method === undefined && config.method_epistemic === undefined)
         config.method_epistemic = METHOD_DEFAULT;
     
-    // post-processing
-    if (nOf.aleatory > 0 && nOf.epistemic == 0 && config.samples > 0 && config.samples_aleatory === undefined)
-        config.samples_aleatory = config.samples;
-    if (nOf.aleatory == 0 && nOf.epistemic > 0 && config.samples > 0 && config.samples_epistemic === undefined)
-        config.samples_epistemic = config.samples;
+    // post-processing methods
     if (nOf.aleatory > 0 && nOf.epistemic == 0 && config.method !== undefined && config.method_aleatory === undefined)
         config.method_aleatory = config.method;
     if (nOf.aleatory == 0 && nOf.epistemic > 0 && config.method !== undefined && config.method_epistemic === undefined)
         config.method_epistemic = config.method;
 
+    // post-processing number of samples
+    if (nOf.aleatory > 0 && nOf.epistemic == 0 && config.samples > 0 && config.samples_aleatory === undefined)
+        config.samples_aleatory = config.samples;
+    if (nOf.aleatory == 0 && nOf.epistemic > 0 && config.samples > 0 && config.samples_epistemic === undefined)
+        config.samples_epistemic = config.samples;
+    if (nOf.aleatory > 0 && config.method_aleatory === "boundaries")
+        config.samples_aleatory = 2;    
+    if (nOf.epistemic > 0 && config.method_epistemic === "boundaries")
+        config.samples_epistemic = 2;
+    
     return config;
 }
 
@@ -90,7 +96,9 @@ function generateAleatorySamples(parameters, method, nSamples) {
     xSamples = Array.from({length: nSamples}, () => []);
 
     for (let parameter of parameters) {
-        if (method == "equally_spaced")
+        if (method == "boundaries")
+            pSamples = makeEquallySpacedArray(0, 1, 2, true, true);
+        else if (method == "equally_spaced")
             pSamples = makeEquallySpacedArray(0, 1, nSamples, false, true);
         else if (method == "monte_carlo")
             pSamples = makeMonteCarloArray(0, 1, nSamples);
@@ -136,7 +144,9 @@ function generateEpistemicSamples(parameters, method, nSamples) {
         let [min, max] = parameter.limits;
         let xSamplesParameter;
 
-        if (method == "equally_spaced")
+        if (method == "boundaries")
+            xSamplesParameter = makeEquallySpacedArray(min, max, 2, true, true);
+        else if (method == "equally_spaced")
             xSamplesParameter = makeEquallySpacedArray(min, max, nSamples, true, true);
         else if (method == "monte_carlo")
             xSamplesParameter = makeMonteCarloArray(min, max, nSamples);
