@@ -23,19 +23,25 @@ exports.verifyDiscretizationError = verifyDiscretizationError;
  * @param {number | string} errorThresholdPercentage the allowed discretization error in %
  * @return {ResultLog}
  */
-function verifyDiscretizationError(results1, results2, timeToEvaluateStart, timeToEvaluateEnd, p, errorThresholdPercentage) {
+function verifyDiscretizationError(results1, results2, signalName, timeToEvaluateStart, timeToEvaluateEnd, p, errorThresholdPercentage) {
+    var signal1, signal2;
+    
     try {
-        let results1 = JSON.parse(results1);
+        results1 = JSON.parse(results1);
+        let signals1 = results1.map(signalString => new Signal(signalString));
+        signal1 = signals1.filter(signal => signal.name == signalName)[0];
     }
     catch (err) {
         return {
             result: false,
-            log: "results1 could not be JSON-parsed"
+            log: "results1 could not be parsed"
         }
     }
 
     try {
-        let results2 = JSON.parse(results2);
+        results2 = JSON.parse(results2);
+        let signals2 = results1.map(signalString => new Signal(signalString));
+        signal2 = signals2.filter(signal => signal.name == signalName)[0];
     }
     catch (err) {
         return {
@@ -43,9 +49,6 @@ function verifyDiscretizationError(results1, results2, timeToEvaluateStart, time
             log: "results2 could not be JSON-parsed"
         }
     }
-
-    let signal1 = new Signal(results1.time, results1.values, {name: "reference signal", unit_values: results1.unit});
-    let signal2 = new Signal(results2.time, results2.values, {name: "reference signal", unit_values: results2.unit});
     
     signal1 = signal1.sliceToTime(Number(timeToEvaluateStart), Number(timeToEvaluateEnd));
     signal2 = signal2.sliceToTime(Number(timeToEvaluateStart), Number(timeToEvaluateEnd));

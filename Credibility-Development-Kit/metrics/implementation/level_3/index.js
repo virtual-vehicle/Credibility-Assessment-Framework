@@ -10,8 +10,8 @@ const error_estimation = require("./src/error_estimation/error_estim");
  */
 
 /**
- * Verifies if the solution to the discretized equations approaching the continuum solution to the partial 
- * differential equations in the limit of decreasing element size.
+ * Evaluates the discretization error uising Richardson extrapolation and checks
+ * if this discretization error is below a certain threshold
  * 
  * @author localhorst87
  * @license BSD-2-Clause
@@ -25,6 +25,7 @@ const error_estimation = require("./src/error_estimation/error_estim");
  * @param {string} results1 first simulation results 
  * @param {string} results2 second simulation results, must be from the same experiment as results1
  *                          but with a different time step size
+ * @param {string} signalName the signal to evaluate
  * @param {number | string} timeToEvaluateStart the start time for evaluating the discretization error, as typically not 
  *                                              the complete results will be evaluated but only a meaningful snippet
  * @param {number | string} timeToEvaluateEnd the end time for evaluating the discretization error, as typically not the
