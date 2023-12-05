@@ -1,6 +1,7 @@
 const util = require('../../../../../util/util-common');
 const schemas = require("../../types/schemas");
 const helper = require("../plausibility_check/plausibility_helpers");
+const { Signal } = require("../../../../../util/signal");
 
 /**
  * @typedef {import('../../types/types').ResultLog} ResultLog
@@ -13,13 +14,16 @@ exports.checkPlausibility = checkPlausibility;
  * in a model are fulfilled
  * 
  * @author localhorst87
+ * @param {string} resultsBaseline The stringified Signal array of the reference results,
+ *                                 as returned by a time-series adapter (e.g., openmcx-csv-adapter)
+ * @param {string} resultsVariation The stringified Signal array of the results after parameter modification,
+ *                                  as returned by a time-series adapter (e.g., openmcx-csv-adapter)
  * @param {string} parameterModification The stringified parameter modification setup
- * @param {string} measurementCollection The stringified measurement collection that contains reference and variation measurements
  * @return {ResultLog} return true/false upon fulfilling/not fulfilling the expectation
  */
 function checkPlausibility(resultsBaseline, resultsVariation, parameterModification) {
     try {
-        parameterModification = JSON.parse(parameterModificationString);
+        parameterModification = JSON.parse(parameterModification);
     }
     catch (err) {
         return {
@@ -28,8 +32,11 @@ function checkPlausibility(resultsBaseline, resultsVariation, parameterModificat
         }
     }
 
+    var signalsBaseline, signalsVariation;
+
     try {
-        resultsBaseline = JSON.parse(resultsBaseline);
+        resultsBaseline = JSON.parse(resultsBaseline); // will be resulting in an array of exported Signals (string[])
+        signalsBaseline = resultsBaseline.map(signalString => new Signal(signalString)); // Signal[]
     }
     catch (err) {
         return {
@@ -39,7 +46,8 @@ function checkPlausibility(resultsBaseline, resultsVariation, parameterModificat
     }
 
     try {
-        resultsVariation = JSON.parse(resultsVariation);
+        resultsVariation = JSON.parse(resultsVariation); // will be resulting in an array of exported Signals (string[])
+        signalsVariation = resultsVariation.map(signalString => new Signal(signalString)); // Signal[]
     }
     catch (err) {
         return {
@@ -55,23 +63,34 @@ function checkPlausibility(resultsBaseline, resultsVariation, parameterModificat
         }
     }    
 
-    if(!helper.isResultsComplete(resultsBaseline, resultsVariation, parameterModification)) {
-        return {
-            result: false,
-            log: "measurement collection is missing required signals"
-        }
-    }
+    const isResultsComplete = helper.isResultsComplete(signalsBaseline, signalsVariation, parameterModification);
+    if(isResultsComplete.result == false)
+        return isResultsComplete;
+        
+    let baselineSignalToEvaluate = helper.getRequiredSignal(signalsBaseline, parameterModification);
+    let variationSignalToEvaluate = helper.getRequiredSignal(signalsVariation, parameterModification);
 
-    const signalName = parameterModification.influenced_variable.name;
+    const startTime = parameterModification.influenced_variable.timepoints_to_check.start;
+    const endTime = parameterModification.influenced_variable.timepoints_to_check.end !== undefined ? parameterModification.influenced_variable.timepoints_to_check.end : startTime;
 
-    let signals = helper.wrapResultsIntoSignals(resultsBaseline, resultsVariation, signalName);
-    const idx = helper.getRegionOfInterest(parameterModification);
-
-    signals.reference = signals.reference.sliceToIndex(idx.start, idx.end);
-    signals.variation = signals.variation.sliceToIndex(idx.start, idx.end);
+    baselineSignalToEvaluate = baselineSignalToEvaluate.sliceToTime(startTime, endTime);
+    variationSignalToEvaluate = variationSignalToEvaluate.sliceToTime(startTime, endTime);
 
     const cmpOperator = parameterModification.influenced_variable.expectation;
     const cmpOptions = helper.createCompareOptions(parameterModification);
 
-    return signals.variation.compare(cmpOperator, signals.reference, cmpOptions);
+    const result = variationSignalToEvaluate.compare(cmpOperator, baselineSignalToEvaluate, cmpOptions);
+
+    if (result == true) {
+        return {
+            result: true,
+            log: "simulation results match the expectation"
+        };
+    }
+    else {
+        return {
+            result: false,
+            log: "simulation results do not match the expectation"
+        }
+    }    
 }

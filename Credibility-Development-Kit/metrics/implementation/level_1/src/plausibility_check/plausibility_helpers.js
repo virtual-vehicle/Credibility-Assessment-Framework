@@ -4,86 +4,69 @@
  * @typedef {import('../../types/types').CuttingIndices} CuttingIndices
  * @typedef {import('../../types/types').CompareOptions} CompareOptions
  * @typedef {import('../../types/types').SignalTuple} SignalTuple
+ * @typedef {import('../../types/types').ResultLog} ResultLog
  */
 
 exports.isResultsComplete = isResultsComplete;
-exports.getRegionOfInterest = getRegionOfInterest;
 exports.createCompareOptions = createCompareOptions;
-exports.wrapResultsIntoSignals = wrapResultsIntoSignals;
+exports.getRequiredSignal = getRequiredSignal;
 
 /**
  * Checks if the required measurements from the paramter modification setup are available
  * in the measurement collection
  *
  * @author: localhorst87
+ * @param {Signal[]} signalsBaseline
+ * @param {Signal[]} signalsVariation
  * @param {ParameterModification} parameterModification The parameter modification setup
- * @param {MeasurementCollection} measurements The measurement collection that contains 
- *                                             reference and variation measurements
- * @return {boolean} return true/false if all measurements are available/not available
+ * @return {ResultLog} return true/false if all measurements are available/not available
  */
-function isResultsComplete(resultsBaseline, resultsVariation, parameterModification) {
+function isResultsComplete(signalsBaseline, signalsVariation, parameterModification) {
     const nameOfSignal = parameterModification.influenced_variable.name;
 
-    if (resultsBaseline[nameOfSignal] === undefined) {
-        console.log("required signal " + nameOfSignal + " is not available in the reference results");
-        return false;
+    if (!isSignalAvailable(signalsBaseline, nameOfSignal)) {
+        return {
+            result: false,
+            log:  "required signal " + nameOfSignal + " is not available in the reference results"
+        };
     }
-    if (resultsVariation[nameOfSignal] === undefined) {
-        console.log("required signal " + nameOfSignal + " is not available in the variation results");
-        return false;
-    }
-    if (resultsBaseline[nameOfSignal].time === undefined) {
-        console.log("time vector of required signal " + nameOfSignal + " is not available in the reference results");
-        return false;
-    }
-    if (resultsBaseline[nameOfSignal].values === undefined) {
-        console.log("value vector of required signal " + nameOfSignal + " is not available in the reference results");
-        return false;
-    }   
-    if (resultsVariation[nameOfSignal].time === undefined) {
-        console.log("time vector required signal " + nameOfSignal + " is not available in the variation results");
-        return false;
-    }
-    if (resultsVariation[nameOfSignal].values === undefined) {
-        console.log("value vector required signal " + nameOfSignal + " is not available in the variation results");
-        return false;
+    if (!isSignalAvailable(signalsVariation, nameOfSignal)) {
+        return {
+            result: false,
+            log: "required signal " + nameOfSignal + " is not available in the variation results"
+        };
     }
 
-    // other checks (length > 0, time and value length have same length, etc.) will be checked
-    // on creating the Signals from these arrays!
+    let baselineSignalToEvaluate = getRequiredSignal(signalsBaseline, parameterModification);
+    let variationSignalToEvaluate = getRequiredSignal(signalsVariation, parameterModification);
+
+    if (baselineSignalToEvaluate.length == 0) {
+        return {
+            result: false,
+            log: "required signal " + nameOfSignal + " has zero length in baseline results!"
+        };
+    }
+    if (variationSignalToEvaluate.length == 0) {
+        return {
+            result: false,
+            log: "required signal " + nameOfSignal + " has zero length in variation results!"
+        };
+    }
     
-    return true;
+    return {
+        result: true,
+        log: "results are complete"
+    };
 }
 
 /**
- * Returns a start and end index for cutting the reference and variation Signal,
- * according to the given reference point in the ParameterModification setup
- *
- * @author: localhorst87
- * @param {ParameterModification} parameterModification The parameter modification setup
- * @return {CuttingIndices} start and end index for cutting the Signals
+ * 
+ * @param {Signals[]} signals 
+ * @param {ParameterModification} parameterModification 
+ * @returns 
  */
-function getRegionOfInterest(parameterModification) {
-    var startIdx, endIdx;
-
-    switch (parameterModification.influenced_variable.reference_point) {
-        case "start":
-            startIdx = 0;
-            endIdx = 1;
-            break;
-        case "end":
-            startIdx = -1;
-            endIdx = undefined;
-            break;
-        default: // continuously
-            startIdx = undefined;
-            endIdx = undefined;
-    }
-
-    return {
-        start: startIdx,
-        end: endIdx,
-    };
+function getRequiredSignal(signals, parameterModification) {
+    return signals.find(signal => signal.name == parameterModification.influenced_variable.name);
 }
 
 /**
@@ -129,38 +112,10 @@ function createCompareOptions(parameterModification) {
 }
 
 /**
- * Extracts the signals identified by signalName from the MeasurementCollection and creates
- * a SignalTuple out of it.
- * The availability of the signals inside the MeasurementCollection must have been checked
- * before! 
- *
- * @author: localhorst87
- * @param {MeasurementCollection} measurements The measurement collection that contains 
- *                                             reference and variation measurements
- * @param {string} signalName The signal to extract from the measurements and wrap into a
- *                            Signal object
- * @return {SignalTuple} reference and variation Signals of <signalName> variable
+ * @param {Signal[]} signals 
+ * @param {string} nameOfSignal 
+ * @returns {boolean}
  */
-function wrapResultsIntoSignals(resultsBaseline, resultsVariation, signalName) {
-    const timeRefSignal = resultsBaseline[signalName].time;
-    const valuesRefSignal = resultsBaseline[signalName].values;
-    const configRefSignal = {
-        name: signalName + "_reference",
-        unit_values: resultsBaseline[signalName].unit,
-    };
-
-    const timeVariSignal = resultsVariation[signalName].time;
-    const valuesVariSignal = resultsVariation[signalName].values;
-    const configVariSignal = {
-        name: signalName + "_variation",
-        unit_values: resultsVariation[signalName].unit,
-    };
-
-    let referenceSignal = new Signal(timeRefSignal, valuesRefSignal, configRefSignal);
-    let variationSignal = new Signal(timeVariSignal, valuesVariSignal, configVariSignal);
-
-    return {
-        reference: referenceSignal,
-        variation: variationSignal,
-    };
+function isSignalAvailable(signals, nameOfSignal) {
+    return signals.reduce((isAvailable, signal) => isAvailable || signal.name == nameOfSignal, false);
 }

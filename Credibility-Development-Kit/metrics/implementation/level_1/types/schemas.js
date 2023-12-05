@@ -266,9 +266,17 @@ const PARAMETER_MODIFICATION = {
                         "type": "string",
                         "enum": [">", ">=", "==", "<>", "<=", "<"],
                     },
-                    "reference_point": {
-                        "type": "string",
-                        "enum": ["start", "continuously", "end"]
+                    "timepoints_to_check": {
+                        "type": "object",
+                        "properties": {
+                            "start": {
+                                "type": "number"
+                            },
+                            "end": {
+                                "type": "number"
+                            }
+                        },
+                        "required": ["start"]
                     },
                     "comparison": {
                         "type": "string",
@@ -304,17 +312,17 @@ const PARAMETER_MODIFICATION = {
                 // tolerance and threshold are optional, but mutually exclusive!
                 "oneOf": [
                     {
-                        "required": ["name", "model_reference", "expectation", "reference_point", "comparison", "threshold"],
+                        "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison", "threshold"],
                         "not": {"required": ["tolerance"]}
                     },
                     {
-                        "required": ["name", "model_reference", "expectation", "reference_point", "comparison", "tolerance"],
+                        "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison", "tolerance"],
                         "not": {"required": ["threshold"]}
                     },
                     {
                         "allOf": [
                             {
-                                "required": ["name", "model_reference", "expectation", "reference_point", "comparison"],
+                                "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison"],
                             },
                             {
                                 "not": {"required": ["threshold"]}

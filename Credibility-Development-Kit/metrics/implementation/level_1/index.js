@@ -48,7 +48,7 @@ const checkExpertReview = verisign.checkExpertStatement;
 const checkSystemStructure = systemStructureCheck.verifySystemStructure;
 
 /**
- * Checks if the representation of a system structure (including all components, connectors and connections of the system) is well-defined
+ * Dynamic code check, if a parameter change will be resulting in the expected behaivor of the simulation
  * 
  * @author localhorst87
  * @license BSD-2-Clause
