@@ -60,5 +60,75 @@ const COMPARE_OPTIONS = {
     }
 };
 
+const SIGNAL_JSON = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "time": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "values": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "units": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "string"
+                },
+            },
+            "required": ["time", "values"]
+        },
+        "precision": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "history": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "step": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "processing": {
+                        "type": "string"
+                    }
+                },
+                "required": ["step", "date", "time", "values", "processing"]
+            }
+        }
+    },
+    "required": ["name", "time", "values", "units", "precision", "history"]
+};
+
+exports.SIGNAL_JSON = SIGNAL_JSON;
 exports.SIGNAL_CONFIG = SIGNAL_CONFIG;
 exports.COMPARE_OPTIONS = COMPARE_OPTIONS;
