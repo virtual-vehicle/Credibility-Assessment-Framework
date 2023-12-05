@@ -6,7 +6,7 @@ exports.translate = translate;
 /**
  * 
  * @param {string} csvPath 
- * @returns {Signal[]}
+ * @returns {string} an stringified array of stringified Signals
  */
 function translate(csvPath) {
     try {
@@ -16,5 +16,7 @@ function translate(csvPath) {
         return JSON.stringify({error : "Could not open specified CSV file"});
     }
 
-    return helper.extractSignals(csvString);
+    let signals = helper.extractSignals(csvString);
+
+    return JSON.stringify(signals.map(signal => signal.export()));
 }
