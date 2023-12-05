@@ -42,6 +42,29 @@ const {
  * @typedef {import('../types/specification').ArcAttributes} ArcAttributes
  * @typedef {import('../types/specification').LifeCycleInformationType} LifeCycleInformationType
  * @typedef {import('../types/specification').LifeCycleEntryType} LifeCycleEntryType
+ * @typedef {import('../types/cdk_types').CredibilityType} CredibilityType
+ * @typedef {import('../types/cdk_types').EvidenceType} EvidenceType 
+ * @typedef {import('../types/cdk_types').EvidenceAttributes} EvidenceAttributes 
+ * @typedef {import('../types/cdk_types').MetricType} MetricType 
+ * @typedef {import('../types/cdk_types').MetricAttributes} MetricAttributes 
+ * @typedef {import('../types/cdk_types').TestType} TestType 
+ * @typedef {import('../types/cdk_types').FunctionArgumentType} FunctionArgumentType 
+ * @typedef {import('../types/cdk_types').FunctionArgumentAttributes} FunctionArgumentAttributes 
+ * @typedef {import('../types/cdk_types').ProcessingType} ProcessingType 
+ * @typedef {import('../types/cdk_types').SimpleProcessingType} SimpleProcessingType 
+ * @typedef {import('../types/cdk_types').SimpleProcessingTypeAttributes} SimpleProcessingTypeAttributes 
+ * @typedef {import('../types/cdk_types').ComlexProcessingType} ComlexProcessingType 
+ * @typedef {import('../types/cdk_types').ComlexProcessingTypeAttributes} ComlexProcessingTypeAttributes 
+ * @typedef {import('../types/cdk_types').ProcessingPrerequisitesType} ProcessingPrerequisitesType 
+ * @typedef {import('../types/cdk_types').ProcessingPrerequisitesTypeAttributes} ProcessingPrerequisitesTypeAttributes 
+ * @typedef {import('../types/cdk_types').InputsType} InputsType 
+ * @typedef {import('../types/cdk_types').GenericInputType} GenericInputType 
+ * @typedef {import('../types/cdk_types').GenericInputTypeAttributes} GenericInputTypeAttributes 
+ * @typedef {import('../types/cdk_types').OutputsType} OutputsType 
+ * @typedef {import('../types/cdk_types').FunctionOutputType} FunctionOutputType 
+ * @typedef {import('../types/cdk_types').FunctionOutputTypeAttributes} FunctionOutputTypeAttributes 
+ * @typedef {import('../types/cdk_types').GenericOutputType} GenericOutputType 
+ * @typedef {import('../types/cdk_types').GenericOutputTypeAttributes} GenericOutputTypeAttributes 
  */
 
 /**
@@ -179,8 +202,16 @@ function extractLifeCycleInformation(parent) {
  */
 function transformGeneralInformation(generalInformationObject) {
     return {
+        attributes: {
+            id: generalInformationObject['@_id'],
+            description: generalInformationObject['@_description']
+        },
         DerivationChain: generalInformationObject['stc:DerivationChain'] !== undefined ? transformDerivationChain(generalInformationObject['stc:DerivationChain']) : undefined,
-        Links: generalInformationObject['stc:Links'] !== undefined ? transformLinks(generalInformationObject['stc:Links']) : undefined
+        Resource: generalInformationObject[RESOURCE_NAME] !== undefined ? transformResource(generalInformationObject[RESOURCE_NAME]) : undefined,
+        ResourceReference: generalInformationObject[RESOUCE_REFERENCE_NAME] !== undefined ? transformResourceReference(generalInformationObject[RESOUCE_REFERENCE_NAME]) : undefined,
+        Links: generalInformationObject['stc:Links'] !== undefined ? transformLinks(generalInformationObject['stc:Links']) : undefined,
+        Classification: generalInformationObject['stc:Classification'] !== undefined ? transformClassification(generalInformationObject['stc:Classification']) : undefined,
+        Annotations: generalInformationObject['stc:Annotations'] !== undefined ? transformAnnotations(generalInformationObject['stc:Annotations']) : undefined
     };
 }
 
@@ -572,6 +603,244 @@ function pruneObject(objectToPrune, keysToDelete) {
     return prunedObject;
 }
 
+// -------------------- CDK specific functions ------------------------
+
+/**
+ * @param {object} credibilityObject 
+ * @returns {CredibilityType}
+ */
+function transformCdkCredibility(credibilityObject) {
+    return {
+        Processing: credibilityObject["cdk:Processing"] !== undefined ? transformCdkProcessing(credibilityObject["cdk:Processing"]) : [],
+        Evidence: transformCdkEvidence(credibilityObject["cdk:Evidence"])
+    };
+}
+
+/**
+ * @param {object[]} evidenceArray 
+ * @returns {EvidenceType[]}
+ */
+function transformCdkEvidence(evidenceArray) {
+    let evidences = [];
+
+    for (let evidenceObject of evidenceArray) {
+        evidences.push({
+            Metric: transformCdkMetric(evidenceObject["cdk:Metric"]),
+            attributes: {
+                level: evidenceObject["@_level"]
+            }
+        });
+    }
+
+    return evidences;
+}
+
+/**
+ * @param {object[]} metricArray 
+ * @returns {MetricType[]}
+ */
+function transformCdkMetric(metricArray) {
+    let metrics = [];
+
+    for (let metricObject of metricArray) {
+        metrics.push({
+            Test: transformCdkTest(metricObject["cdk:Test"]),
+            attributes: {
+                packageUri: metricObject["@_packageUri"],
+                function: metricObject["@_function"]
+            }
+        });
+    }
+
+    return metrics;
+}
+
+/**
+ * @param {object[]} testArray 
+ * @returns {TestType[]}
+ */
+function transformCdkTest(testArray) {
+    let tests = [];
+    for (let testObject of testArray) {
+        tests.push({
+            FunctionArgument: transformCdkFunctionArguments(testObject["cdk:FunctionArgument"]),
+            attributes: {
+                id: testObject["@_id"]
+            }
+        });
+    }
+
+    return tests;
+}
+
+/**
+ * @param {object[]} functionArgumentArray 
+ * @returns {FunctionArgumentType[]}
+ */
+function transformCdkFunctionArguments(functionArgumentArray) {
+    let fcnArguments = [];
+
+    for (let argumentObject of functionArgumentArray) {
+        fcnArguments.push({
+            attributes: {
+                name: argumentObject["@_name"],
+                method: argumentObject["@_method"],
+                type: argumentObject["@_type"],
+                source: argumentObject["@_source"],
+                content: argumentObject["@_content"]
+            }
+        });
+    }
+
+    return fcnArguments;
+}
+
+/**
+ * @param {object[]} processingArray 
+ * @returns {ProcessingType[]}
+ */
+function transformCdkProcessing(processingArray) {
+    let transformedProcessings = [];
+
+    for (let processing of processingArray) {
+        transformedProcessings.push({
+            SimpleProcessing: processing["cdk:SimpleProcessing"] !== undefined ? transformCdkSimpleProcessing(processing["cdk:SimpleProcessing"]) : undefined,
+            ComplexProcessing: processing["cdk:ComplexProcessing"] !== undefined ? transformCdkComplexProcessing(processing["cdk:ComplexProcessing"]) : undefined,
+            Prerequisites: processing["cdk:Prerequisites"] !== undefined ? transformCdkProcessPrerequisites(processing["cdk:Prerequisites"]) : [],
+            Inputs: processing["cdk:Inputs"] !== undefined ? transformCdkInputs(processing["cdk:Inputs"]) : undefined,
+            Outputs: transformCdkOutputs(processing["cdk:Outputs"])
+        });
+    }
+
+    return transformedProcessings;
+}
+
+/**
+ * @param {object} simpleProcessing 
+ * @returns {SimpleProcessingType}
+ */
+function transformCdkSimpleProcessing(simpleProcessing) {
+    return {
+        attributes: {
+            packageUri: simpleProcessing["@_packageUri"],
+            function: simpleProcessing["@_function"],
+            id: simpleProcessing["@_id"]
+        }
+    };
+}
+
+/**
+ * @param {object} complexProcessing 
+ * @returns {ComlexProcessingType}
+ */
+function transformCdkComplexProcessing(complexProcessing) {
+    return {
+        attributes: {
+            method: complexProcessing['@_method'],
+            source: complexProcessing['@_source'],
+            description: complexProcessing['@_description'],
+            id: complexProcessing['@_id']
+        }
+    };
+}
+
+/**
+ * 
+ * @param {object} prerequisites 
+ * @returns {ProcessingPrerequisitesType}
+ */
+function transformCdkProcessPrerequisites(prerequisitesArray) {
+    let transformedPrerequisites = [];
+
+    for (let prerequisite of prerequisitesArray) {
+        transformedPrerequisites.push({
+            attributes: {
+                source: prerequisite['@_source']
+            }
+        });
+    }
+
+    return transformedPrerequisites;
+}
+
+/**
+ * @param {object} inputs
+ * @returns {InputsType}
+ */
+function transformCdkInputs(inputs) {
+    return {
+        FunctionArgument: inputs['FunctionArgument'] !== undefined ? transformCdkFunctionArguments(inputs['FunctionArgument']) : [],
+        Input: inputs['Input'] !== undefined ? transformCdkInput(inputs['Input']) : []
+    };
+}
+
+/**
+ * @param {object[]} inputs 
+ * @returns {GenericInputType[]}
+ */
+function transformCdkInput(inputs) {
+    let transformedInputs = [];
+
+    for (let input of inputs) {
+        transformedInputs.push({
+            attributes: {
+                description: input['@_description'],
+                type: input['@_type'],
+                path: input['@_path']
+            }
+        });
+    }
+
+    return transformedInputs;
+}
+
+/**
+ * @param {object} outputs 
+ * @returns {OutputsType}
+ */
+function transformCdkOutputs(outputs) {
+    return {
+        Return: outputs['Return'] !== undefined ? transformCdkFunctionOutput(outputs['Return']) : [],
+        Output: outputs['Output'] !== undefined ? transformCdkGenericOutput(outputs['Output']) : []
+    };
+}
+
+/**
+ * @param {object} returnObj 
+ * @returns {FunctionOutputType}
+ */
+function transformCdkFunctionOutput(returnObj) {
+    return {
+        attributes: {
+            type: returnObj['@_type'],
+            path: returnObj['@_path']
+        }
+    };
+}
+
+/**
+ * @param {object[]} outputs
+ * @returns {GenericOutputType[]}
+ */
+function transformCdkGenericOutput(outputs) {
+    let transformedOutputs = [];
+
+    for (let output of outputs) {
+        transformedOutputs.push({
+            attributes: {
+                description: output['@_description'],
+                type: output['@_type'],
+                path: output['@_path']
+            }
+        });
+    }
+
+    return transformedOutputs;
+}
+
+
+
+
 exports.extractGeneralInformation = extractGeneralInformation;
 exports.extractTopLevelInformation = extractTopLevelInformation;
 exports.extractResources = extractResources;
@@ -580,3 +849,4 @@ exports.extractLinks = extractLinks;
 exports.extractClassification = extractClassification;
 exports.extractAnnotations = extractAnnotations;
 exports.extractLifeCycleInformation = extractLifeCycleInformation;
+exports.transformCdkCredibility = transformCdkCredibility;
