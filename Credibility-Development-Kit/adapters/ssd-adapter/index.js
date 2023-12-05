@@ -22,17 +22,16 @@ exports.translate = translate;
 /**
 * Transforms an SSD into a JSON structure, according to the given elements to extract
 * @author   localhorst87
-* @param    {String} ssdPath    path of the SSD file to transform
-* @return   {String}            returns the transformed and stringified SystemStructure object
+* @param    {String} ssdFilePath  string of the SSD file to transform
+* @return   {String} returns the transformed and stringified SystemStructure object
 */
-function translate(ssdPath) {
+function translate(ssdFilePath) {
     try {
-        var ssdString = fs.readFileSync(ssdPath, 'utf8');
+        var ssdString = fs.readFileSync(ssdFilePath, 'utf-8');
     }
     catch (err) {
         return JSON.stringify({error : "Could not open specified SSD file"});
     }
-
     try {
         var xsdString = fs.readFileSync(SSD_SPEC_FOLDER + SSD_SPEC_FILE, 'utf8');
     }
