@@ -1,6 +1,11 @@
 const Ajv = require("ajv");
 const ajv = new Ajv({$data: true, allErrors: true})
 require("ajv-keywords")(ajv);
+const { XMLParser, XMLValidator } = require('fast-xml-parser');
+const xsdValidator = require('libxmljs2-xsd');
+const fileSync = require("fs");
+const path = require('path');
+
 
 exports.isStructureValid = isStructureValid
 exports.roundToDigit = roundToDigit;
@@ -9,6 +14,11 @@ exports.roundToInterval = roundToInterval;
 exports.floorToInterval = floorToInterval;
 exports.ceilToInterval = ceilToInterval;
 exports.mod = mod;
+
+exports.validateXMLAgainstXSD = validateXMLAgainstXSD;
+exports.validateXML = validateXML;
+exports.parseXMLToJson = parseXMLToJson;
+
 
 const PRECISION = 15;
 
@@ -210,4 +220,54 @@ function mod(value, divisor) {
     const remainderPower = (value * Math.pow(10, lsd)) % (divisor * Math.pow(10, lsd));
 
     return remainderPower / Math.pow(10, lsd);
+}
+
+/**
+* Checks if the XML model description file fulfills the given XSD scheme
+* @author   lvtan
+* @function
+* @param    {String} xmlString XML-validated model description
+* @param    {String} xsdFilePath path of xsd file that is used to validate
+* @return   {Boolean} returns true/false upon valid/invalid scheme
+*/
+function validateXMLAgainstXSD(xmlString, xsdFilePath) {
+    var xsdString = fileSync.readFileSync(xsdFilePath, 'utf8');
+    var modelDescXsdBasePath = path.dirname(path.resolve(xsdFilePath))+"/"
+    let parsedXsd = xsdValidator.parse(xsdString, { baseUrl: modelDescXsdBasePath });
+    let validationErrors = parsedXsd.validate(xmlString);
+    return validationErrors == null;
+}
+
+/**
+* Checks if the XML structure of the given XML string is valid
+* @author   lvtan
+* @function
+* @param    {String} xmlString  XML as plain text
+* @return   {Boolean} returns true/false upon valid/invalid XML format
+*/
+
+function validateXML(xmlString) {
+    const validationOptions = {
+        allowBooleanAttributes: true
+    };
+    const validationResult = XMLValidator.validate(xmlString, validationOptions);
+
+    return validationResult == true;
+}
+
+/**
+ * Convert XML string to JSON
+ * 
+ * @author lvtan3005
+ * @function 
+ * @param {string} xmlString the xml at the string format
+ * @returns {object} json object after parsing
+ */
+
+function parseXMLToJson(xmlString) {
+    const parserOptions = {
+        ignoreAttributes : false
+    };
+    const xmlParser = new XMLParser(parserOptions);
+    return xmlParser.parse(xmlString);
 }
