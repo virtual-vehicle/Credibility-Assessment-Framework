@@ -67,7 +67,7 @@ function linkageCheckSyntax(namedGraph, resourceIri, stmd) {
         };  
     }
 
-    var stmdReader = new stmd_reader.StmdReader(stmd);
+    var stmdReader = new stmd_reader.StmdCrud(stmd);
 
     var checkResourceIriExisted = isResourceInPhase(resourceIri, 'stmd:RequirementsPhase', stmdReader);
 
