@@ -19,7 +19,15 @@ function parseSTMD(stmdString) {
                 tagName == 'stc:ClassificationEntry' || 
                 tagName == 'stc:Link' ||
                 tagName == 'stc:Arc' ||
-                tagName == 'stc:DerivationChainEntry') return true;
+                tagName == 'stc:DerivationChainEntry' ||
+                tagName == 'cdk:Evidence' ||
+                tagName == 'cdk:Prerequisites' ||
+                tagName == 'cdk:Processing' ||
+                tagName == 'cdk:Test' ||
+                tagName == 'cdk:Metric' ||
+                tagName == 'cdk:Input' ||
+                tagName == 'cdk:Output' ||
+                tagName == 'cdk:FunctionArgument') return true;
             else return false;
         }
     };
