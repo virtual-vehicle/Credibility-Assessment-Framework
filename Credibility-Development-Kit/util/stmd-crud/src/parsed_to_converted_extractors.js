@@ -708,7 +708,7 @@ function transformCdkProcessing(processingArray) {
             ComplexProcessing: processing["cdk:ComplexProcessing"] !== undefined ? transformCdkComplexProcessing(processing["cdk:ComplexProcessing"]) : undefined,
             Prerequisites: processing["cdk:Prerequisites"] !== undefined ? transformCdkProcessPrerequisites(processing["cdk:Prerequisites"]) : [],
             Inputs: processing["cdk:Inputs"] !== undefined ? transformCdkInputs(processing["cdk:Inputs"]) : undefined,
-            Outputs: transformCdkOutputs(processing["cdk:Outputs"])
+            Outputs: processing["cdk:Outputs"] !== undefined ? transformCdkOutputs(processing["cdk:Outputs"]) : undefined,
         });
     }
 
@@ -746,7 +746,7 @@ function transformCdkComplexProcessing(complexProcessing) {
 
 /**
  * 
- * @param {object} prerequisites 
+ * @param {object[]} prerequisites 
  * @returns {ProcessingPrerequisitesType}
  */
 function transformCdkProcessPrerequisites(prerequisitesArray) {
@@ -769,8 +769,8 @@ function transformCdkProcessPrerequisites(prerequisitesArray) {
  */
 function transformCdkInputs(inputs) {
     return {
-        FunctionArgument: inputs['FunctionArgument'] !== undefined ? transformCdkFunctionArguments(inputs['FunctionArgument']) : [],
-        Input: inputs['Input'] !== undefined ? transformCdkInput(inputs['Input']) : []
+        FunctionArgument: inputs['cdk:FunctionArgument'] !== undefined ? transformCdkFunctionArguments(inputs['cdk:FunctionArgument']) : [],
+        Input: inputs['cdk:Input'] !== undefined ? transformCdkInput(inputs['cdk:Input']) : []
     };
 }
 
@@ -800,8 +800,8 @@ function transformCdkInput(inputs) {
  */
 function transformCdkOutputs(outputs) {
     return {
-        Return: outputs['Return'] !== undefined ? transformCdkFunctionOutput(outputs['Return']) : [],
-        Output: outputs['Output'] !== undefined ? transformCdkGenericOutput(outputs['Output']) : []
+        Return: outputs['cdk:Return'] !== undefined ? transformCdkFunctionOutput(outputs['cdk:Return']) : [],
+        Output: outputs['cdk:Output'] !== undefined ? transformCdkGenericOutput(outputs['cdk:Output']) : []
     };
 }
 
@@ -837,9 +837,6 @@ function transformCdkGenericOutput(outputs) {
 
     return transformedOutputs;
 }
-
-
-
 
 exports.extractGeneralInformation = extractGeneralInformation;
 exports.extractTopLevelInformation = extractTopLevelInformation;
