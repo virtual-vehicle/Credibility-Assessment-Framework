@@ -27,7 +27,8 @@ function parseSTMD(stmdString) {
                 tagName == 'cdk:Metric' ||
                 tagName == 'cdk:Input' ||
                 tagName == 'cdk:Output' ||
-                tagName == 'cdk:FunctionArgument') return true;
+                tagName == 'cdk:FunctionArgument' ||
+                tagName == 'cdk:CommandLineArgument') return true;
             else return false;
         }
     };
