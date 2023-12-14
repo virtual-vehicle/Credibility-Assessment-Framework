@@ -69,6 +69,22 @@
  */
 
 /**
+ * CommandLineInputType
+ * 
+ * @typedef {object} CommandLineInputType
+ * @property {CommandLineInputTypeAttributes} attributes
+ */
+
+/**
+ * CommandLineInputTypeAttributes
+ * 
+ * @typedef {object} CommandLineInputTypeAttributes
+ * @property {string} flag
+ * @property {string} [argument]
+ * @property {string} [type]
+ */
+
+/**
  * FunctionArgumentTypeAttributes
  * 
  * @typedef {object} FunctionArgumentTypeAttributes
@@ -85,11 +101,19 @@
  * ProcessingType
  * 
  * @typedef {object} ProcessingType
+ * @property {ProcessingTypeAttributes} attributes
  * @property {SimpleProcessingType} [SimpleProcessing]
  * @property {ComlexProcessingType} [ComplexProcessing]
  * @property {ProcessingPrerequisitesType[]} Prerequisites
  * @property {InputsType} [Inputs]
- * @property {OutputsType} Outputs
+ * @property {OutputsType} [Outputs]
+ */
+
+/**
+ * ProcessingTypeAttributes
+ * 
+ * @typedef {object} ProcessingTypeAttributes
+ * @property {string} [description]
  */
 
 /**
@@ -136,6 +160,7 @@
  * ProcessingPrerequisitesTypeAttributes
  * 
  * @typedef {object} ProcessingPrerequisitesTypeAttributes
+ * @property {string} method
  * @property {string} source
  */
 
@@ -143,8 +168,16 @@
  * InputsType
  * 
  * @typedef {object} InputsType
+ * @property {InputsTypeAttributes} attributes
  * @property {FunctionArgumentType[]} FunctionArgument
  * @property {GenericInputType[]} Input
+ */
+
+/**
+ * InputsTypeAttributes
+ * 
+ * @typedef {object} InputsTypeAttributes
+ * @property {string} [description]
  */
 
 /**
@@ -167,8 +200,16 @@
  * OutputsType
  * 
  * @typedef {object} OutputsType
+ * @property {OutputsTypeAttributes} attributes
  * @property {FunctionOutputType} [Return]
  * @property {GenericOutputType[]} Output
+ */
+
+/**
+ * OutputsTypeAttributes
+ * 
+ * @typedef {object} OutputsTypeAttributes
+ * @property {string} [description]
  */
 
 /** 

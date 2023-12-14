@@ -696,6 +696,27 @@ function transformCdkFunctionArguments(functionArgumentArray) {
 }
 
 /**
+ * 
+ * @param {object[]} clArgumentArray 
+ * @returns 
+ */
+function transformCdkCommandLineArguments(clArgumentArray) {
+    let clArguments = [];
+
+    for (let clArgument of clArguments) {
+        clArguments.push({
+            attributes: {
+                flag: clArgument['@_flag'],
+                argument: clArgument['@_argument'],
+                type: clArgument['@_type']
+            }
+        });
+    }
+
+    return clArguments;
+}
+
+/**
  * @param {object[]} processingArray 
  * @returns {ProcessingType[]}
  */
@@ -704,6 +725,9 @@ function transformCdkProcessing(processingArray) {
 
     for (let processing of processingArray) {
         transformedProcessings.push({
+            attributes: {
+                description: processing['@_description']
+            },
             SimpleProcessing: processing["cdk:SimpleProcessing"] !== undefined ? transformCdkSimpleProcessing(processing["cdk:SimpleProcessing"]) : undefined,
             ComplexProcessing: processing["cdk:ComplexProcessing"] !== undefined ? transformCdkComplexProcessing(processing["cdk:ComplexProcessing"]) : undefined,
             Prerequisites: processing["cdk:Prerequisites"] !== undefined ? transformCdkProcessPrerequisites(processing["cdk:Prerequisites"]) : [],
@@ -755,6 +779,7 @@ function transformCdkProcessPrerequisites(prerequisitesArray) {
     for (let prerequisite of prerequisitesArray) {
         transformedPrerequisites.push({
             attributes: {
+                method: prerequisite['@_method'],
                 source: prerequisite['@_source']
             }
         });
@@ -769,8 +794,12 @@ function transformCdkProcessPrerequisites(prerequisitesArray) {
  */
 function transformCdkInputs(inputs) {
     return {
+        attributes: {
+            description: inputs['@_description']
+        },
         FunctionArgument: inputs['cdk:FunctionArgument'] !== undefined ? transformCdkFunctionArguments(inputs['cdk:FunctionArgument']) : [],
-        Input: inputs['cdk:Input'] !== undefined ? transformCdkInput(inputs['cdk:Input']) : []
+        Input: inputs['cdk:Input'] !== undefined ? transformCdkInput(inputs['cdk:Input']) : [],
+        CommandLineArgument: inputs['cdk:CommandLineArgument'] !== undefined ? transformCdkCommandLineArguments(inputs['cdk:CommandLineArgument']) : []
     };
 }
 
@@ -800,6 +829,9 @@ function transformCdkInput(inputs) {
  */
 function transformCdkOutputs(outputs) {
     return {
+        attributes: {
+            description: outputs['@_description']
+        },
         Return: outputs['cdk:Return'] !== undefined ? transformCdkFunctionOutput(outputs['cdk:Return']) : [],
         Output: outputs['cdk:Output'] !== undefined ? transformCdkGenericOutput(outputs['cdk:Output']) : []
     };
