@@ -703,7 +703,7 @@ function transformCdkFunctionArguments(functionArgumentArray) {
 function transformCdkCommandLineArguments(clArgumentArray) {
     let clArguments = [];
 
-    for (let clArgument of clArguments) {
+    for (let clArgument of clArgumentArray) {
         clArguments.push({
             attributes: {
                 flag: clArgument['@_flag'],
