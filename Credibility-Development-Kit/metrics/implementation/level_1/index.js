@@ -2,6 +2,7 @@ const schemasVerisign = require("../../../util/veri-sign/types/schemas")
 const verisign = require("../../../util/veri-sign");
 const systemStructureCheck = require("./src/system_structure/verifySystemStructure");
 const plausibilityCheck = require("./src/plausibility_check/plausibility");
+const opendrive = require("./src/opendrive/opendrive");
 
 /**
  * @typedef {import('./types/types').ResultLog} ResultLog
@@ -66,6 +67,26 @@ const checkSystemStructure = systemStructureCheck.verifySystemStructure;
  */
 const checkPlausibility = plausibilityCheck.checkPlausibility;
 
+/**
+ * Static code check, if the given OpenDRIVE map is XML conformant and fulfills the given XML 
+ * schema definition
+ * 
+ * @author localhorst87
+ * @license BSD-2-Clause
+ * @kind function
+ * @version 1.0
+ * @domain Automotive
+ * @modeltypes OpenDRIVE road network models
+ * @level 1
+ * @phase implementation
+ * @step [models]
+ * @param {string} opendrive The OpenDRIVE map as a string
+ * @param {string} xsdSchemaPath The path to the OpenDRIVE XSD schema definition
+ * @return {ResultLog} returns true/false and a log upon valid/invalid behaviour
+ */
+const checkOpenDriveSyntax = opendrive.checkOpenDriveSyntax;
+
 exports.checkExpertReview = checkExpertReview;
 exports.checkSystemStructure = checkSystemStructure;
 exports.checkPlausibility = checkPlausibility;
+exports.checkOpenDriveSyntax = checkOpenDriveSyntax;
