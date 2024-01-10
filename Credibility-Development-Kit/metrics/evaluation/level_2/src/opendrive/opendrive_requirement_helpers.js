@@ -13,13 +13,9 @@ exports.getTractionRange = getTractionRange;
 exports.getTrafficRule = getTrafficRule;
 
 /**
- * @typedef {import('../../types/types').t_road} t_road
- * @typedef {import('../../types/types').t_road_planView} t_road_planView
- * @typedef {import('../../types/types').t_junction} t_junction
  * @typedef {import('../../types/types').LineMarking} LineMarking
  * @typedef {import('../../types/types').ResultLog} ResultLog
  */
-
 
 /**
  * Helper methods for arrays to make array unique, using shallow equality
