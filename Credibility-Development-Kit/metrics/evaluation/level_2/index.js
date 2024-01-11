@@ -1,6 +1,5 @@
 const time_domain_metrics = require('./src/time_domain');
 const opendrive = require("./src/opendrive/opendrive");
-const schemas = require('./types/schemas');
 
 /**
  * @module metrics/evaluation/level_2
@@ -25,11 +24,12 @@ const schemas = require('./types/schemas');
  * @modeltypes model type-independent
  * @level 2
  * @phase evaluation
- * @step []
- * @param {string} experimentResults stringified results of simulation experiment,
- *                                   implementing {@link schemas.MEASUREMENT}
- * @param {string} referenceResults stringified results of the reference results (e.g., measurements),
- *                                  implementing {@link schemas.MEASUREMENT} 
+ * @step [evaluate]
+ * @param {string} experimentResults stringified Signal array of simulation experiment results, as returned by a Signal
+ *                                   adapter, like the openmcx-csv-adapter
+ * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
+ *                                  Signal adapter, like the openmcx-csv-adapter
+ * @param {string} signalName the name of the signal to evaluate
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MAE must not exceed
@@ -52,11 +52,12 @@ const checkMeanAbsoluteError = time_domain_metrics.checkMae;
  * @modeltypes model type-independent
  * @level 2
  * @phase evaluation
- * @step []
- * @param {string} experimentResults stringified results of simulation experiment,
- *                                   implementing {@link schemas.MEASUREMENT}
- * @param {string} referenceResults stringified results of the reference results (e.g., measurements),
- *                                  implementing {@link schemas.MEASUREMENT} 
+ * @step [evaluate]
+ * @param {string} experimentResults stringified Signal array of simulation experiment results, as returned by a Signal
+ *                                   adapter, like the openmcx-csv-adapter
+ * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
+ *                                  Signal adapter, like the openmcx-csv-adapter
+ * @param {string} signalName the name of the signal to evaluate
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MSE must not exceed
@@ -79,11 +80,12 @@ const checkMeanSquaredError = time_domain_metrics.checkMse;
  * @modeltypes model type-independent
  * @level 2
  * @phase evaluation
- * @step []
- * @param {string} experimentResults stringified results of simulation experiment,
- *                                   implementing {@link schemas.MEASUREMENT}
- * @param {string} referenceResults stringified results of the reference results (e.g., measurements),
- *                                  implementing {@link schemas.MEASUREMENT} 
+ * @step [evaluate]
+ * @param {string} experimentResults stringified Signal array of simulation experiment results, as returned by a Signal
+ *                                   adapter, like the openmcx-csv-adapter
+ * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
+ *                                  Signal adapter, like the openmcx-csv-adapter
+ * @param {string} signalName the name of the signal to evaluate
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the RMSE must not exceed
@@ -107,11 +109,12 @@ const checkRootMeanSquaredError = time_domain_metrics.checkRmse;
  * @modeltypes model type-independent
  * @level 2
  * @phase evaluation
- * @step []
- * @param {string} experimentResults stringified results of simulation experiment,
- *                                   implementing {@link schemas.MEASUREMENT}
- * @param {string} referenceResults stringified results of the reference results (e.g., measurements),
- *                                  implementing {@link schemas.MEASUREMENT} 
+ * @step [evaluate]
+ * @param {string} experimentResults stringified Signal array of simulation experiment results, as returned by a Signal
+ *                                   adapter, like the openmcx-csv-adapter
+ * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
+ *                                  Signal adapter, like the openmcx-csv-adapter
+ * @param {string} signalName the name of the signal to evaluate
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MAPE must not exceed
@@ -135,11 +138,12 @@ const checkMeanAbsolutePercentError = time_domain_metrics.checkMape;
  * @modeltypes model type-independent
  * @level 2
  * @phase evaluation
- * @step []
- * @param {string} experimentResults stringified results of simulation experiment,
- *                                   implementing {@link schemas.MEASUREMENT}
- * @param {string} referenceResults stringified results of the reference results (e.g., measurements),
- *                                  implementing {@link schemas.MEASUREMENT} 
+ * @step [evaluate]
+ * @param {string} experimentResults stringified Signal array of simulation experiment results, as returned by a Signal
+ *                                   adapter, like the openmcx-csv-adapter
+ * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
+ *                                  Signal adapter, like the openmcx-csv-adapter
+ * @param {string} signalName the name of the signal to evaluate
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the TIC must not exceed
@@ -162,7 +166,7 @@ const checkTheilsInequalityCoefficient = time_domain_metrics.checkTic;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkAccuracy('<?xml ...>', 0.20, '{"type":"signal","id":"5100141","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.2965355,"east":10.7193196}}', '{"type":"object","id":"4000050","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.622345,"east":11.2178422}}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -187,7 +191,7 @@ const checkOpenDriveAccuracy = opendrive.checkAccuracy;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveObjects('<?xml ...>', '{"type":"pole"}', '{"type":"barrier","subtype":"concrete"}', '{"type": "crosswalk"}')
  * @param {string} xodrString 
@@ -207,7 +211,7 @@ const checkOpenDriveObjects = opendrive.checkObjectsAvailability;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveObjects('<?xml ...>', '{"type":"209",subtype:"30"}', '{"type":"448"}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -227,7 +231,7 @@ const checkOpenDriveSignals = opendrive.checkSignalAvailability;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveRoadTypes('<?xml ...>', 'motorway', 'rural')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -247,7 +251,7 @@ const checkOpenDriveRoadTypes = opendrive.checkIncludedRoadTypes;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveRoadTypes('<?xml ...>', 'driving', 'exit', 'entry')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -267,7 +271,7 @@ const checkOpenDriveLaneTypes = opendrive.checkIncludedLaneTypes;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveLaneMarkingTypes('<?xml ...>', '{"type":"solid","color":"white","weight":"standard"}', '{"type":"broken","color":"white","weight":"standard"}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -287,7 +291,7 @@ const checkOpenDriveLaneMarkingTypes = opendrive.checkIncludedLaneMarkingTypes;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveLaneMarkingTypes('<?xml ...>', 6000)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -307,7 +311,7 @@ const checkOpenDriveRoadLength = opendrive.checkRoadLength;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveTrafficRule('<?xml ...>', 'RHT')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -327,7 +331,7 @@ const checkOpenDriveTrafficRule = opendrive.checkTrafficRule;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveCurveRadii('<?xml ...>', 25)
  * checkOpenDriveCurveRadii('<?xml ...>', 200, 1000)
@@ -349,7 +353,7 @@ const checkOpenDriveCurveRadii = opendrive.checkCurveRadiusRange;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveElevations('<?xml ...>', -0.02, 0.02)
  * checkOpenDriveElevations('<?xml ...>', -3, 10, 'deg')
@@ -375,7 +379,7 @@ const checkOpenDriveElevations = opendrive.checkElevationRange;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveLaneWidths('<?xml ...>', 3.10, 4.50)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -396,7 +400,7 @@ const checkOpenDriveLaneWidths = opendrive.checkDrivingLaneWidthRange;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveTractions('<?xml ...>', 0.8, 1.1)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
@@ -417,7 +421,7 @@ const checkOpenDriveTractions = opendrive.checkTractionRange;
  * @modeltypes OpenDRIVE road network models 
  * @level 2
  * @phase evaluation
- * @step []
+ * @step [evaluate]
  * @example
  * checkOpenDriveDrivingLanesQuantity('<?xml ...>', 2, 2)
  * checkOpenDriveDrivingLanesQuantity('<?xml ...>', 2, 4)

@@ -9,8 +9,8 @@ const schemas = require('../types/schemas');
  */
 
 exports.calcRms = calcRms;
-exports.makeSignals = makeSignals;
 exports.checkPreConditions = checkPreConditions;
+exports.extractSignal = extractSignal;
 
 /**
  * Returns the root mean square of a signal
@@ -28,77 +28,96 @@ function calcRms(signal, unit) {
 }
 
 /**
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
- * @param {number} evaluationTimeStart 
- * @param {number} evaluationTimeEnd 
- * @returns {SignalsCollection}
- */
-function makeSignals(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    let experimentSignal = new Signal(experimentResults.time, experimentResults.values, {name: "experiment", unit_values: experimentResults.unit});
-    let referenceSignal = new Signal(referenceResults.time, referenceResults.values, {name: "reference", unit_values: referenceResults.unit});
-    
-    experimentSignal.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
-    referenceSignal.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
-
-    return {
-        experiment: experimentSignal,
-        reference: referenceSignal
-    };
-}
-
-/**
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {string} experimentResults 
+ * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {ResultLog}
  */
-function checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
+function checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd) {
     try {
         experimentResults = JSON.parse(experimentResults);
-    }    
+    }
     catch (err) {
         return {
             result: false,
-            log: "experimentResults could not be JSON-parsed"
+            log: "Experiment results can not be JSON-parsed"
+        };
+    }
+
+    var allSignals;
+    try {
+        allSignals = experimentResults.map(signalString => new Signal(signalString)); // Signal[]
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "Experiment Signals does not fulfill the Signal import schema"
+        };
+    }
+
+    try {
+        allSignals.filter(signal => signal.name == signalName)[0];
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "Signal " + signalName + " not available in experiment results."
         };
     }
 
     try {
         referenceResults = JSON.parse(referenceResults);
-    }    
+    }
     catch (err) {
         return {
             result: false,
-            log: "referenceResults could not be JSON-parsed"
-        };
-    } 
-    
-    if (!util.isStructureValid(experimentResults, schemas.MEASUREMENT)) {
-        return {
-            result: false,
-            log: "experimentResults does not fulfill the required schema"
+            log: "Reference results can not be JSON-parsed"
         };
     }
 
-    if (!util.isStructureValid(referenceResults, schemas.MEASUREMENT)) {
+    try {
+        allSignals = referenceResults.map(signalString => new Signal(signalString)); // Signal[]
+    }
+    catch (err) {
         return {
             result: false,
-            log: "referenceResults does not fulfill the required schema"
+            log: "Reference Signals does not fulfill the Signal import schema"
+        };
+    }
+
+    try {
+        allSignals.filter(signal => signal.name == signalName)[0];
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "Signal " + signalName + " not available in reference results."
         };
     }
 
     if (evaluationTimeStart > evaluationTimeEnd) {
         return {
             results: false,
-            log: "evaluation start time must not be greater than the evaluation end time"
+            log: "Evaluation start time must not be greater than the evaluation end time"
         };
     }
 
     return {
         results: true,
-        log: "precheck passed"
+        log: "Precheck passed"
     };
+}
+
+/**
+ * @param {string} signalsString 
+ * @param {string} signalName 
+ * @returns {Signal}
+ */
+function extractSignal(signalsString, signalName) {
+    let stringifiedSignalArray = JSON.parse(signalsString);
+    let allSignals = stringifiedSignalArray.map(signalString => new Signal(signalString)); // Signal[]
+    return allSignals.filter(signal => signal.name == signalName)[0];
 }

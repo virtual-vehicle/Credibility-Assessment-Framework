@@ -9,21 +9,6 @@ const { Signal } = require("../../../../util/signal");
  */
 
 /**
- * Measurement Type Definition
- * 
- * @typedef {Object} Measurement contains time and value arrays as well as a unit
- * @property {number[]} time
- * @property {number[]} values
- * @property {string} unit
- */
-
-/**
- * @typedef {Object} SignalsCollection
- * @property {Signal} experiment experimental results
- * @property {Signal} reference reference results
- */
-
-/**
  * TargetObject
  * 
  * @typedef {object} TargetObject 

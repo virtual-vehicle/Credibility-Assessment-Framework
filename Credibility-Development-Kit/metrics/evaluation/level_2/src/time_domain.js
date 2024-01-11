@@ -1,4 +1,5 @@
 const helper = require('./time_domain_helper');
+const {Signal} = require('../../../../util/signal');
 
 /**
  * @typedef {import('../types/types').ResultLog} ResultLog 
@@ -17,23 +18,24 @@ exports.checkTic = checkTic;
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number | string} evaluationTimeStart 
  * @param {number | string} evaluationTimeEnd 
  * @param {number | string} threshold
  * @returns {ResultLog}
  */
-function checkMae(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd, threshold) {
-    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function checkMae(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd, threshold) {
+    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd);
     if (preCheck.result === false)
         return preCheck;
 
-    experimentResults = JSON.parse(experimentResults);
-    referenceResults = JSON.parse(referenceResults);
+    let experimentResultSignal = extractSignal(experimentResults, signalName);
+    let referenceResultSignal = extractSignal(referenceResults, signalName);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);
     threshold = Number(threshold);
 
-    const mae = calcMae(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const mae = calcMae(experimentResultSignal, referenceResultSignal, evaluationTimeStart, evaluationTimeEnd);
 
     if (mae <= threshold) {
         return {
@@ -56,23 +58,24 @@ function checkMae(experimentResults, referenceResults, evaluationTimeStart, eval
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number | string} evaluationTimeStart 
  * @param {number | string} evaluationTimeEnd 
  * @param {number | string} threshold
  * @returns {ResultLog}
  */
-function checkMse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd, threshold) {
-    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function checkMse(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd, threshold) {
+    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd);
     if (preCheck.result === false)
         return preCheck;
 
-    experimentResults = JSON.parse(experimentResults);
-    referenceResults = JSON.parse(referenceResults);
+    let experimentResultSignal = extractSignal(experimentResults, signalName);
+    let referenceResultSignal = extractSignal(referenceResults, signalName);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);
     threshold = Number(threshold);
 
-    const mse = calcMse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const mse = calcMse(experimentResultSignal, referenceResultSignal, evaluationTimeStart, evaluationTimeEnd);
 
     if (mse <= threshold) {
         return {
@@ -95,23 +98,24 @@ function checkMse(experimentResults, referenceResults, evaluationTimeStart, eval
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number | string} evaluationTimeStart 
  * @param {number | string} evaluationTimeEnd 
  * @param {number | string} threshold
  * @returns {ResultLog}
  */
-function checkRmse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd, threshold) {
-    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function checkRmse(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd, threshold) {
+    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd);
     if (preCheck.result === false)
         return preCheck;
 
-    experimentResults = JSON.parse(experimentResults);
-    referenceResults = JSON.parse(referenceResults);
+    let experimentResultSignal = extractSignal(experimentResults, signalName);
+    let referenceResultSignal = extractSignal(referenceResults, signalName);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);
     threshold = Number(threshold);
 
-    const rmse = calcRmse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const rmse = calcRmse(experimentResultSignal, referenceResultSignal, evaluationTimeStart, evaluationTimeEnd);
 
     if (rmse <= threshold) {
         return {
@@ -135,23 +139,25 @@ function checkRmse(experimentResults, referenceResults, evaluationTimeStart, eva
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number | string} evaluationTimeStart 
  * @param {number | string} evaluationTimeEnd 
  * @param {number | string} threshold
  * @returns {ResultLog}
  */
-function checkMape(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd, threshold) {
-    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function checkMape(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd, threshold) {
+    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, signalName, 
+        evaluationTimeStart, evaluationTimeEnd);
     if (preCheck.result === false)
         return preCheck;
 
-    experimentResults = JSON.parse(experimentResults);
-    referenceResults = JSON.parse(referenceResults);
+    let experimentResultSignal = extractSignal(experimentResults, signalName);
+    let referenceResultSignal = extractSignal(referenceResults, signalName);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);
     threshold = Number(threshold);
 
-    const mape = calcMape(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const mape = calcMape(experimentResultSignal, referenceResultSignal, evaluationTimeStart, evaluationTimeEnd);
 
     if (mape <= threshold) {
         return {
@@ -175,23 +181,24 @@ function checkMape(experimentResults, referenceResults, evaluationTimeStart, eva
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
+ * @param {string} signalName
  * @param {number | string} evaluationTimeStart 
  * @param {number | string} evaluationTimeEnd 
  * @param {number | string} threshold
  * @returns {ResultLog}
  */
-function checkTic(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd, threshold) {
-    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function checkTic(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd, threshold) {
+    const preCheck = helper.checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd);
     if (preCheck.result === false)
         return preCheck;
 
-    experimentResults = JSON.parse(experimentResults);
-    referenceResults = JSON.parse(referenceResults);
+    let experimentResultSignal = extractSignal(experimentResults, signalName);
+    let referenceResultSignal = extractSignal(referenceResults, signalName);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);
     threshold = Number(threshold);
 
-    const tic = calcTic(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const tic = calcTic(experimentResultSignal, referenceResultSignal, evaluationTimeStart, evaluationTimeEnd);
 
     if (tic <= threshold) {
         return {
@@ -212,17 +219,15 @@ function checkTic(experimentResults, referenceResults, evaluationTimeStart, eval
  * 
  * MAE = 1/n * sum[1:n](|reference - experiment|)
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {Signal} experiment 
+ * @param {Signal} reference 
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {number}
  */
-function calcMae(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    let signals = helper.makeSignals(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
-    
-    let experiment = signals.experiment;
-    let reference = signals.reference;
+function calcMae(experiment, reference, evaluationTimeStart, evaluationTimeEnd) {
+    experiment = experiment.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
+    reference = reference.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
     let diff = reference.subtract(experiment);
 
     return diff.values.reduce((sum, currentValue) => sum + Math.abs(currentValue)) / diff.length;
@@ -233,17 +238,15 @@ function calcMae(experimentResults, referenceResults, evaluationTimeStart, evalu
  * 
  * MSE = 1/n * sum[1:n](reference - experiment)²
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {Signal} experiment 
+ * @param {Signal} reference 
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {number}
  */
-function calcMse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    let signals = helper.makeSignals(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
-    
-    let experiment = signals.experiment;
-    let reference = signals.reference;
+function calcMse(experiment, reference, evaluationTimeStart, evaluationTimeEnd) {   
+    experiment = experiment.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
+    reference = reference.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
     let diff = reference.subtract(experiment);
 
     return diff.values.reduce((sum, currentValue) => sum + Math.pow(currentValue, 2)) / diff.length; // 1/n * sum(diff²)
@@ -254,14 +257,14 @@ function calcMse(experimentResults, referenceResults, evaluationTimeStart, evalu
  * 
  * RMSE = sqrt(1/n * sum[1:n](reference - experiment)² )
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {Signal} experiment 
+ * @param {Signal} reference 
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {number}
  */
-function calcRmse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    const mse = calcMse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+function calcRmse(experiment, reference, evaluationTimeStart, evaluationTimeEnd) {
+    const mse = calcMse(experiment, reference, evaluationTimeStart, evaluationTimeEnd);
 
     return Math.sqrt(mse);
 }
@@ -271,17 +274,15 @@ function calcRmse(experimentResults, referenceResults, evaluationTimeStart, eval
  * 
  * MAPE = 100/n * sum[1:n](|reference - experiment|/|reference|)
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {Signal} experiment 
+ * @param {Signal} reference 
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {number}
  */
-function calcMape(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    let signals = helper.makeSignals(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
-    
-    let experiment = signals.experiment;
-    let reference = signals.reference;
+function calcMape(experiment, reference, evaluationTimeStart, evaluationTimeEnd) {    
+    experiment = experiment.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
+    reference = reference.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
     let diffRel = reference.subtract(experiment).divide(reference);
 
     return diffRel.values.reduce((sum, currentValue) => sum + Math.abs(currentValue)) * 100 / diff.length;
@@ -292,19 +293,17 @@ function calcMape(experimentResults, referenceResults, evaluationTimeStart, eval
  * 
  * TIC = RMSE(reference, experiment) / (RMS(reference) + RMS(experiment))
  * 
- * @param {Measurement} experimentResults 
- * @param {Measurement} referenceResults 
+ * @param {Signal} experiment 
+ * @param {Signal} reference 
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {number}
  */
-function calcTic(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd) {
-    let signals = helper.makeSignals(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
-    
-    let experiment = signals.experiment;
-    let reference = signals.reference;
+function calcTic(experiment, reference, evaluationTimeStart, evaluationTimeEnd) {
+    experiment = experiment.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
+    reference = reference.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
 
-    const rmse = calcRmse(experimentResults, referenceResults, evaluationTimeStart, evaluationTimeEnd);
+    const rmse = calcRmse(experiment, reference, evaluationTimeStart, evaluationTimeEnd);
     const rmsRef = helper.calcRms(reference);
     const rmsExp = helper.calcRms(experiment, reference.units.values);
 
