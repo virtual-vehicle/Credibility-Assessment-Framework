@@ -661,6 +661,9 @@ function transformCdkMetric(metricArray) {
  */
 function transformCdkTest(testArray) {
     let tests = [];
+    if (!testArray) {
+        return []
+    }
     for (let testObject of testArray) {
         tests.push({
             FunctionArgument: transformCdkFunctionArguments(testObject["cdk:FunctionArgument"]),
