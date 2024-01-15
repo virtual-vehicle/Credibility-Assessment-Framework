@@ -82,6 +82,7 @@
  * @property {string} flag
  * @property {string} [argument]
  * @property {string} [type]
+ * @property {string} [path]
  */
 
 /**
