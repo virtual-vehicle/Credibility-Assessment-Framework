@@ -1022,4 +1022,34 @@ exports.StmdReader = class StmdReader {
             });
         }
     }
+
+    /**
+     * Find all Rational Tag location
+     */
+    findAllParticleLocation(particleName) {
+        let locationList = [];
+        let phaseRawParsed, stepRawParsed, currentLocation;
+
+        // loop through all phases (stmd:AnalysisPhase, stmd:RequirementsPhase, ...)
+        const stmdPhaseNames = Object.keys(PHASE_TREE[ROOT_ELEMENT_NAME]);
+        for (let phase of stmdPhaseNames) {
+            phaseRawParsed = this.#stmdRawParsed[ROOT_ELEMENT_NAME][phase];
+            if (phaseRawParsed === undefined) continue;
+
+            currentLocation = [ROOT_ELEMENT_NAME, phase];
+            this.#addLinks(phaseRawParsed, currentLocation);
+
+            // loop through all steps of a phase (stmd:DefineModelRequirements, stmd:DefineParameterRequirements, ...)
+            const stmdStepNames = Object.keys(PHASE_TREE[ROOT_ELEMENT_NAME][phase]);
+            for (let step of stmdStepNames) {
+                stepRawParsed = phaseRawParsed[step];
+                if (stepRawParsed === undefined) continue;
+                if (stepRawParsed[particleName] == undefined) continue;
+                currentLocation = [ROOT_ELEMENT_NAME, phase, step, particleName];
+                // this.#addLinks(stepRawParsed, currentLocation);
+                locationList.push(currentLocation)
+            }
+        }
+        return locationList;
+    }
 }
