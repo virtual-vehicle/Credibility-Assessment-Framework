@@ -1,6 +1,6 @@
 const { Signal } = require('../../../../util/signal');
-const util = require('../../../../util/util-common');
-const schemas = require('../types/schemas');
+// const util = require('../../../../util/util-common');
+// const schemas = require('../types/schemas');
 
 /**
  * @typedef {import('../types/types').SignalsCollection} SignalsCollection
