@@ -3,8 +3,6 @@ const mathjs = require("mathjs");
 const schemas = require("./types/schemas");
 const helper = require("./src/helper");
 
-exports.createSamples = createSamples;
-
 /**
  * @module util/parameter
  * @memberof util
@@ -22,9 +20,7 @@ const DEFAULT_UNIT = "-";
 const VALID_SOURCES = ["unknown", "estimated", "provided", "computed", "measured", "calibrated"];
 const N_SAMPLES_MAX = 1e4;
 
-exports.N_SAMPLES_MAX = N_SAMPLES_MAX;
-
-exports.ScalarParameter = class ScalarParameter {
+class ScalarParameter {
     name;
     #data; 
     #uncertainty; 
@@ -770,11 +766,20 @@ exports.ScalarParameter = class ScalarParameter {
  * Creates a DoE for the given parameters according to the given configuration
  * 
  * @author localhorst87
- * @param {ScalarParameter | ScalarParameter[]} parameters 
- * @param {SamplingConfig} config 
+ * @param {ScalarParameter | ScalarParameter[] | string} parameters 
+ * @param {SamplingConfig | string} config
  * @returns {ParameterSampling}
  */
 function createSamples(parameters, config) {
+    if (typeof(parameters) === "string") {
+        parameters = JSON.parse(parameters);
+        if (Array.isArray(parameters))
+            parameters = parameters.map(parameterString => new ScalarParameter(parameterString));
+    }
+    
+    if (typeof(config) === "string")
+        config = JSON.parse(config);
+
     if (!Array.isArray(parameters))
         parameters = [parameters];
     
@@ -810,3 +815,7 @@ function createSamples(parameters, config) {
         values: samples,
     };
 }
+
+exports.createSamples = createSamples;
+exports.ScalarParameter = ScalarParameter;
+exports.N_SAMPLES_MAX = N_SAMPLES_MAX;
