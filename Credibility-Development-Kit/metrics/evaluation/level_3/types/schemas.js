@@ -21,7 +21,7 @@ const EMPIRICAL_DISTRIBUTION_SCHEMA =
                 "type": "number"
             }
         },
-        "y": {
+        "p": {
             "type": "array",
             "description": "Probability for each sample (relative probability for PDF or accumulated probability for CDF)",
             "items": {
@@ -33,7 +33,7 @@ const EMPIRICAL_DISTRIBUTION_SCHEMA =
             "description": "Unit of the random variable"
         }
     },
-    "required": ["type", "x", "y", "unit"]
+    "required": ["type", "x", "p", "unit"]
 };
 
 /**
