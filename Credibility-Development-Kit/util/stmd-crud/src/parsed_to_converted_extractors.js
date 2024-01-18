@@ -711,8 +711,7 @@ function transformCdkCommandLineArguments(clArgumentArray) {
             attributes: {
                 flag: clArgument['@_flag'],
                 argument: clArgument['@_argument'],
-                type: clArgument['@_type'],
-                path: clArgument['@_path']
+                type: clArgument['@_type']
             }
         });
     }
