@@ -60,10 +60,9 @@ function isResultsComplete(signalsBaseline, signalsVariation, parameterModificat
 }
 
 /**
- * 
- * @param {Signals[]} signals 
+ * @param {Signal[]} signals 
  * @param {ParameterModification} parameterModification 
- * @returns 
+ * @returns {Signal[]}
  */
 function getRequiredSignal(signals, parameterModification) {
     return signals.find(signal => signal.name == parameterModification.influenced_variable.name);
