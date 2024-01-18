@@ -31,12 +31,13 @@ function calcRms(signal, unit) {
  * 
  * @param {string} experimentResults 
  * @param {string} referenceResults 
- * @param {string} signalName
+ * @param {string} signalNameExperiment
+ * @param {string} signalNameReference
  * @param {number} evaluationTimeStart 
  * @param {number} evaluationTimeEnd 
  * @returns {ResultLog}
  */
-function checkPreConditions(experimentResults, referenceResults, signalName, evaluationTimeStart, evaluationTimeEnd) {
+function checkPreConditions(experimentResults, referenceResults, signalNameExperiment, signalNameReference, evaluationTimeStart, evaluationTimeEnd) {
     try {
         experimentResults = JSON.parse(experimentResults);
     }
@@ -59,12 +60,12 @@ function checkPreConditions(experimentResults, referenceResults, signalName, eva
     }
 
     try {
-        allSignals.filter(signal => signal.name == signalName)[0];
+        allSignals.filter(signal => signal.name == signalNameExperiment)[0];
     }
     catch (err) {
         return {
             result: false,
-            log: "Signal " + signalName + " not available in experiment results."
+            log: "Signal " + signalNameExperiment + " not available in experiment results."
         };
     }
 
@@ -89,12 +90,12 @@ function checkPreConditions(experimentResults, referenceResults, signalName, eva
     }
 
     try {
-        allSignals.filter(signal => signal.name == signalName)[0];
+        allSignals.filter(signal => signal.name == signalNameReference)[0];
     }
     catch (err) {
         return {
             result: false,
-            log: "Signal " + signalName + " not available in reference results."
+            log: "Signal " + signalNameReference + " not available in reference results."
         };
     }
 

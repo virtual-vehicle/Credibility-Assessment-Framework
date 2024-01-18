@@ -29,7 +29,8 @@ const opendrive = require("./src/opendrive/opendrive");
  *                                   adapter, like the openmcx-csv-adapter
  * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
  *                                  Signal adapter, like the openmcx-csv-adapter
- * @param {string} signalName the name of the signal to evaluate
+ * @param {string} signalNameExperiment the name of the signal to evaluate from experiment
+ * @param {string} signalNameReference the name of the signal to evaluate from reference
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MAE must not exceed
@@ -57,7 +58,8 @@ const checkMeanAbsoluteError = time_domain_metrics.checkMae;
  *                                   adapter, like the openmcx-csv-adapter
  * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
  *                                  Signal adapter, like the openmcx-csv-adapter
- * @param {string} signalName the name of the signal to evaluate
+ * @param {string} signalNameExperiment the name of the signal to evaluate from experiment
+ * @param {string} signalNameReference the name of the signal to evaluate from reference
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MSE must not exceed
@@ -85,7 +87,8 @@ const checkMeanSquaredError = time_domain_metrics.checkMse;
  *                                   adapter, like the openmcx-csv-adapter
  * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
  *                                  Signal adapter, like the openmcx-csv-adapter
- * @param {string} signalName the name of the signal to evaluate
+ * @param {string} signalNameExperiment the name of the signal to evaluate from experiment
+ * @param {string} signalNameReference the name of the signal to evaluate from reference
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the RMSE must not exceed
@@ -114,7 +117,8 @@ const checkRootMeanSquaredError = time_domain_metrics.checkRmse;
  *                                   adapter, like the openmcx-csv-adapter
  * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
  *                                  Signal adapter, like the openmcx-csv-adapter
- * @param {string} signalName the name of the signal to evaluate
+ * @param {string} signalNameExperiment the name of the signal to evaluate from experiment
+ * @param {string} signalNameReference the name of the signal to evaluate from reference
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the MAPE must not exceed
@@ -143,7 +147,8 @@ const checkMeanAbsolutePercentError = time_domain_metrics.checkMape;
  *                                   adapter, like the openmcx-csv-adapter
  * @param {string} referenceResults stringified Signal array of reference results (e.g., measurements), as returned by a
  *                                  Signal adapter, like the openmcx-csv-adapter
- * @param {string} signalName the name of the signal to evaluate
+ * @param {string} signalNameExperiment the name of the signal to evaluate from experiment
+ * @param {string} signalNameReference the name of the signal to evaluate from reference
  * @param {number | string} evaluationTimeStart the time point in the results where the evaluation should start
  * @param {number | string} evaluationTimeEnd the time point in the results where the evaluation should end
  * @param {number | string} threshold the threshold the TIC must not exceed
