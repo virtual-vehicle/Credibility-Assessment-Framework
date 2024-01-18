@@ -12,6 +12,8 @@ exports.stripXRight = stripXRight;
 exports.isEdf = isEdf;
 exports.isPBox = isPBox;
 
+const MAX_NUM_VALUES_PBOXES = 1000;
+
 
 /**
  * @typedef {import('../types/types').EmpiricalDistribution} EmpiricalDistribution
@@ -140,6 +142,10 @@ function postprocessConfig(edfs, config) {
 
         const lsd = Math.max(...lsdValues);
         config.interval = util.roundToDigit(Math.pow(10, -lsd), lsd);
+
+        // limit interval to have max. 1000 values
+        if (config.interval > MAX_NUM_VALUES_PBOXES)
+            config.interval = (Math.max(...xValues) - Math.min(...xValues)) / MAX_NUM_VALUES_PBOXES;        
     }
     
     if (config.x_min === undefined)
