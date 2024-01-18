@@ -1,5 +1,6 @@
 const helper = require('./src/uncertainty_helper');
 const util = require("../util-common");
+const { Signal } = require('../signal');
 
 exports.createEmpiricalDistribution = createEmpiricalDistribution;
 exports.createPBoxes = createPBoxes;
@@ -21,11 +22,17 @@ exports.addUncertainty = addUncertainty;
  * 
  * 
  * @author localhorst87 
- * @param {number[] | Signal[]} data array of concrete results or array of Signals
- * @param {Function} [evalFn] must be used if data is given as Signal array to know how to evaluate each Signal
+ * @param {number[] | Signal[] | string} data array of concrete results or array of Signals
+ * @param {Function | string} [evalFn] must be used if data is given as Signal array to know how to evaluate each Signal.
+ *                                     Can be given as string, e.g. "(signal) => signal.values[2]"
  * @return {EmpiricalDistribution}
  */
 function createEmpiricalDistribution(data, evalFn) {
+    if (typeof(data) === "string")
+        data = JSON.parse(data);
+    if (typeof(evalFn) === "string")
+        evalFn = eval(evalFn);
+
     if (!Array.isArray(data))
         throw("data must be given as array");
     if (data.length <= 1)
@@ -34,7 +41,9 @@ function createEmpiricalDistribution(data, evalFn) {
     if (data.every(el => el.constructor.name == "Number")) {
         return helper.calcEmpiricalDistribution(data, "unknown");
     }
-    else if (data.every(el => el.constructor.name == "Signal")) {
+    else if (data.every(el => el.constructor.name == "String") || data.every(el => el.constructor.name == "Signal")) {
+        if (data.every(el => el.constructor.name == "String"))
+            data = data.map(exportedSignal => new Signal(exportedSignal));
         if (evalFn === undefined)
             throw("if data is given as Signal array, an evaluation function must be given");
         if (typeof(evalFn) !== "function")
@@ -53,14 +62,18 @@ function createEmpiricalDistribution(data, evalFn) {
  * Creates probability boxes from several single cumulative distributions.
  * 
  * @author localhorst87 
- * @param {EmpiricalDistribution[]} edfs empirical (cumulative) distribution functions to extract max and min boundaries from
- * @param {PBoxesConfig} [config] the configuration
+ * @param {EmpiricalDistribution[] | string} edfs empirical (cumulative) distribution functions to extract max and min 
+ *                                                boundaries from. Can be given as string, using the JSON.stringify
+ *                                                function with the EmpiricalDistribution array.
+ * @param {PBoxesConfig | string} [config] the configuration. Can be given as string, using the JSON.stringify function
  * @return {PBoxes} the identified P-Boxes from the ensemble of EDFs
  */
 function createPBoxes(edfs, config) {
-    let pBoxes;
+    if (typeof(edfs) === "string")
+        edfs = JSON.parse(edfs);
+    if (typeof(config) === "string")
+        config = JSON.parse(config);
 
-    // check first argument
     if (!Array.isArray(edfs))
         throw("empirical distributions must be given as array");
     if (edfs.length <= 1)
@@ -77,7 +90,7 @@ function createPBoxes(edfs, config) {
 
     helper.checkEdfArray(edfs);
     config = helper.postprocessConfig(edfs, config);
-    pBoxes = helper.calcPBoxes(edfs, config.x_min, config.x_max, config.interval);
+    let pBoxes = helper.calcPBoxes(edfs, config.x_min, config.x_max, config.interval);
 
     if (!isIntervalGiven)
         pBoxes = helper.removeRedundantValues(pBoxes);
@@ -89,16 +102,23 @@ function createPBoxes(edfs, config) {
  * Adds an epistemic uncertainty to existing P-Boxes
  * 
  * @author localhorst87, lvtan3005
- * @param {PBoxes | EmpiricalDistribution} distribution the EDF or p-Box to add the uncertainty to
- * @param {number | number[]} uncertainty the epistemic uncertainty to add. If a plain number is given, the uncertainty is added to both sides;
+ * @param {PBoxes | EmpiricalDistribution | string} distribution the EDF or p-Box to add the uncertainty to
+ * @param {number | number[] | string} uncertainty the epistemic uncertainty to add. If a plain number is given, the uncertainty is added to both sides;
  *                                        if it is an array, the uncertainty is added specifically according to the array: [left, right]
- * @param {boolean} [keepIntervals=true]
+ * @param {boolean | string} [keepIntervals=true]
  * @returns {PBoxes} the resulting p-boxes with the added uncertainty
  */
 function addUncertainty(distribution, uncertainty, keepIntervals = true) {
     let xLeft = [];
     let xRight = [];
     let lsdX;
+
+    if (typeof(distribution) === "string")
+        distribution = JSON.parse(distribution);
+    if (typeof(uncertainty) === "string")
+        uncertainty = JSON.parse(uncertainty);
+    if (typeof(keepIntervals) === "string")
+        keepIntervals = JSON.parse(keepIntervals);
 
     // uncertainty is considered to be epistemic, therefore the offset is added to the random variable (SRQs)
     if (typeof(uncertainty) == "number") {
