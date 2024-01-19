@@ -290,7 +290,7 @@ function calcMape(experiment, reference, evaluationTimeStart, evaluationTimeEnd)
     reference = reference.sliceToTime(evaluationTimeStart, evaluationTimeEnd);
     let diffRel = reference.subtract(experiment).divide(reference);
 
-    return diffRel.values.reduce((sum, currentValue) => sum + Math.abs(currentValue)) * 100 / diff.length;
+    return diffRel.values.reduce((sum, currentValue) => sum + Math.abs(currentValue)) * 100 / diffRel.length;
 }
 
 /**
