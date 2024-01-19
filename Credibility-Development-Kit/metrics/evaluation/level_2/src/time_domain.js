@@ -155,7 +155,7 @@ function checkMape(experimentResults, referenceResults, signalNameExperiment, si
     if (preCheck.result === false)
         return preCheck;
 
-    let experimentResultSignal = helper.extractSignal(experimentResults, signalNameReference);
+    let experimentResultSignal = helper.extractSignal(experimentResults, signalNameExperiment);
     let referenceResultSignal = helper.extractSignal(referenceResults, signalNameReference);
     evaluationTimeStart = Number(evaluationTimeStart);
     evaluationTimeEnd = Number(evaluationTimeEnd);

@@ -1,6 +1,4 @@
 const { Signal } = require('../../../../util/signal');
-// const util = require('../../../../util/util-common');
-// const schemas = require('../types/schemas');
 
 /**
  * @typedef {import('../types/types').SignalsCollection} SignalsCollection
@@ -120,5 +118,6 @@ function checkPreConditions(experimentResults, referenceResults, signalNameExper
 function extractSignal(signalsString, signalName) {
     let stringifiedSignalArray = JSON.parse(signalsString);
     let allSignals = stringifiedSignalArray.map(signalString => new Signal(signalString)); // Signal[]
+    console.log(signalName)
     return allSignals.filter(signal => signal.name == signalName)[0];
 }

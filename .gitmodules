@@ -1,0 +1,3 @@
+[submodule "Credibility-Development-Kit/workflows/run-openmcx"]
+	path = Credibility-Development-Kit/workflows/run-openmcx
+	url = https://github.com/localhorst87/run-openmcx
