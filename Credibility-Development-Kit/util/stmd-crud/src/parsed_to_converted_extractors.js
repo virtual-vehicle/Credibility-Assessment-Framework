@@ -665,12 +665,19 @@ function transformCdkTest(testArray) {
         return []
     }
     for (let testObject of testArray) {
-        tests.push({
+        var transTest = {
             FunctionArgument: transformCdkFunctionArguments(testObject["cdk:FunctionArgument"]),
             attributes: {
                 id: testObject["@_id"]
             }
-        });
+        };
+        if (testObject["cdk:Return"]) {
+            transTest["Return"] = {
+                type : testObject["cdk:Return"]["@_type"],
+                path : testObject["cdk:Return"]["@_path"],
+            }
+        }
+        tests.push(transTest);
     }
 
     return tests;
