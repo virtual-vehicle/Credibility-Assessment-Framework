@@ -1,6 +1,8 @@
 /**
  * @typedef {import('./specification').t_road_planView_geometry_attributes} t_road_planView_geometry_attributes
  * @typedef {import('./specification').t_road_planView_geometry_paramPoly3_attributes} t_road_planView_geometry_paramPoly3_attributes
+ * @typedef {import('./specification').t_road_planView_geometry_arc_attributes} t_road_planView_geometry_arc_attributes
+ * @typedef {import('./specification').t_road_planView_geometry_spiral_attributes} t_road_planView_geometry_spiral_attributes
  */
 
 /**
@@ -9,6 +11,22 @@
  * @typedef {object} internal_geometry_parameters_paramPoly3
  * @property {t_road_planView_geometry_attributes} init
  * @property {t_road_planView_geometry_paramPoly3_attributes} parameters
+ */
+
+/**
+ * internal_geometry_parameters_arc
+ * 
+ * @typedef {object} internal_geometry_parameters_arc
+ * @property {t_road_planView_geometry_attributes} init
+ * @property {t_road_planView_geometry_arc_attributes} parameters
+ */
+
+/**
+ * internal_geometry_parameters_spiral
+ * 
+ * @typedef {object} internal_geometry_parameters_spiral
+ * @property {t_road_planView_geometry_attributes} init
+ * @property {t_road_planView_geometry_spiral_attributes} parameters
  */
 
 /**
@@ -26,6 +44,8 @@
 module.exports = {
     /**
      * @type {internal_geometry_parameters_paramPoly3}
+     * @type {internal_geometry_parameters_arc}
+     * @type {internal_geometry_parameters_spiral}
      * @type {internal_pose3d}
      */
 }

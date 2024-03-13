@@ -1,6 +1,7 @@
 
 const parser = require("./parser");
 const extractors = require("./extractors");
+const util = require("../../util-common");
 
 const ROOT_ELEMENT = "OpenDRIVE";
 
@@ -16,6 +17,8 @@ const ROOT_ELEMENT = "OpenDRIVE";
  * @typedef {import('../types/specification').t_userData} t_userData
  * @typedef {import('../types/specification').t_dataQuality} t_dataQuality
  * @typedef {import('../types/internal').internal_geometry_parameters_paramPoly3} internal_geometry_parameters_paramPoly3
+ * @typedef {import('../types/internal').internal_geometry_parameters_arc} internal_geometry_parameters_arc
+ * @typedef {import('../types/internal').internal_geometry_parameters_spiral} internal_geometry_parameters_spiral
  * @typedef {import('../types/specification').t_road_elevationProfile_elevation} t_road_elevationProfile_elevation 
  * @typedef {import('../types/specification').t_road_elevationProfile_elevation_attributes} t_road_elevationProfile_elevation_attributes
  * @typedef {import('../types/specification').t_road_lateralProfile_superelevation_attributes} t_road_lateralProfile_superelevation_attributes
@@ -435,6 +438,29 @@ exports.OdrReader = class OdrReader {
     }
 
     /**
+     * Get all the driving lane IDs of a specific lane section
+     * 
+     * @param {t_road} road 
+     * @param {number} s 
+     * @returns {number[]} all available driving lane IDs of the lane section
+     */
+    getDrivingLaneIds(road, s) {
+        let laneIds = [];
+
+        const laneSection = this.#getLaneSection(road, s);
+
+        if (laneSection.left !== undefined) {
+            laneIds.push(...laneSection.left.lane.filter(lane => lane.attributes.type === "driving").map(lane => lane.attributes.id));
+        }
+
+        if (laneSection.right !== undefined) {
+            laneIds.push(...laneSection.right.lane.filter(lane => lane.attributes.type === "driving").map(lane => lane.attributes.id));
+        }
+
+        return laneIds.sort((a, b) => a - b);
+    }
+
+    /**
      * 
      * @param {t_road} road 
      * @param {number} s 
@@ -442,25 +468,96 @@ exports.OdrReader = class OdrReader {
      * @returns {internal_pose3d}
      */
     #getPose(road, s, t) {
-        const parametersPlanView = this.#getPlanViewParameters(road, s);
+        const modelingApproach = this.#getPlanViewModelingApproach(road, s);
         const parametersElevation = this.#getElevationProfileParameters(road, s);
         const parametersSuperElevation = this.#getSuperElevationParameters(road, s);
         const parametersShape = this.#getLateralShapeParameters(road, s);
 
-        const x = this.#x(parametersPlanView, s, t);
-        const y = this.#y(parametersPlanView, s, t);
-        const z = this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t);
-        const heading = this.#hdg(parametersPlanView, s);
-        const pitch = this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t);
-        const roll = this.#roll(parametersSuperElevation, parametersShape, s, t);
+        var parametersPlanView;
+        var pose;
 
+        switch (modelingApproach) {
+            case "paramPoly3":
+                parametersPlanView = this.#getParamPoly3Parameters(road, s);
+                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                break;
+            case "line":
+                parametersPlanView = this.#getLineParameters(road, s);
+                // line is interpreted as paramPoly3 parameters
+                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                break;
+            case "arc":
+                parametersPlanView = this.#getArcParameters(road, s);
+                pose = this.#getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                break;
+            case "spiral":
+                parametersPlanView = this.#getSpiralParameters(road, s);
+                pose = this.#getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                break;
+            case "poly3":
+                throw("cubic polynoms are not supported");
+        }
+
+        return pose;
+    }
+
+    /**
+     * @param {internal_geometry_parameters_paramPoly3} parametersPlanView 
+     * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
+     * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
+     * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {number} s
+     * @param {number} t
+     * @returns {internal_pose3d} 
+     */
+    #getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
         return {
-            x: x,
-            y: y,
-            z: z,
-            heading: heading,
-            pitch: pitch,
-            roll: roll
+            x: this.#xParamPoly3(parametersPlanView, s, t),
+            y: this.#yParamPoly3(parametersPlanView, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            heading: this.#hdgParamPoly3(parametersPlanView, s),
+            pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
+        };
+    }
+
+    /**
+     * @param {internal_geometry_parameters_arc} parametersPlanView 
+     * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
+     * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
+     * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {internal_pose3d} 
+     */
+    #getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
+        return {
+            x: this.#xArc(parametersPlanView, s, t),
+            y: this.#yArc(parametersPlanView, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            heading: this.#hdgArc(parametersPlanView, s),
+            pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
+        };
+    }
+
+    /**
+     * @param {internal_geometry_parameters_spiral} parametersPlanView 
+     * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
+     * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
+     * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {internal_pose3d} 
+     */
+    #getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
+        return {
+            x: this.#xSpiral(parametersPlanView, s, t),
+            y: this.#ySpiral(parametersPlanView, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            heading: this.#hdgSpiral(parametersPlanView, s),
+            pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
         };
     }
 
@@ -678,23 +775,101 @@ exports.OdrReader = class OdrReader {
     /**
      * @param {t_road} road 
      * @param {number} s
-     * @returns {internal_geometry_parameters_paramPoly3} 
+     * @returns {string}
      */
-    #getPlanViewParameters(road, s) {
+    #getPlanViewModelingApproach(road, s) {
         const geometry = road.planView.geometry.findLast(geometry => s >= geometry.attributes.s);
 
-        return this.#getParamPoly3Parameters(geometry);
+        if (geometry.line !== undefined) {
+            return "line";
+        }
+        else if (geometry.spiral !== undefined) {
+            return "spiral";
+        }
+        else if (geometry.arc !== undefined) {
+            return "arc";
+        }
+        else if (geometry.poly3 !== undefined) {
+            return "poly3";
+        }
+        else if (geometry.paramPoly3 !== undefined) {
+            return "paramPoly3";
+        }
+        else {
+            return "unknown";
+        }
     }
 
     /**
-     * @param {t_road_planView_geometry} geometry
-     * @returns {internal_geometry_parameters_paramPoly3 | undefined}
+     * @param {t_road} road 
+     * @param {number} s
+     * @returns {internal_geometry_parameters_paramPoly3}
      */
-    #getParamPoly3Parameters(geometry) {
+    #getParamPoly3Parameters(road, s) {
+        const geometry = road.planView.geometry.findLast(geometry => s >= geometry.attributes.s);
+        const parameters = geometry.paramPoly3.attributes;
+
         return {
             init: geometry.attributes,
-            parameters: geometry.paramPoly3.attributes
+            parameters: parameters
         };
+    }
+
+    /**
+     * Easy workaround: Interprete as paramPoly3 parameters!
+     * 
+     * @param {t_road} road 
+     * @param {number} s
+     * @returns {internal_geometry_parameters_paramPoly3}
+     */
+    #getLineParameters(road, s) {
+        const geometry = road.planView.geometry.findLast(geometry => s >= geometry.attributes.s);
+        const parameters = {
+            aU: 0,
+            bU: 1,
+            cU: 0,
+            dU: 0,
+            aV: 0,
+            bV: 0,
+            cV: 0,
+            dV: 0,
+            pRange: "arcLength"
+        };
+        
+        return {
+            init: geometry.attributes,
+            parameters: parameters
+        };
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @returns {internal_geometry_parameters_arc}
+     */
+    #getArcParameters(road ,s) {
+        const geometry = road.planView.geometry.findLast(geometry => s >= geometry.attributes.s);
+        const parameters = geometry.arc.attributes;
+
+        return {
+            init: geometry.attributes,
+            parameters: parameters
+        };
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @returns {internal_geometry_parameters_spiral}
+     */
+    #getSpiralParameters(road, s) {
+        const geometry = road.planView.geometry.findLast(geometry => s >= geometry.attributes.s);
+        const parameters = geometry.spiral.attributes;
+
+        return {
+            init: geometry.attributes,
+            parameters: parameters
+        }
     }
 
     /**
@@ -726,13 +901,13 @@ exports.OdrReader = class OdrReader {
      * @param {number} s
      * @returns {number}
      */
-    #x(parameters, s, t = 0) {
+    #xParamPoly3(parameters, s, t = 0) {
         const xOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.x : 0;
-        const phi0 = this.#cosRotation(parameters);
-        const phi = this.#hdg(parameters, s);
+        const phi0 = this.#cosRotationParamPoly3(parameters);
+        const phi = this.#hdgParamPoly3(parameters, s);
         const p = s - parameters.init.s;
-        const u = this.#u(parameters, p);
-        const v = this.#v(parameters, p);
+        const u = this.#uParamPoly3(parameters, p);
+        const v = this.#vParamPoly3(parameters, p);
 
         return xOffset + parameters.init.x + u * Math.cos(phi0) - v * Math.sin(phi0) - t * Math.sin(phi);
     }
@@ -744,16 +919,92 @@ exports.OdrReader = class OdrReader {
      * @param {number} s
      * @returns {number}
      */
-    #y(parameters, s, t = 0) {
+    #yParamPoly3(parameters, s, t = 0) {
         const yOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.y : 0;
-        const phi0 = this.#cosRotation(parameters);
-        const phi = this.#hdg(parameters, s);
+        const phi0 = this.#cosRotationParamPoly3(parameters);
+        const phi = this.#hdgParamPoly3(parameters, s);
         const p = s - parameters.init.s;
-        const u = this.#u(parameters, p);
-        const v = this.#v(parameters, p);
+        const u = this.#uParamPoly3(parameters, p);
+        const v = this.#vParamPoly3(parameters, p);
 
         return yOffset + parameters.init.y + u * Math.sin(phi0) + v * Math.cos(phi0) + t * Math.cos(phi);
     }
+
+    /**
+     * get global x-coordinate of local arc spline
+     * 
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {number}
+     */
+    #xArc(parameters, s, t = 0) {
+        const xOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.x : 0;
+        const phi0 = parameters.init.hdg;
+        const phi = this.#hdgArc(parameters, s);
+        const p = s - parameters.init.s;
+        const u = this.#uArc(parameters, p);
+        const v = this.#vArc(parameters, p);
+
+        return xOffset + parameters.init.x + u * Math.cos(phi0) - v * Math.sin(phi0) - t * Math.sin(phi);
+    }
+
+    /**
+     * get global y-coordinate of local arc spline
+     * 
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {number}
+     */
+    #yArc(parameters, s, t = 0) {
+        const yOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.y : 0;
+        const phi0 = parameters.init.hdg;
+        const phi = this.#hdgArc(parameters, s);
+        const p = s - parameters.init.s;
+        const u = this.#uArc(parameters, p);
+        const v = this.#vArc(parameters, p);
+
+        return yOffset + parameters.init.y + u * Math.sin(phi0) + v * Math.cos(phi0) + t * Math.cos(phi);
+    }
+
+    /**
+     * get global x-coordinate of local spiral
+     * 
+     * @param {internal_geometry_parameters_spiral} parameters 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns 
+     */
+    #xSpiral(parameters, s, t = 0) {
+        const xOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.x : 0;
+        const phi0 = parameters.init.hdg;
+        const phi = this.#hdgSpiral(parameters, s);
+        const p = s - parameters.init.s;
+        const u = this.#uSpiral(parameters, p);
+        const v = this.#vSpiral(parameters, p);
+
+        return xOffset + parameters.init.x + u * Math.cos(phi0) - v * Math.sin(phi0) - t * Math.sin(phi);
+    }
+
+    /**
+     * get global y-coordinate of local spiral
+     * 
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {number}
+     */
+    #ySpiral(parameters, s, t = 0) {
+        const yOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.y : 0;
+        const phi0 = parameters.init.hdg;
+        const phi = this.#hdgSpiral(parameters, s);
+        const p = s - parameters.init.s;
+        const u = this.#uSpiral(parameters, p);
+        const v = this.#vSpiral(parameters, p);
+
+        return yOffset + parameters.init.y + u * Math.sin(phi0) + v * Math.cos(phi0) + t * Math.cos(phi);
+    } 
 
     /**
      * get global z-coordinate of local elevation polynom
@@ -780,14 +1031,44 @@ exports.OdrReader = class OdrReader {
      * @param {number} s
      * @returns {number}
      */
-    #hdg(parameters, s) {
+    #hdgParamPoly3(parameters, s) {
         const hdgOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.hdg : 0;
         const p = s - parameters.init.s;
         
         const dUdp = parameters.parameters.bU + 2 * parameters.parameters.cU * p + 3 * parameters.parameters.dU * Math.pow(p, 2);
         const dVdp = parameters.parameters.bV + 2 * parameters.parameters.cV * p + 3 * parameters.parameters.dV * Math.pow(p, 2);
         
-        return hdgOffset + parameters.init.hdg + Math.atan(dVdp/dUdp);
+        let hdg = hdgOffset + parameters.init.hdg + Math.atan(dVdp/dUdp);
+        return this.#capAngle(hdg);
+    }
+
+    /**
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} s 
+     * @returns 
+     */
+    #hdgArc(parameters, s) {
+        const hdgOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.hdg : 0;
+        const p = s - parameters.init.s;
+
+        let hdg = hdgOffset + parameters.init.hdg + p * parameters.parameters.curvature;
+
+        return this.#capAngle(hdg);
+    }
+
+    /**
+     * @param {internal_geometry_parameters_spiral} parameters 
+     * @param {number} s 
+     * @returns 
+     */
+    #hdgSpiral(parameters, s) {
+        const hdgOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.hdg : 0;
+        const p = s - parameters.init.s;
+        const curvGradient = (parameters.parameters.curvEnd - parameters.parameters.curvStart) / parameters.init.length;
+
+        let hdg = hdgOffset + parameters.init.hdg + parameters.parameters.curvStart * p + curvGradient / 2 * Math.pow(p, 2);
+
+        return this.#capAngle(hdg);
     }
 
     /**
@@ -830,7 +1111,7 @@ exports.OdrReader = class OdrReader {
      * @param {number} p
      * @returns {number}
      */
-    #u(parameters, p) {
+    #uParamPoly3(parameters, p) {
         return parameters.parameters.aU + parameters.parameters.bU * p + parameters.parameters.cU * Math.pow(p, 2) + parameters.parameters.dU * Math.pow(p, 3);
     }
     
@@ -841,8 +1122,135 @@ exports.OdrReader = class OdrReader {
      * @param {number} p
      * @returns {number}
      */
-    #v(parameters, p) {
+    #vParamPoly3(parameters, p) {
         return parameters.parameters.aV + parameters.parameters.bV * p + parameters.parameters.cV * Math.pow(p, 2) + parameters.parameters.dV * Math.pow(p, 3);
+    }
+
+    /**
+     * get u-coordinate of local arc COS
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} p 
+     */
+    #uArc(parameters, p) {
+        return Math.sin(parameters.parameters.curvature * p) / parameters.parameters.curvature;
+    }
+
+    /**
+     * get v-coordinate of local arc COS
+     * @param {internal_geometry_parameters_arc} parameters 
+     * @param {number} p 
+     */
+    #vArc(parameters, p) {
+        return (1 - Math.cos(parameters.parameters.curvature * p)) / parameters.parameters.curvature;
+    }
+
+    /**
+     * get u-coordinate of local spiral COS
+     * @param {internal_geometry_parameters_spiral} parameters 
+     * @param {number} p 
+     */
+    #uSpiral(parameters, p) {
+        const curvatureStart = parameters.parameters.curvStart;
+        const curvatureP = this.#curvatureSpiral(parameters, p);
+        const curvGradient = (parameters.parameters.curvEnd - parameters.parameters.curvStart) / parameters.init.length;
+
+        // identify length of an arc from curvatore 0 to start curvature
+        // and length of the arc from curvature 0 to curvature at length p
+        const LStart = curvatureStart / curvGradient;
+        const LP = curvatureP / curvGradient;
+
+        // calculate local u and v of spiral from curvature 0 to start curvature 
+        // and from curvature 0 to curvature at length p with easy approximation formula
+        const uStart = this.#approximateSpiralU(LStart, curvatureStart, 1e-6, 50);
+        let uP = this.#approximateSpiralU(LP, curvatureP, 1e-6, 50);
+        const vStart = this.#approximateSpiralV(LStart, curvatureStart, 1e-6, 50);
+        let vP = this.#approximateSpiralV(LP, curvatureP, 1e-6, 50);
+
+        // as the easy approximation formula calculates the solution of a clothoide that starts 
+        // with curvature zero at the origin of the COS, we need to shift the arc so that the start
+        // point is aligned with the origin of the COS (subtract and rotate)
+        let hdgStart = curvGradient / 2 * Math.pow(LStart, 2);
+        uP -= uStart;
+        vP -= vStart;
+        uP = Math.cos(-hdgStart) * uP - Math.sin(-hdgStart) * vP;
+
+        return uP;
+    }
+
+    /**
+     * get v-coordinate of local spiral COS
+     * @param {internal_geometry_parameters_spiral} parameters 
+     * @param {number} p 
+     */
+    #vSpiral(parameters, p) {
+        const curvatureStart = parameters.parameters.curvStart;
+        const curvatureP = this.#curvatureSpiral(parameters, p);
+        const curvGradient = (parameters.parameters.curvEnd - parameters.parameters.curvStart) / parameters.init.length;
+
+        // identify length of an arc from curvatore 0 to start curvature
+        // and length of the arc from curvature 0 to curvature at length p
+        const LStart = curvatureStart / curvGradient;
+        const LP = curvatureP / curvGradient;
+
+        // calculate local u and v of spiral from curvature 0 to start curvature 
+        // and from curvature 0 to curvature at length p with easy approximation formula
+        const uStart = this.#approximateSpiralU(LStart, curvatureStart, 1e-6, 50);
+        let uP = this.#approximateSpiralU(LP, curvatureP, 1e-6, 50);
+        const vStart = this.#approximateSpiralV(LStart, curvatureStart, 1e-6, 50);
+        let vP = this.#approximateSpiralV(LP, curvatureP, 1e-6, 50);
+
+        // as the easy approximation formula calculates the solution of a clothoide that starts 
+        // with curvature zero at the origin of the COS, we need to shift the arc so that the start
+        // point is aligned with the origin of the COS (subtract and rotate)
+        let hdgStart = curvGradient / 2 * Math.pow(LStart, 2);
+        uP -= uStart;
+        vP -= vStart;
+        vP = Math.sin(-hdgStart) * uP + Math.cos(-hdgStart) * vP;
+
+        return vP;
+    }
+
+    #approximateSpiralU(L, curvature, eps, maxIterations) {
+        const T = 1/2 * L * curvature;
+
+        let u = 0;
+        let i = 0;
+        while (i < maxIterations) {
+            let newTaylorPolynomial = L * Math.pow(T, 2 * i) / util.factorialize(2 * i) / (4 * i + 1);
+            u += i % 2 == 0 ? newTaylorPolynomial : -newTaylorPolynomial;
+
+            if (newTaylorPolynomial < eps) break;
+            i++;
+        }
+
+        return u;
+    }
+
+    #approximateSpiralV(L, curvature, eps, maxIterations) {
+        const T = 1/2 * L * curvature;
+
+        let v = 0;
+        let i = 0;        
+        while (i < maxIterations) {
+            let newTaylorPolynomial = L * Math.pow(T, 2 * i + 1) / util.factorialize(2 * i + 1) / (4 * i + 3);
+            v += i % 2 == 0 ? newTaylorPolynomial : -newTaylorPolynomial;
+
+            if (newTaylorPolynomial < eps) break;
+            i++;
+        }
+
+        return v;
+    }
+
+    /**
+     * get the curvature of a spiral at a specific point
+     * @param {internal_geometry_parameters_spiral} parameters 
+     * @param {number} p 
+     */
+    #curvatureSpiral(parameters, p) {
+        const curvGradient = (parameters.parameters.curvEnd - parameters.parameters.curvStart) / parameters.init.length;
+
+        return parameters.parameters.curvStart + curvGradient * p;
     }
 
     /**
@@ -989,9 +1397,28 @@ exports.OdrReader = class OdrReader {
      * @param {internal_geometry_parameters_paramPoly3} parameters 
      * @returns {number}
      */
-    #cosRotation(parameters) {
+    #cosRotationParamPoly3(parameters) {
         return Math.atan(parameters.parameters.bV/parameters.parameters.bU) + parameters.init.hdg;
     }
 
+    /**
+     * caps an angle to -pi...+pi
+     * @param {number} angle 
+     * @returns {number}
+     */
+    #capAngle(angle) {
+        // reduce multiples of 360°
+        angle = angle % (2 * Math.PI);
+
+        // cap to -180°...180°
+        if (angle > Math.PI) {
+            angle = Math.PI - angle;
+        }
+        else if (angle < -Math.PI) {
+            angle = 2 * Math.PI + angle;
+        }
+
+        return angle;
+    }
     
 }

@@ -1023,7 +1023,7 @@ function transformRoadLanesLaneSectionLrLaneAccess(accesses) {
         });
     }
 
-    return transformedAccessess;
+    return transformedAccesses;
 }
 
 function transformRoadLanesLaneSectionLrLaneHeight(heights) {

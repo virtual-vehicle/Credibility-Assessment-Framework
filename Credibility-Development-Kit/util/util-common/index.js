@@ -6,7 +6,8 @@ const xsdValidator = require('libxmljs2-xsd');
 const fileSync = require("fs");
 const path = require('path');
 
-
+exports.factorialize = factorialize;
+exports.makeDeepCopy = makeDeepCopy;
 exports.isStructureValid = isStructureValid
 exports.roundToDigit = roundToDigit;
 exports.getLsd = getLsd;
@@ -21,6 +22,33 @@ exports.parseXMLToJson = parseXMLToJson;
 
 
 const PRECISION = 15;
+
+/**
+ * Calculates the faculty of an integer
+ * 
+ * If the number is smaller than 0 or not an integer, -1 will be returned
+ * 
+ * @param {number} num 
+ * @returns 
+ */
+function factorialize(num) {
+    if (!Number.isInteger(num) || num < 0) 
+          return -1;
+    else if (num == 0) 
+        return 1;
+    else
+        return (num * factorialize(num - 1));
+}
+
+/**
+ * Makes a deep copy of the input object
+ * 
+ * @param {any[], Object} obj
+ * @returns 
+ */
+function makeDeepCopy(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
 
 /**
  * Validates if the passed object fulfills the given JSON schema
