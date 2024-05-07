@@ -18,8 +18,17 @@ exports.checkPoseOffsetsPredecessingRoad = checkPoseOffsetsPredecessingRoad;
 exports.checkJunctionRefs = checkJunctionRefs;
 exports.checkRoadLinkRefs = checkRoadLinkRefs;
 exports.checkLaneSectionRefs = checkLaneSectionRefs;
+exports.extractGeometryModelingApproaches = extractGeometryModelingApproaches;
+
+/**
+ * Helper methods for arrays to make array unique, using shallow equality
+ */
+Array.prototype.unique = function () {
+    return this.filter((val, i, self) => self.indexOf(val) === i);
+}
 
 const eps = 1e-6;
+const GEOMETRIES = ['line', 'spiral', 'arc', 'poly3', 'paramPoly3'];
 
 /**
  * @param {OdrReader} odrReader 
@@ -150,7 +159,17 @@ function checkPoseOffsetsPredecessingRoad(odrReader, road, predecessingRoad, thr
  * @returns {ResultLog}
  */
 function checkGeometryTransitions(odrReader, roadId, thresholdPose) {
-    const road = odrReader.getRoad(roadId, "road");
+    let road = odrReader.getRoad(roadId, "road");
+
+    if (road === undefined) {
+        return {
+            result: false,
+            log: "road with ID " + roadId + " does not exist."
+        }
+    }
+    else {
+        road = road[0];
+    }
 
     if (road.planView.geometry.length < 2)
         return {
@@ -573,4 +592,23 @@ function comparePose(pose1, operator, pose2) {
         && eval(pose1.heading + operator + pose2.heading)
         && eval(pose1.pitch + operator + pose2.pitch)
         && eval(pose1.roll + operator + pose2.roll);
+}
+
+/**
+ * Extracts all geometries that are used to model the plan view of the road
+ * 
+ * @param {t_road} road 
+ * @returns {string[]}
+ */
+function extractGeometryModelingApproaches(road) {
+    let approaches = [];
+
+    for (let geometry of road.planView.geometry) {
+        for (let geometryApproach of GEOMETRIES) {
+            if (geometry[geometryApproach] !== undefined)
+                approaches.push(geometryApproach);
+        }
+    }
+
+    return approaches.unique();
 }

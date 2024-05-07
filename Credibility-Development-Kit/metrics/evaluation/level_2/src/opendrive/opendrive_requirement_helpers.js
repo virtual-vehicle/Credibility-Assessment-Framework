@@ -1,4 +1,5 @@
 const { OdrReader } = require('../../../../../util/opendrive-reader');
+const util = require('../../../../../util/util-common');
 
 exports.getRoadLength = getRoadLength;
 exports.getDrivingLaneWidthRange = getDrivingLaneWidthRange;
@@ -39,14 +40,27 @@ Array.prototype.deepUnique = function () {
  * map
  * 
  * @param {OdrReader} odrReader 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min width, max width] of all roads in the map
  */
-function getDrivingLaneWidthRange(odrReader) {
+function getDrivingLaneWidthRange(odrReader, roadSelection) {
     let wMin = Infinity; // [m]
     let wMax = 0; // [m]
     const ds = 1.0; // [m]
 
-    let roads = odrReader.getAllRoads();
+    let roads = [];
+
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     for (let road of roads) {
         for (let ls = 0; ls < road.lanes.laneSection.length - 1; ls++) {
@@ -63,6 +77,9 @@ function getDrivingLaneWidthRange(odrReader) {
                     
                 for (let lane of lanes) {
                     let width = odrReader.getLaneWidth(road.attributes.id, lane.attributes.id, s);
+                    if (width < wMin) {
+                        console.log(width, road.attributes.id, lane.attributes.id, s)
+                    }
                     wMin = width < wMin ? width : wMin;
                     wMax = width > wMax ? width : wMax;
                 }
@@ -77,16 +94,29 @@ function getDrivingLaneWidthRange(odrReader) {
  * Return the minimum and maximum elevation of the reference line of all roads 
  * in the map
  * 
- * @param {OdrReader} odrReader 
+ * @param {OdrReader} odrReader
  * @param {string} unit unit of the elevation ("rad", "deg", or "%")
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min elevation, max elevation] of all roads in the map
  */
-function getElevationRange(odrReader, unit="rad") {
+function getElevationRange(odrReader, unit, roadSelection) {
     let eMin = 0; // [rad]
     let eMax = 0; // [rad]
     const ds = 1.0; // [m]
 
-    let roads = odrReader.getAllRoads();
+    let roads = [];
+
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     for (let road of roads) {
         for (let s = 0; s < road.attributes.length - ds; s += ds) {
@@ -110,24 +140,46 @@ function getElevationRange(odrReader, unit="rad") {
  * Returns the minimum and maximum curve radius of all roads in the map
  * 
  * @param {OdrReader} odrReader 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min radius, max radius] of all roads in the map
  */
-function getCurveRadiusRange(odrReader) {
+function getCurveRadiusRange(odrReader, roadSelection) {
     let rMin = Infinity; // [m]
     let rMax = 0; // [m]
     const ds = 1.0; // [m]
-    const eps = 0.01; // [m]
+    const eps = 0.05; // [m]
 
-    let roads = odrReader.getAllRoads();
+    let roads = [];
+
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     for (let road of roads) {
         for (let s = 0; s < road.attributes.length - ds; s += ds) {
-            let pose1 = odrReader.getReferenceLinePose(road.attributes.id, s);
-            let pose2 = odrReader.getReferenceLinePose(road.attributes.id, s + eps);
-            let r = Math.abs(eps / (pose2.heading - pose1.heading));
-            
-            rMin = r < rMin ? r : rMin;
-            rMax = r > rMax ? r : rMax;
+
+            const availableDrivingLaneIds = odrReader.getDrivingLaneIds(road, s);
+
+            for (let drivingLaneId of availableDrivingLaneIds) {
+                let pose1Left = odrReader.getLaneBoundaryPose(road.attributes.id, drivingLaneId, s, "left");
+                let pose1Right = odrReader.getLaneBoundaryPose(road.attributes.id, drivingLaneId, s, "right");
+                let pose2Left = odrReader.getLaneBoundaryPose(road.attributes.id, drivingLaneId, s + eps, "left");
+                let pose2Right = odrReader.getLaneBoundaryPose(road.attributes.id, drivingLaneId, s + eps, "right");
+
+                let rLeft = Math.abs(eps / (pose2Left.heading - pose1Left.heading));
+                let rRight = Math.abs(eps / (pose2Right.heading - pose1Right.heading));
+                
+                rMin = Math.min(rLeft, rRight) < rMin ? Math.min(rLeft, rRight) : rMin;
+                rMax = Math.max(rLeft, rRight) > rMax ? Math.max(rLeft, rRight) : rMax;
+            }
         }
     }
 
@@ -138,11 +190,25 @@ function getCurveRadiusRange(odrReader) {
  * Return the cumulated length of all available roads in the map
  * 
  * @param {OdrReader} odrReader 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {number} the sum of all road lengths in the map
  */
-function getRoadLength(odrReader) {
+function getRoadLength(odrReader, roadSelection) {
+    let roads = [];
+
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+
     let length = 0;
-    let roads = odrReader.getAllRoads();
 
     for (let road of roads)
         length += Number(road.attributes.length);
@@ -156,13 +222,25 @@ function getRoadLength(odrReader) {
  * (minimum is therefore always >= 1)
  * 
  * @param {OdrReader} odrReader
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min number of lanes, max number of lanes] of all roads in the map
  */
-function getDrivingLaneRange(odrReader) {
+function getDrivingLaneRange(odrReader, roadSelection) {
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+
     let nLanesMax = 0;
     let nLanesMin = Infinity;
-
-    let roads = odrReader.getAllRoads();
 
     for (let road of roads) {
         for (let laneSection of road.lanes.laneSection) {
@@ -190,10 +268,23 @@ function getDrivingLaneRange(odrReader) {
  * Returns the available lane types of all roads in the map
  * 
  * @param {OdrReader} odrReader
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {string[]}
  */
-function getAvailableLaneTypes(odrReader) {
-    let roads = odrReader.getAllRoads();
+function getAvailableLaneTypes(odrReader, roadSelection) {
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+    
     let laneTypes = [];
 
     for (let road of roads) {
@@ -217,10 +308,23 @@ function getAvailableLaneTypes(odrReader) {
  * attributes of t_road_lanes_laneSection_lcr_lane_roadMark are considered
  * 
  * @param {OdrReader} odrReader
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {LineMarking[]} all line marking types
  */
-function getAvailableLaneMarkingTypes(odrReader) {
-    let roads = odrReader.getAllRoads();
+function getAvailableLaneMarkingTypes(odrReader, roadSelection) {
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+
     let laneMarkingTypes = [];
 
     for (let road of roads) {
@@ -250,10 +354,23 @@ function getAvailableLaneMarkingTypes(odrReader) {
  * Returns all available road types in the map
  * 
  * @param {OdrReader} odrReader 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {string[]}
  */
-function getAvailableRoadTypes(odrReader) {
-    let roads = odrReader.getAllRoads();
+function getAvailableRoadTypes(odrReader, roadSelection) {
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+
     let types = [];
 
     for (let road of roads) {
@@ -308,11 +425,24 @@ function getAvailableSpeedLimits(odrReader, includeSignals=true) {
 /**
  * Returns the minimum and maximum available traction values of all roads
  * 
- * @param {OdrReader} odrReader 
+ * @param {OdrReader} odrReader
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered 
  * @returns {number[]} [min traction, max traction]
  */
-function getTractionRange(odrReader) {
-    let roads = odrReader.getAllRoads();
+function getTractionRange(odrReader, roadSelection) {
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
+    
     let fMin = Infinity;
     let fMax = 0;
 

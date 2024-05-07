@@ -90,13 +90,33 @@ const checkOpenDriveReferences = opendrive.checkReferences;
  * @level 2
  * @phase implementation
  * @step [integration]
- * @param {string} xodrString the string of the OpenDRIVE file to be examined
- * @param {string} xoscString The string of the according OpenSCENARIO file
+ * @param {string} xodrPath the path of the OpenDRIVE file to be examined
+ * @param {string} xoscPath The path of the according OpenSCENARIO or OpenSCENARIO parameter variation file
  * @returns {ResultLog} result and logging information
  */
 const checkOpenDriveScenarioIntegration = opendrive.checkScenarioIntegration;
+
+/**
+ * Verifies if only those modeling approaches for the road planView geometries are used, as defined.
+ * 
+ * @author localhorst87
+ * @license BSD-2-Clause
+ * @kind function
+ * @version 1.0
+ * @domain Automotive
+ * @modeltypes OpenDRIVE road network models 
+ * @level 2
+ * @phase implementation
+ * @step [models]
+ * @example checkPlanViewModelingApproach('<?xml version=...', 'parampoly3', 'spiral', 'line')
+ * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {...string} allowedGeometries the list of allowed geometries (case-insensitive)
+ * @returns {ResultLog} result and logging information
+ */
+const checkOpenDrivePlanViewModelingApproach = opendrive.checkPlanViewModelingApproach;
 
 exports.checkConvergency = checkConvergency;
 exports.checkOpenDriveOffsets = checkOpenDriveOffsets;
 exports.checkOpenDriveReferences = checkOpenDriveReferences;
 exports.checkOpenDriveScenarioIntegration = checkOpenDriveScenarioIntegration;
+exports.checkOpenDrivePlanViewModelingApproach = checkOpenDrivePlanViewModelingApproach;

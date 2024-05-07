@@ -1,10 +1,13 @@
 const { OdrReader } = require('../../../../../util/opendrive-reader');
+const fs = require('fs');
+const path = require('path');
 const helper = require('./opendrive_helpers');
 const osc_helper = require('./openscenario_helpers');
 
 exports.checkOffsets = checkOffsets;
 exports.checkReferences = checkReferences;
 exports.checkScenarioIntegration = checkScenarioIntegration;
+exports.checkPlanViewModelingApproach = checkPlanViewModelingApproach;
 
 /**
  * @typedef {import('../../types/types').TargetObject} TargetObject
@@ -25,9 +28,11 @@ exports.checkScenarioIntegration = checkScenarioIntegration;
  * 
  * @param {string} xodrString 
  * @param {string} offsetThreshold maximum allowed offset (as stringified {@link pose3d} object)
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {ResultLog}
  */
-function checkOffsets(xodrString, offsetThreshold) {
+function checkOffsets(xodrString, offsetThreshold, roadSelection) {
     try {
         offsetThreshold = JSON.parse(offsetThreshold);
     }
@@ -43,11 +48,11 @@ function checkOffsets(xodrString, offsetThreshold) {
 
     let resultLog;
 
-    resultLog = checkRoadTransitions(xodrString, offsetThreshold);
+    resultLog = checkRoadTransitions(xodrString, offsetThreshold, roadSelection);
     result = result && resultLog.result;
     log += resultLog.log;
 
-    resultLog = checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold);
+    resultLog = checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold, roadSelection);
     result = result && resultLog.result;
     log += resultLog.log;
 
@@ -63,11 +68,24 @@ function checkOffsets(xodrString, offsetThreshold) {
  * 
  * @param {string} xodrString 
  * @param {pose3d} offsetThreshold 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {ResultLog}
  */
-function checkRoadTransitions(xodrString, offsetThreshold) {
+function checkRoadTransitions(xodrString, offsetThreshold, roadSelection) {
     let odrReader = new OdrReader(xodrString);
-    const roads = odrReader.getAllRoads();
+    
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     result = true;
     log = "";
@@ -89,6 +107,10 @@ function checkRoadTransitions(xodrString, offsetThreshold) {
         }
     }
 
+    if (result === true) {
+        log = "All road transitions are in the "
+    }
+
     return {
         result: result,
         log: log
@@ -102,14 +124,22 @@ function checkRoadTransitions(xodrString, offsetThreshold) {
  * 
  * @param {string} xodrString 
  * @param {pose3d} offsetThreshold 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {ResultLog}
  */
-function checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold) {
+function checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold, roadSelection) {
     let result = true;
     let log = "";
 
     let odrReader = new OdrReader(xodrString);
-    const roadIds = odrReader.getAllRoads().map(road => road.attributes.id);
+
+    let roadIds = [];
+
+    if (roadSelection !== undefined) 
+        roadIds = roadSelection;
+    else
+        roadIds = odrReader.getAllRoads().map(road => road.attributes.id);
 
     let resultLog;
 
@@ -142,11 +172,24 @@ function checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold) 
  * are well-defined in the XODR model
  * 
  * @param {string} xodrString 
+ * @param {string} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
  * @returns {ResultLog}
  */
-function checkReferences(xodrString) {
+function checkReferences(xodrString, roadSelection) {
     let odrReader = new OdrReader(xodrString);
-    const roads = odrReader.getAllRoads();
+
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     let result = true;
     let log = "";
@@ -185,51 +228,75 @@ function checkReferences(xodrString) {
  * @param {string} xoscString 
  * @returns {ResultLog}
  */
-function checkScenarioIntegration(xodrString, xoscString) {
+function checkScenarioIntegration(xodrPath, xoscPath) {
     let result = true;
     let log = "";
 
+    const xodrString = fs.readFileSync(xodrPath, 'utf-8');
+    const xoscString = fs.readFileSync(xoscPath, 'utf-8');
+
     let odrReader = new OdrReader(xodrString);
-    let openScenarioParsed = osc_helper.parseOpenscenario(xoscString);
-    let initialPositions = osc_helper.getInitialPositions(openScenarioParsed);
 
-    for (let initPosition of initialPositions) {
-        let road = odrReader.getRoad(initPosition.roadId, "road");
-        if (road[0] !== undefined) {
-            let laneFound = false;
+    let scenariosToCheck;
 
-            for (let laneSection of road[0].lanes.laneSection) {
-                if (initPosition.laneId > 0) {
-                    if (laneSection.left !== undefined) {
-                        if (laneSection.left.lane.find(lane => lane.attributes.id == initPosition.laneId) !== undefined) {
-                            laneFound = true;
-                            break;
-                        }                            
+    if (osc_helper.isParameterDistributionFile(osc_helper.parseOpenscenario(xoscString))) {
+        // if a parameter distribution file is handed over, generate concrete scenarios from it and check each scenario
+        const parameterVariationFileParsed = osc_helper.parseOpenscenario(xoscString);
+
+        let basePath = path.dirname(xoscPath);
+        const oscTemplateString = osc_helper.getXoscTemplateFromDistributionFile(parameterVariationFileParsed, basePath);
+        const parameterSets = osc_helper.getParameterSets(parameterVariationFileParsed);
+        scenariosToCheck = osc_helper.integrateParameters(oscTemplateString, parameterSets);
+    }
+    else {
+        // if a single concrete scenario file is used, check only this
+        scenariosToCheck = [xoscString];
+    }
+
+    for (let scenarioToCheck of scenariosToCheck) {
+        let openScenarioParsed = osc_helper.parseOpenscenario(scenarioToCheck);
+
+        let initialPositions = osc_helper.getInitialPositions(openScenarioParsed);
+
+        for (let initPosition of initialPositions) {
+            let road = odrReader.getRoad(initPosition.roadId, "road");
+            if (road[0] !== undefined) {
+                let laneFound = false;
+
+                for (let laneSection of road[0].lanes.laneSection) {
+                    if (initPosition.laneId > 0) {
+                        if (laneSection.left !== undefined) {
+                            if (laneSection.left.lane.find(lane => lane.attributes.id == initPosition.laneId) !== undefined) {
+                                laneFound = true;
+                                break;
+                            }                            
+                        }
+                    }
+                    else if (initPosition.laneId < 0) {
+                        if (laneSection.right !== undefined) {
+                            if (laneSection.right.lane.find(lane => lane.attributes.id == initPosition.laneId) !== undefined) {
+                                laneFound = true;
+                                break;
+                            }                            
+                        }
                     }
                 }
-                else if (initPosition.laneId < 0) {
-                    if (laneSection.right !== undefined) {
-                        if (laneSection.right.lane.find(lane => lane.attributes.id == initPosition.laneId) !== undefined) {
-                            laneFound = true;
-                            break;
-                        }                            
-                    }
+
+                if (laneFound === false) {
+                    result = false;
+                    let newlog = "The lane with ID " + initPosition.laneId + " in the road with ID " + initPosition.roadId + " does not exist, but it is referenced in the target scenario. "
+                    if (!log.includes(newlog.trim()))
+                        log += newlog;
                 }
             }
-
-            if (laneFound === false) {
+            else {
                 result = false;
-                let newlog = "The lane with ID " + initPosition.laneId + " in the road with ID " + initPosition.roadId + " does not exist, but it is referenced in the target scenario. "
+                let newlog = "The road with ID " + initPosition.roadId + " could not be found in the map, but it is referenced in the target scenario. ";
                 if (!log.includes(newlog.trim()))
                     log += newlog;
             }
         }
-        else {
-            result = false;
-            let newlog = "The road with ID " + initPosition.roadId + " could not be found in the map, but it is referenced in the target scenario. ";
-            if (!log.includes(newlog.trim()))
-                log += newlog;
-        }
+
     }
 
     if (result == true) {
@@ -240,4 +307,37 @@ function checkScenarioIntegration(xodrString, xoscString) {
         result: result,
         log: log.trim()
     };  
+}
+
+/**
+ * @param {string} xodrString 
+ * @param {...string} allowedGeometries 
+ */
+function checkPlanViewModelingApproach(xodrString, ...allowedGeometries) {
+    let odrReader = new OdrReader(xodrString);
+    const roads = odrReader.getAllRoads();
+
+    let result = true;
+    let log = "";
+
+    allowedGeometries = allowedGeometries.map(geometry => geometry.toLocaleLowerCase());
+
+    for (let road of roads) {
+        let availableGeometries = helper.extractGeometryModelingApproaches(road).map(geometry => geometry.toLocaleLowerCase());
+        for (let geometry of availableGeometries) {
+            if (!allowedGeometries.includes(geometry)) {
+                result = false;
+                log += `The road with ID ${road.attributes.id} contains a (by definition not-allowed) ${geometry} section in the planView. `
+            }
+        }
+    }
+
+    if (result == true) {
+        log = "All roads contain only allowed geometry elements."
+    }
+
+    return {
+        result: result,
+        log: log.trim()
+    };
 }

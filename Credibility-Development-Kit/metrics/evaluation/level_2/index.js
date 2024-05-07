@@ -157,8 +157,10 @@ const checkMeanAbsolutePercentError = time_domain_metrics.checkMape;
 const checkTheilsInequalityCoefficient = time_domain_metrics.checkTic;
 
 /**
- * Validates if the accuracy (the offset between map and reference world coordinate system) of the map is below a given
- * threshold, using reference objects and/or signals with well-known coordinates.
+ * Checks the accuracy (absolute exactness) of the map w.r.t. a global coordinate system.
+ * 
+ * In specific, the absolute position of reference objects/signals in the global coordinate system
+ * will be checked against the actual position, given with coordinates.
  * 
  * Precondition: The OpenDRIVE file must define a projection string in its header (cf. {@link https://proj.org/}), like
  * for example "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=-177308 +y_0=-5425923 +datum=WGS84 +units=m"
@@ -173,13 +175,40 @@ const checkTheilsInequalityCoefficient = time_domain_metrics.checkTic;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkAccuracy('<?xml ...>', 0.20, '{"type":"signal","id":"5100141","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.2965355,"east":10.7193196}}', '{"type":"object","id":"4000050","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.622345,"east":11.2178422}}')
+ * checkOpenDriveAccuracy('<?xml ...>', 0.20, '{"type":"signal","id":"5100141","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.2965355,"east":10.7193196}}', '{"type":"object","id":"4000050","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.622345,"east":11.2178422}}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
  * @param {string | number} thresholdDistance maximum allowed offset in [m]
  * @param {...string} references stringified {@link MapReference}s of all reference objects and/or reference signals
  * @returns {ResultLog} result and logging information
  */
 const checkOpenDriveAccuracy = opendrive.checkAccuracy;
+
+/**
+ * Checks the precision (relative exactness) of the map.
+ * 
+ * In specific, the relative distance of reference objects/signals towards each other will be checked
+ * against the actual relative distance of well-known reference objects
+ * 
+ * Precondition: The OpenDRIVE file must define a projection string in its header (cf. {@link https://proj.org/}), like
+ * for example "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=-177308 +y_0=-5425923 +datum=WGS84 +units=m"
+ *  
+ * @author localhorst87
+ * @license BSD-2-Clause
+ * @kind function
+ * @version 1.0
+ * @domain Automotive
+ * @modeltypes OpenDRIVE road network models 
+ * @level 2
+ * @phase evaluation
+ * @step [evaluate]
+ * @example
+ * checkOpenDrivePrecision('<?xml ...>', 0.20, '{"type":"signal","id":"5100141","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.2965355,"east":10.7193196}}', '{"type":"object","id":"4000050","coordinates":{"proj":"+proj=utm +zone=32 +ellps=WGS84 +units=m","north":52.622345,"east":11.2178422}}')
+ * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string | number} thresholdDistance maximum allowed offset in [m]
+ * @param {...string} references stringified {@link MapReference}s of all reference objects and/or reference signals
+ * @returns {ResultLog} result and logging information
+ */
+const checkOpenDrivePrecision = opendrive.checkPrecision;
 
 /**
  * Validates if the required objects in objectList are contained in the map.
@@ -198,8 +227,10 @@ const checkOpenDriveAccuracy = opendrive.checkAccuracy;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveObjects('<?xml ...>', '{"type":"pole"}', '{"type":"barrier","subtype":"concrete"}', '{"type": "crosswalk"}')
+ * checkOpenDriveObjects('<?xml ...>', '["1001", "1002"]', '{"type":"pole"}', '{"type":"barrier","subtype":"concrete"}', '{"type": "crosswalk"}')
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} objectList stringified {@link TargetObject}s
  * @returns {ResultLog}
  */
@@ -218,8 +249,10 @@ const checkOpenDriveObjects = opendrive.checkObjectsAvailability;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveObjects('<?xml ...>', '{"type":"209",subtype:"30"}', '{"type":"448"}')
+ * checkOpenDriveSignals('<?xml ...>', '[]', {"type":"209",subtype:"30"}', '{"type":"448"}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} signalList stringified {@link TargetSignal}s
  * @returns {ResultLog}
  */
@@ -238,8 +271,10 @@ const checkOpenDriveSignals = opendrive.checkSignalAvailability;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveRoadTypes('<?xml ...>', 'motorway', 'rural')
+ * checkOpenDriveRoadTypes('<?xml ...>', '["1001", "1002"]', 'motorway', 'rural')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredRoadTypes the names of the required road types, according to the ODR spec
  * @returns {ResultLog}
  */
@@ -258,8 +293,10 @@ const checkOpenDriveRoadTypes = opendrive.checkIncludedRoadTypes;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveRoadTypes('<?xml ...>', 'driving', 'exit', 'entry')
+ * checkOpenDriveRoadTypes('<?xml ...>', '["1001", "1002"]', 'driving', 'exit', 'entry')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredLaneTypes the names of the required lane types, according to the ODR spec
  * @returns {ResultLog}
  */
@@ -278,8 +315,10 @@ const checkOpenDriveLaneTypes = opendrive.checkIncludedLaneTypes;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveLaneMarkingTypes('<?xml ...>', '{"type":"solid","color":"white","weight":"standard"}', '{"type":"broken","color":"white","weight":"standard"}')
+ * checkOpenDriveLaneMarkingTypes('<?xml ...>', '["1001", "1002"]', '{"type":"solid","color":"white","weight":"standard"}', '{"type":"broken","color":"white","weight":"standard"}')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredMarkingTypes the required lane marking types as stringified {@link LineMarking}s
  * @returns {ResultLog}
  */
@@ -298,8 +337,10 @@ const checkOpenDriveLaneMarkingTypes = opendrive.checkIncludedLaneMarkingTypes;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveLaneMarkingTypes('<?xml ...>', 6000)
+ * checkOpenDriveLaneMarkingTypes('<?xml ...>', '["1001", "1002"]', 6000)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} minLength the required length of the road in [m]
  * @returns {ResultLog}
  */
@@ -338,9 +379,11 @@ const checkOpenDriveTrafficRule = opendrive.checkTrafficRule;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveCurveRadii('<?xml ...>', 25)
- * checkOpenDriveCurveRadii('<?xml ...>', 200, 1000)
+ * checkOpenDriveCurveRadii('<?xml ...>', '["1001", "1002"]', 25)
+ * checkOpenDriveCurveRadii('<?xml ...>', '[]', 200, 1000)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed curve radius in [m].
  * @param {string | number} [thresholdMax] minimum allowed curve radius in [m]. If undefined, it will be set to infinity
  * @returns {ResultLog}
@@ -360,11 +403,13 @@ const checkOpenDriveCurveRadii = opendrive.checkCurveRadiusRange;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveElevations('<?xml ...>', -0.02, 0.02)
- * checkOpenDriveElevations('<?xml ...>', -3, 10, 'deg')
- * checkOpenDriveElevations('<?xml ...>', 0, 10, 'deg')
- * checkOpenDriveElevations('<?xml ...>', -5, 5, '%')
+ * checkOpenDriveElevations('<?xml ...>', '[]', -0.02, 0.02)
+ * checkOpenDriveElevations('<?xml ...>', '["1001", "1002"]', -3, 10, 'deg')
+ * checkOpenDriveElevations('<?xml ...>', '[]', 0, 10, 'deg')
+ * checkOpenDriveElevations('<?xml ...>', '[]'  -5, 5, '%')
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed elevation
  * @param {string | number} thresholdMax maximum allowed elevation
  * @param {string} [thresholdsUnit] The unit of the given threshold. Must be either "rad", "deg", or "%". 
@@ -386,10 +431,12 @@ const checkOpenDriveElevations = opendrive.checkElevationRange;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveLaneWidths('<?xml ...>', 3.10, 4.50)
+ * checkOpenDriveLaneWidths('<?xml ...>', '["1001", "1002"]', 3.10, 4.50)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed lane width in [m]
- * @param {string | number} thresholdMax maximum allowed lane width in [m]
+ * @param {string | number} [thresholdMax] maximum allowed lane width in [m]
  * @returns {ResultLog}
  */
 const checkOpenDriveLaneWidths = opendrive.checkDrivingLaneWidthRange;
@@ -407,8 +454,10 @@ const checkOpenDriveLaneWidths = opendrive.checkDrivingLaneWidthRange;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveTractions('<?xml ...>', 0.8, 1.1)
+ * checkOpenDriveTractions('<?xml ...>', '["1001", "1002"]', 0.8, 1.1)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin the minimum allowed traction
  * @param {string | number} thresholdMax the maximum allowed traction
  * @returns {ResultLog}
@@ -428,11 +477,13 @@ const checkOpenDriveTractions = opendrive.checkTractionRange;
  * @phase evaluation
  * @step [evaluate]
  * @example
- * checkOpenDriveDrivingLanesQuantity('<?xml ...>', 2, 2)
- * checkOpenDriveDrivingLanesQuantity('<?xml ...>', 2, 4)
+ * checkOpenDriveDrivingLanesQuantity('<?xml ...>', '[]', 2, 2)
+ * checkOpenDriveDrivingLanesQuantity('<?xml ...>', '["1001", "1002"]', 2, 4)
  * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum number of allowed driving lanes
- * @param {string | number} thresholdMax maximum number of allowed driving lanes
+ * @param {string | number} [thresholdMax] maximum number of allowed driving lanes
  * @returns {ResultLog}
  */
 const checkOpenDriveDrivingLanesQuantity = opendrive.checkNumberOfDrivingLanes;
@@ -443,6 +494,7 @@ exports.checkRootMeanSquaredError = checkRootMeanSquaredError;
 exports.checkMeanAbsolutePercentError = checkMeanAbsolutePercentError;
 exports.checkTheilsInequalityCoefficient = checkTheilsInequalityCoefficient;
 exports.checkOpenDriveAccuracy = checkOpenDriveAccuracy;
+exports.checkOpenDrivePrecision = checkOpenDrivePrecision;
 exports.checkOpenDriveObjects = checkOpenDriveObjects;
 exports.checkOpenDriveSignals = checkOpenDriveSignals;
 exports.checkOpenDriveRoadTypes = checkOpenDriveRoadTypes;

@@ -5,6 +5,7 @@ const proj4 = require('proj4');
 exports.checkObjectsAvailability = checkObjectsAvailability;
 exports.checkSignalAvailability = checkSignalAvailability;
 exports.checkAccuracy = checkAccuracy;
+exports.checkPrecision = checkPrecision;
 exports.checkDrivingLaneWidthRange = checkDrivingLaneWidthRange;
 exports.checkElevationRange = checkElevationRange;
 exports.checkCurveRadiusRange = checkCurveRadiusRange;
@@ -32,10 +33,12 @@ exports.checkTrafficRule = checkTrafficRule;
  * railing, trafficIsland, crosswalk, streetLamp, gantry, roadMark
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} objectList stringified {@link TargetObject}s
  * @returns {ResultLog}
  */
-function checkObjectsAvailability(xodrString, ...objectList) {
+function checkObjectsAvailability(xodrString, roadSelection, ...objectList) {
     try {
         objectList = objectList.map(obj => JSON.parse(obj));
     }
@@ -47,7 +50,18 @@ function checkObjectsAvailability(xodrString, ...objectList) {
     }
 
     let odrReader = new OdrReader(xodrString);
-    const roads = odrReader.getAllRoads();
+    
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     let result = true;
     let log = "";
@@ -59,15 +73,24 @@ function checkObjectsAvailability(xodrString, ...objectList) {
             if (road.objects === undefined)
                 continue;
 
-            let searchPredicate;
-            if (targetObj.subtype !== undefined)
-                searchPredicate = (obj) => obj.attributes.type === targetObj.type && obj.attributes.subtype === targetObj.subtype;
-            else
-                searchPredicate = (obj) => obj.attributes.type === targetObj.type;
+            if (targetObj.type.toLowerCase() === "bridge" || targetObj.type.toLowerCase() === "tunnel") {
+                if (road.objects[targetObj.type.toLowerCase()] !== undefined) {
+                    objFound = true;
+                    break;
+                }
+            }
+            else {
+                let searchPredicate;
 
-            if (road.objects.object.find(searchPredicate) !== undefined) {
-                objFound = true;
-                break;
+                if (targetObj.subtype !== undefined)
+                    searchPredicate = (obj) => obj.attributes.type === targetObj.type && obj.attributes.subtype === targetObj.subtype;
+                else
+                    searchPredicate = (obj) => obj.attributes.type === targetObj.type;
+    
+                if (road.objects.object.find(searchPredicate) !== undefined) {
+                    objFound = true;
+                    break;
+                }
             }
         }
 
@@ -93,10 +116,12 @@ function checkObjectsAvailability(xodrString, ...objectList) {
  * Checks if the required signals in signalList are contained in the map.
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} signalList stringified {@link TargetSignal}s
  * @returns {ResultLog}
  */
-function checkSignalAvailability(xodrString, ...signalList) {
+function checkSignalAvailability(xodrString, roadSelection, ...signalList) {
     try {
         signalList = signalList.map(sig => JSON.parse(sig));
     }
@@ -108,7 +133,18 @@ function checkSignalAvailability(xodrString, ...signalList) {
     }
 
     let odrReader = new OdrReader(xodrString);
-    const roads = odrReader.getAllRoads();
+
+    let roads = [];
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads !== undefined)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }
 
     let result = true;
     let log = "";
@@ -151,8 +187,10 @@ function checkSignalAvailability(xodrString, ...signalList) {
 }
 
 /**
- * Checks if the position of reference objects / signals fulfills the given
- * accuracy w.r.t. a global coordinate system
+ * Checks the accuracy (absolute exactness) of the map w.r.t. a global coordinate system.
+ * 
+ * In specific, the absolute position of reference objects/signals in the global coordinate system
+ * will be checked against the actual position, given with coordinates.
  * 
  * @param {string} xodrString 
  * @param {string | number} thresholdDistance maximum allowed offset in [m]
@@ -165,15 +203,16 @@ function checkAccuracy(xodrString, thresholdDistance, ...references) {
     }
     catch (err) {
         return {
-            result: result,
+            result: false,
             log: "references can not be JSON-parsed"
         };
     }
 
-    threshold = Number(threshold);
+    thresholdDistance = Number(thresholdDistance);
 
     let odrReader = new OdrReader(xodrString);
     let proj = odrReader.getHeader().geoReference.geoReference;
+
     let result = true;
     let log = "";
 
@@ -214,19 +253,111 @@ function checkAccuracy(xodrString, thresholdDistance, ...references) {
 }
 
 /**
+ * Checks the precision (relative exactness) of the map.
+ * 
+ * In specific, the relative distance of reference objects/signals towards each other will be checked
+ * against the actual relative distance of well-known reference objects
+ * 
+ * @param {string} xodrString 
+ * @param {string | number} thresholdDistance maximum allowed precision error [m]
+ * @param {...string} references stringified {@link MapReference}s of all reference objects/signals
+ * @returns {ResultLog}
+ */
+function checkPrecision(xodrString, thresholdDistance, ...references) {
+    try {
+        references = references.map(ref => JSON.parse(ref));
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "references can not be JSON-parsed"
+        };
+    }
+
+    if (references.length < 2) {
+        return {
+            result: false,
+            log: "At least 2 references required"
+        };
+    }
+
+    thresholdDistance = Number(thresholdDistance);
+
+    let odrReader = new OdrReader(xodrString);
+    let proj = odrReader.getHeader().geoReference.geoReference;
+    
+    let result = true;
+    let log = "";
+
+    let projectionsReference = [];
+    let projectionsMap = [];
+
+    for (let reference of references) {
+        projectionsReference.push(proj4(reference.coordinates.proj, [reference.coordinates.east, reference.coordinates.north]));
+
+        if (reference.type == "object") {
+            let object = odrReader.getObject(reference.id);
+            let road = odrReader.getRoad(reference.id, "object");
+            let objectPose = odrReader.getPose(road.attributes.id, object.attributes.s, object.attributes.t);
+            projectionsMap.push(proj4(proj, reference.coordinates.proj, [objectPose.x, objectPose.y]));
+        }
+        else if (reference.type == "signal") {
+            let signal = odrReader.getSignal(reference.id);
+            let road = odrReader.getRoad(reference.id, "signal");
+            let signalPose = odrReader.getPose(road.attributes.id, signal.attributes.s, signal.attributes.t);
+            projectionsMap.push(proj4(proj, reference.coordinates.proj, [signalPose.x, signalPose.y]));
+        }
+    }
+
+    // compare each object/signal to all other object/signals
+    for (let i = 0; i < references.length - 1; i++) {
+        for (let j = i + 1; j < references.length; j++) {
+            // get the distance of two objects using the reference coordinates and the map positions
+            // then compare these distances to the threshold
+            // example: we use two objects. The distance to each other using the reference coordinates is 1.73 m,
+            // the distance of the objects using the map position is 1.68 m, so the precision error is 0.05 m
+            let distanceReference = Math.sqrt(Math.pow(projectionsReference[i][0] - projectionsReference[j][0], 2), Math.pow(projectionsReference[i][1] - projectionsReference[j][1], 2));
+            let distanceMap = Math.sqrt(Math.pow(projectionsMap[i][0] - projectionsMap[j][0], 2), Math.pow(projectionsMap[i][1] - projectionsMap[j][1], 2));
+            let precisionError = Math.abs(distanceReference - distanceMap);
+            
+            if (precisionError > thresholdDistance) {
+                result = false;
+                log += `The precision error between the references with ID ${references[i]} and ${references[j]} is ${precisionError} m (threshold is ${thresholdDistance} m). `;
+            }
+        }
+    }
+
+    if (result == true)
+    log = "The positions of all references in the map fulfill the required precision of the map."
+
+    return {
+        result: result,
+        log: log.trim()
+    };    
+}
+
+/**
  * Checks if all widths of driving lanes in the map fulfill the given thresholds
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed lane width in [m]
- * @param {string | number} thresholdMax maximum allowed lane width in [m]
+ * @param {string | number} [thresholdMax] maximum allowed lane width in [m]
  * @returns {ResultLog}
  */
-function checkDrivingLaneWidthRange(xodrString, thresholdMin, thresholdMax) {
+function checkDrivingLaneWidthRange(xodrString, roadSelection, thresholdMin, thresholdMax) {
     thresholdMin = Number(thresholdMin);
-    thresholdMax = Number(thresholdMax);
-    let odrReader = new OdrReader(xodrString)
+    thresholdMax = thresholdMax !== undefined ? Number(thresholdMax) : Infinity;
+    let odrReader = new OdrReader(xodrString);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
     
-    const laneWidths = req_helper.getDrivingLaneWidthRange(odrReader);
+    const laneWidths = req_helper.getDrivingLaneWidthRange(odrReader, roadIds);
 
     if (laneWidths[0] >= thresholdMin && laneWidths[1] <= thresholdMax) {
         return {
@@ -246,17 +377,25 @@ function checkDrivingLaneWidthRange(xodrString, thresholdMin, thresholdMax) {
  * Checks if all road elevations are within the allowed range
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed elevation, e.g. -0.02
  * @param {string | number} thresholdMax maximum allowed elevation, e.g. 0.02
  * @param {string} [thresholdsUnit] The unit of the given threshold. Must be either "rad", "deg", or "%". Default: "rad"
  * @returns {ResultLog}
  */
-function checkElevationRange(xodrString, thresholdMin, thresholdMax, thresholdsUnit="rad") {
+function checkElevationRange(xodrString, roadSelection, thresholdMin, thresholdMax, thresholdsUnit="rad") {
     thresholdMin = Number(thresholdMin);
     thresholdMax = Number(thresholdMax);
     let odrReader = new OdrReader(xodrString);
 
-    const elevations = req_helper.getElevationRange(odrReader, thresholdsUnit);
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const elevations = req_helper.getElevationRange(odrReader, thresholdsUnit, roadIds);
 
     if (elevations[0] >= thresholdMin && elevations[1] <= thresholdMax) {
         return {
@@ -276,16 +415,24 @@ function checkElevationRange(xodrString, thresholdMin, thresholdMax, thresholdsU
  * Checks if the curve radii of all roads are within the given range
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum allowed curve radius in [m], e.g. 50
  * @param {string | number} [thresholdMax] minimum allowed curve radius in [m]. If undefined, it will be set to infinity
  * @returns {ResultLog}
  */
-function checkCurveRadiusRange(xodrString, thresholdMin, thresholdMax) {
+function checkCurveRadiusRange(xodrString, roadSelection, thresholdMin, thresholdMax) {
     thresholdMin = Number(thresholdMin);
     thresholdMax = thresholdMax !== undefined ? Number(thresholdMax) : Infinity;
     let odrReader = new OdrReader(xodrString);
 
-    const radii = req_helper.getCurveRadiusRange(odrReader);
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const radii = req_helper.getCurveRadiusRange(odrReader, roadIds);
 
     if (radii[0] >= thresholdMin && radii[1] <= thresholdMax) {
         return {
@@ -305,14 +452,22 @@ function checkCurveRadiusRange(xodrString, thresholdMin, thresholdMax) {
  * Checks if the added length of all roads is sufficient
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} minLength the required length of the road in [m]
  * @returns {ResultLog}
  */
-function checkRoadLength(xodrString, minLength) {
+function checkRoadLength(xodrString, roadSelection, minLength) {
     minLength = Number(minLength);
     let odrReader = new OdrReader(xodrString);
 
-    const length = req_helper.getRoadLength(odrReader);
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const length = req_helper.getRoadLength(odrReader, roadIds);
 
     if (length >= minLength) {
         return {
@@ -332,16 +487,24 @@ function checkRoadLength(xodrString, minLength) {
  * Checks if the number of lanes of each road is within the given range
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin minimum number of allowed driving lanes
- * @param {string | number} thresholdMax maximum number of allowed driving lanes
+ * @param {string | number} [thresholdMax] maximum number of allowed driving lanes
  * @returns {ResultLog}
  */
-function checkNumberOfDrivingLanes(xodrString, thresholdMin, thresholdMax) {
+function checkNumberOfDrivingLanes(xodrString, roadSelection, thresholdMin, thresholdMax) {
     thresholdMin = Number(thresholdMin);
-    thresholdMax = Number(thresholdMax);
+    thresholdMax = thresholdMax !== undefined ? Number(thresholdMax) : Infinity;
     let odrReader = new OdrReader(xodrString);
 
-    const nDrivingLanes = req_helper.getDrivingLaneRange(odrReader);
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const nDrivingLanes = req_helper.getDrivingLaneRange(odrReader, roadIds);
 
     if (nDrivingLanes[0] >= thresholdMin && nDrivingLanes[1] <= thresholdMax) {
         return {
@@ -361,12 +524,21 @@ function checkNumberOfDrivingLanes(xodrString, thresholdMin, thresholdMax) {
  * Checks if all required lane types are available in the ODR
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredLaneTypes the names of the required lane types, according to the ODR spec
  * @returns {ResultLog}
  */
-function checkIncludedLaneTypes(xodrString, ...requiredLaneTypes) {
+function checkIncludedLaneTypes(xodrString, roadSelection, ...requiredLaneTypes) {
     let odrReader = new OdrReader(xodrString);
-    const availableLaneTypes = req_helper.getAvailableLaneTypes(odrReader);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const availableLaneTypes = req_helper.getAvailableLaneTypes(odrReader, roadIds);
 
     let result = true;
     let log = "";
@@ -392,11 +564,20 @@ function checkIncludedLaneTypes(xodrString, ...requiredLaneTypes) {
  * Checks if all required road types are available in the ODR
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredRoadTypes the names of the required road types, according to the ODR spec
  * @returns {ResultLog}
  */
-function checkIncludedRoadTypes(xodrString, ...requiredRoadTypes) {
+function checkIncludedRoadTypes(xodrString, roadSelection, ...requiredRoadTypes) {
     let odrReader = new OdrReader(xodrString);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
     const availableRoadTypes = req_helper.getAvailableRoadTypes(odrReader);
 
     let result = true;
@@ -423,10 +604,12 @@ function checkIncludedRoadTypes(xodrString, ...requiredRoadTypes) {
  * Checks if all required lane marking types are included in the ODR
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {...string} requiredMarkingTypes the required lane marking types as stringified {@link LineMarking}s
  * @returns {ResultLog}
  */
-function checkIncludedLaneMarkingTypes(xodrString, ...requiredMarkingTypes) {
+function checkIncludedLaneMarkingTypes(xodrString, roadSelection, ...requiredMarkingTypes) {
     try {
         requiredMarkingTypes = requiredMarkingTypes.map(mt => JSON.parse(mt));
     }
@@ -438,7 +621,14 @@ function checkIncludedLaneMarkingTypes(xodrString, ...requiredMarkingTypes) {
     }
 
     let odrReader = new OdrReader(xodrString);
-    const availableMarkingTypes = req_helper.getAvailableLaneMarkingTypes(odrReader);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const availableMarkingTypes = req_helper.getAvailableLaneMarkingTypes(odrReader, roadIds);
 
     let result = true;
     let log = "";
@@ -465,16 +655,24 @@ function checkIncludedLaneMarkingTypes(xodrString, ...requiredMarkingTypes) {
  * Checks if the traction of all roads is within the required range
  * 
  * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
  * @param {string | number} thresholdMin the minimum allowed traction
  * @param {string | number} thresholdMax the maximum allowed traction
  * @returns {ResultLog}
  */
-function checkTractionRange(xodrString, thresholdMin, thresholdMax) {
+function checkTractionRange(xodrString, roadSelection, thresholdMin, thresholdMax) {
     thresholdMin = Number(thresholdMin);
     thresholdMax = Number(thresholdMax);
     let odrReader = new OdrReader(xodrString);
 
-    const tractionRange = req_helper.getTractionRange(odrReader);
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const tractionRange = req_helper.getTractionRange(odrReader, roadIds);
 
     if (tractionRange[0] >= thresholdMin && tractionRange[1] <= thresholdMax) {
         return {

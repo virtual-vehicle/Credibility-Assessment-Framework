@@ -410,6 +410,7 @@ function getLaneLinksRoadToSuccessingRoadJunction(road, successingRoad, odrReade
         junction = odrReader.getJunction(road.attributes.junction);
         let connection = junction.connection.find(con => con.attributes.incomingRoad == successingRoad.attributes.id 
                                     && con.attributes.connectingRoad == road.attributes.id);
+                                    
         for (let laneLink of connection.laneLink) {
             pairs.push([laneLink.attributes.to, laneLink.attributes.from]);
             // [to, from] is correct here, as "to" belongs to road and "from" belongs to the successing road

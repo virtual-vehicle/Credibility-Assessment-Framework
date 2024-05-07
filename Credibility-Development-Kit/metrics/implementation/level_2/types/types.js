@@ -65,6 +65,12 @@
  */
 
 /**
+ * @typedef {object} OscParameterSet
+ * @property {string[]} parameters
+ * @property {string[]} values
+ */
+
+/**
  * ODR Reader's internal_3dpose
  * 
  * @typedef {import('../../../../util/opendrive-reader/types/internal').internal_pose3d} pose3d
@@ -86,5 +92,6 @@ module.exports = {
  * @type {MapReference}
  * @type {MapLocation}
  * @type {LineMarking}
+ * @type {OscParameterSet}
  */
 }
