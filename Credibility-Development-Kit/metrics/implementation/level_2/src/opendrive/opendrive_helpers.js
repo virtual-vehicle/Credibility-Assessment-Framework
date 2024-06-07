@@ -161,7 +161,7 @@ function checkPoseOffsetsPredecessingRoad(odrReader, road, predecessingRoad, thr
 function checkGeometryTransitions(odrReader, roadId, thresholdPose) {
     let road = odrReader.getRoad(roadId, "road");
 
-    if (road === undefined) {
+    if (road.length > 0) {
         return {
             result: false,
             log: "road with ID " + roadId + " does not exist."
@@ -215,6 +215,16 @@ function checkGeometryTransitions(odrReader, roadId, thresholdPose) {
 function checkElevationTransitions(odrReader, roadId, thresholdPose) {
     const road = odrReader.getRoad(roadId, "road");
 
+    if (road.length > 0) {
+        road = road[0];
+    }
+    else {
+        return {
+            result: false,
+            log: "Could not identify the road with the road ID " + roadId
+        };
+    }
+
     if (road.elevationProfile === undefined) 
         return {
             result: true,
@@ -262,6 +272,16 @@ function checkElevationTransitions(odrReader, roadId, thresholdPose) {
 function checkSuperElevationTransitions(odrReader, roadId, thresholdPose) {
     const road = odrReader.getRoad(roadId, "road");
 
+    if (road.length > 0) {
+        road = road[0];
+    }
+    else {
+        return {
+            result: false,
+            log: "Could not identify the road with the road ID " + roadId
+        };
+    }
+
     if (road.lateralProfile === undefined)
         return {
             result: true,
@@ -307,6 +327,16 @@ function checkSuperElevationTransitions(odrReader, roadId, thresholdPose) {
  */
 function checkShapeTransitions(odrReader, roadId, thresholdPose) {
     const road = odrReader.getRoad(roadId, "road");
+
+    if (road.length > 0) {
+        road = road[0];
+    }
+    else {
+        return {
+            result: false,
+            log: "Could not identify the road with the road ID " + roadId
+        };
+    }
 
     if (road.lateralProfile === undefined)
         return {
@@ -358,7 +388,7 @@ function checkJunctionRefs(odrReader, road) {
 
                 if (connection.attributes.incomingRoad !== undefined) {
                     roadToCheck = odrReader.getRoad(connection.attributes.incomingRoad, "road");
-                    if (roadToCheck.includes(undefined)) {
+                    if (roadToCheck.length == 0) {
                         result = false;
                         log += "Road with ID " + connection.attributes.incomingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
                     }
@@ -384,7 +414,7 @@ function checkJunctionRefs(odrReader, road) {
 
                 if (connection.attributes.connectingRoad !== undefined) {
                     roadToCheck = odrReader.getRoad(connection.attributes.connectingRoad, "road");
-                    if (roadToCheck.includes(undefined)) {
+                    if (roadToCheck.length == 0) {
                         result = false;
                         log += "Road with ID " + connection.attributes.connectingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
                     }
@@ -410,7 +440,7 @@ function checkJunctionRefs(odrReader, road) {
 
                 if (connection.predecessor !== undefined) {
                     roadToCheck = odrReader.getRoad(connection.predecessor.attributes.elementId, "road");
-                    if (roadToCheck === undefined) {
+                    if (roadToCheck.length == 0) {
                         result = false;
                         log += "Road with ID " + connection.predecessor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
                     }
@@ -418,7 +448,7 @@ function checkJunctionRefs(odrReader, road) {
 
                 if (connection.successor !== undefined) {
                     roadToCheck = odrReader.getRoad(connection.successor.attributes.elementId, "road");
-                    if (roadToCheck === undefined) {
+                    if (roadToCheck.length == 0) {
                         result = false;
                         log += "Road with ID " + connection.successor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
                     }

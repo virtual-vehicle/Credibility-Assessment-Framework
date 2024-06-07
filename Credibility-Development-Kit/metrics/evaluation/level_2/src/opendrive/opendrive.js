@@ -46,7 +46,17 @@ function checkObjectsAvailability(xodrString, roadSelection, ...objectList) {
         return {
             result: false,
             log: "objectList can not be JSON-parsed."
-        }
+        };
+    }
+
+    try {
+        roadSelection = JSON.parse(roadSelection);
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "roadSelection can not be JSON-parsed."
+        };
     }
 
     let odrReader = new OdrReader(xodrString);
@@ -55,7 +65,7 @@ function checkObjectsAvailability(xodrString, roadSelection, ...objectList) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -129,7 +139,17 @@ function checkSignalAvailability(xodrString, roadSelection, ...signalList) {
         return {
             result: false,
             log: "signalList can not be JSON-parsed."
-        }
+        };
+    }
+
+    try {
+        roadSelection = JSON.parse(roadSelection);
+    }
+    catch (err) {
+        return {
+            result: false,
+            log: "roadSelection can not be JSON-parsed."
+        };
     }
 
     let odrReader = new OdrReader(xodrString);
@@ -138,7 +158,7 @@ function checkSignalAvailability(xodrString, roadSelection, ...signalList) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -219,18 +239,32 @@ function checkAccuracy(xodrString, thresholdDistance, ...references) {
     for (let reference of references) {
         let projectionReference = proj4(reference.coordinates.proj, [reference.coordinates.east, reference.coordinates.north]);
         let projectionMap;
+        let road;
 
         if (reference.type == "object") {
             let object = odrReader.getObject(reference.id);
-            let road = odrReader.getRoad(reference.id, "object");
-            let objectPose = odrReader.getPose(road.attributes.id, object.attributes.s, object.attributes.t);
-            projectionMap = proj4(proj, reference.coordinates.proj, [objectPose.x, objectPose.y]);
+            road = odrReader.getRoad(reference.id, "object");
+            if (road.length > 0) {
+                road = road[0];
+                let objectPose = odrReader.getPose(road.attributes.id, object.attributes.s, object.attributes.t);
+                projectionMap = proj4(proj, reference.coordinates.proj, [objectPose.x, objectPose.y]);
+            }
         }
         else if (reference.type == "signal") {
             let signal = odrReader.getSignal(reference.id);
-            let road = odrReader.getRoad(reference.id, "signal");
-            let signalPose = odrReader.getPose(road.attributes.id, signal.attributes.s, signal.attributes.t);
-            projectionMap = proj4(proj, reference.coordinates.proj, [signalPose.x, signalPose.y]);
+            road = odrReader.getRoad(reference.id, "signal");
+            if (road.length > 0) {
+                road = road[0];
+                let signalPose = odrReader.getPose(road.attributes.id, signal.attributes.s, signal.attributes.t);
+                projectionMap = proj4(proj, reference.coordinates.proj, [signalPose.x, signalPose.y]);
+            }
+        }
+
+        if (road.length == 0) {
+            return {
+                result: false,
+                log: "Error: Could not identify the associated road to " + reference.type + " with ID " + reference.id
+            };
         }
 
         let distance = Math.sqrt(Math.pow(projectionMap[0] - projectionReference[0], 2), Math.pow(projectionMap[1] - projectionReference[1], 2));
@@ -291,21 +325,35 @@ function checkPrecision(xodrString, thresholdDistance, ...references) {
 
     let projectionsReference = [];
     let projectionsMap = [];
+    let road;
 
     for (let reference of references) {
         projectionsReference.push(proj4(reference.coordinates.proj, [reference.coordinates.east, reference.coordinates.north]));
 
         if (reference.type == "object") {
             let object = odrReader.getObject(reference.id);
-            let road = odrReader.getRoad(reference.id, "object");
-            let objectPose = odrReader.getPose(road.attributes.id, object.attributes.s, object.attributes.t);
-            projectionsMap.push(proj4(proj, reference.coordinates.proj, [objectPose.x, objectPose.y]));
+            road = odrReader.getRoad(reference.id, "object");
+            if (road.length > 0) {
+                road = road[0];
+                let objectPose = odrReader.getPose(road.attributes.id, object.attributes.s, object.attributes.t);
+                projectionsMap.push(proj4(proj, reference.coordinates.proj, [objectPose.x, objectPose.y]));
+            }
         }
         else if (reference.type == "signal") {
             let signal = odrReader.getSignal(reference.id);
-            let road = odrReader.getRoad(reference.id, "signal");
-            let signalPose = odrReader.getPose(road.attributes.id, signal.attributes.s, signal.attributes.t);
-            projectionsMap.push(proj4(proj, reference.coordinates.proj, [signalPose.x, signalPose.y]));
+            road = odrReader.getRoad(reference.id, "signal");
+            if (road.length > 0) {
+                road = road[0];
+                let signalPose = odrReader.getPose(road.attributes.id, signal.attributes.s, signal.attributes.t);
+                projectionsMap.push(proj4(proj, reference.coordinates.proj, [signalPose.x, signalPose.y]));
+            }
+        }
+
+        if (road.length == 0) {
+            return {
+                result: false,
+                log: "Error: Could not identify the associated road to " + reference.type + " with ID " + reference.id
+            };   
         }
     }
 

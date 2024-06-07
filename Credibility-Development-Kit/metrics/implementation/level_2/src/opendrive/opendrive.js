@@ -79,7 +79,7 @@ function checkRoadTransitions(xodrString, offsetThreshold, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -183,7 +183,7 @@ function checkReferences(xodrString, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -260,7 +260,7 @@ function checkScenarioIntegration(xodrPath, xoscPath) {
 
         for (let initPosition of initialPositions) {
             let road = odrReader.getRoad(initPosition.roadId, "road");
-            if (road[0] !== undefined) {
+            if (road.length > 0) {
                 let laneFound = false;
 
                 for (let laneSection of road[0].lanes.laneSection) {

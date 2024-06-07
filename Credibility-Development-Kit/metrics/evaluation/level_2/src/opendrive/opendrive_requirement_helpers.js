@@ -54,7 +54,7 @@ function getDrivingLaneWidthRange(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -77,9 +77,6 @@ function getDrivingLaneWidthRange(odrReader, roadSelection) {
                     
                 for (let lane of lanes) {
                     let width = odrReader.getLaneWidth(road.attributes.id, lane.attributes.id, s);
-                    if (width < wMin) {
-                        console.log(width, road.attributes.id, lane.attributes.id, s)
-                    }
                     wMin = width < wMin ? width : wMin;
                     wMax = width > wMax ? width : wMax;
                 }
@@ -110,7 +107,7 @@ function getElevationRange(odrReader, unit, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -155,7 +152,7 @@ function getCurveRadiusRange(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -200,7 +197,7 @@ function getRoadLength(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -231,7 +228,7 @@ function getDrivingLaneRange(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -277,7 +274,7 @@ function getAvailableLaneTypes(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -317,7 +314,7 @@ function getAvailableLaneMarkingTypes(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -363,7 +360,7 @@ function getAvailableRoadTypes(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }
@@ -435,7 +432,7 @@ function getTractionRange(odrReader, roadSelection) {
     if (roadSelection !== undefined) {
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
-            if (extractedRoads !== undefined)
+            if (extractedRoads.length > 0)
                 roads.push(...extractedRoads);
         }
     }

@@ -164,25 +164,31 @@ exports.OdrReader = class OdrReader {
      * 
      * If you want to get the road by a signal ID, then type must be "signal".
      * 
-     * The function will return undefined, if the road does not exist.
-     * 
      * @param {string} id the road or junction ID
      * @param {string} type specifies, if id refers to a road ID or a junction ID, must be either "road", "junction",
      *                      "object", or "signal"
-     * @returns {t_road[] | undefined}
+     * @returns {t_road[]}
      */
     getRoad(id, type) {
-        if (type === "road")
-            return [this.#getRoadByRoadId(id)];
-        else if (type === "junction")
+        let road;
+
+        if (type === "road") {
+            road = this.#getRoadByRoadId(id);
+            return road !== undefined ? [road] : [];
+        }
+        else if (type === "junction") {
             return this.#getRoadByJunctionId(id);
-        else if (type === "object")
-            return this.#getRoadByObjectId(id);
-        else if (type === "signal")
-            return this.#getRoadBySignalId(id);
+        }
+        else if (type === "object") {
+            road = this.#getRoadByObjectId(id);
+            return road !== undefined ? [road] : [];
+        }
+        else if (type === "signal") {
+            road = this.#getRoadBySignalId(id);
+            return road !== undefined ? [road] : [];
+        }
         else {
-            console.log("type keyword " + type + " unknown");
-            return undefined;
+            return [];
         }
     }
 
@@ -599,9 +605,7 @@ exports.OdrReader = class OdrReader {
      */
     #getRoadByRoadId(id) {
         const road = this.#roads.find(road => road.attributes.id == id);
-        if (road === undefined)
-            console.log("The ODR does not have a road with the given ID");
-
+        
         return road;
     }
 
@@ -611,8 +615,6 @@ exports.OdrReader = class OdrReader {
      */
     #getRoadByJunctionId(junctionId) {
         const roads = this.#roads.filter(road => road.attributes.junction == junctionId);
-        if (roads.length == 0)
-            console.log("The ODR does not have a road with the given junction");
 
         return roads;
     }
@@ -666,8 +668,6 @@ exports.OdrReader = class OdrReader {
      */
     #getJunction(id) {
         const junction = this.#junctions.find(junction => junction.attributes.id === id);
-        if (junction === undefined)
-            console.log("The ODR does not have a junction with the given ID");
 
         return junction;
     }
