@@ -37,7 +37,7 @@ function checkExpertStatement(signedExpertStatement, x509Certificate) {
     if (isSignatureValid.result === false) {
         return {
             result: false,
-            log: "The expert statement could not be verified (" + verification.log + ")"
+            log: "The expert statement could not be verified (" + isSignatureValid.log + ")"
         };
     }
     else {
