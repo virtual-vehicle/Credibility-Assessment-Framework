@@ -442,6 +442,56 @@ const checkOpenDriveElevations = opendrive.checkElevationRange;
 const checkOpenDriveLaneWidths = opendrive.checkDrivingLaneWidthRange;
 
 /**
+ * Validates if the variability (the maximum observed width minus the minimum observed width) of the driving lanes is
+ * within the expected range.
+ * 
+ * @author localhorst87
+ * @license BSD-2-Clause
+ * @kind function
+ * @version 1.0
+ * @domain Automotive
+ * @modeltypes OpenDRIVE road network models 
+ * @level 2
+ * @phase evaluation
+ * @step [evaluate]
+ * @example
+ * checkOpenDriveLaneVariability('<?xml ...>', '["1001", "1002"]', 0.20, 0.70)
+ * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
+ * @param {string | number} variabilityMin minimum required lane width variability in [m]
+ * @param {string | number} [variabilityMax] maximum allowed lane width variability in [m]
+ * @returns {ResultLog}
+ */
+const checkOpenDriveLaneVariability = opendrive.checkDrivingLaneVariability;
+
+/**
+ * Validates if the the map contains at least one straight which is longer than the given value.
+ * 
+ * A straight is defined as the longest coherent road where the curve radius does not 
+ * drop below the given radius threshold in curveRadiusThreshold
+ * 
+ * @author localhorst87
+ * @license BSD-2-Clause
+ * @kind function
+ * @version 1.0
+ * @domain Automotive
+ * @modeltypes OpenDRIVE road network models 
+ * @level 2
+ * @phase evaluation
+ * @step [evaluate]
+ * @example
+ * checkOpenDriveStraightLength('<?xml ...>', '["1001", "1002"]', 5000, 750)
+ * @param {string} xodrString the string of the OpenDRIVE file to be examined
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
+ * @param {string | number} curveRadiusThreshold the minimum curve radius to consider a road a straight in [m] 
+ * @param {string | number} minLength the minimum required length of a straight, given in [m] (quality criterion)
+ * @returns {ResultLog}
+ */
+const checkOpenDriveStraightLength = opendrive.checkStraightLength;
+
+/**
  * Validates if the traction of all roads is within the required range
  * 
  * @author localhorst87
@@ -507,3 +557,5 @@ exports.checkOpenDriveElevations = checkOpenDriveElevations;
 exports.checkOpenDriveLaneWidths = checkOpenDriveLaneWidths;
 exports.checkOpenDriveTractions = checkOpenDriveTractions;
 exports.checkOpenDriveDrivingLanesQuantity = checkOpenDriveDrivingLanesQuantity;
+exports.checkOpenDriveLaneVariability = checkOpenDriveLaneVariability;
+exports.checkOpenDriveStraightLength = checkOpenDriveStraightLength;

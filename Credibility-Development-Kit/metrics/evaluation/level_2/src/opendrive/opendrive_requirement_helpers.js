@@ -12,6 +12,7 @@ exports.getAvailableRoadTypes = getAvailableRoadTypes;
 exports.getAvailableSpeedLimits = getAvailableSpeedLimits;
 exports.getTractionRange = getTractionRange;
 exports.getTrafficRule = getTrafficRule;
+exports.getMaximumStraightLength = getMaximumStraightLength;
 
 /**
  * @typedef {import('../../types/types').LineMarking} LineMarking
@@ -40,7 +41,7 @@ Array.prototype.deepUnique = function () {
  * map
  * 
  * @param {OdrReader} odrReader 
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min width, max width] of all roads in the map
  */
@@ -93,7 +94,7 @@ function getDrivingLaneWidthRange(odrReader, roadSelection) {
  * 
  * @param {OdrReader} odrReader
  * @param {string} unit unit of the elevation ("rad", "deg", or "%")
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min elevation, max elevation] of all roads in the map
  */
@@ -137,7 +138,7 @@ function getElevationRange(odrReader, unit, roadSelection) {
  * Returns the minimum and maximum curve radius of all roads in the map
  * 
  * @param {OdrReader} odrReader 
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min radius, max radius] of all roads in the map
  */
@@ -184,10 +185,61 @@ function getCurveRadiusRange(odrReader, roadSelection) {
 }
 
 /**
+ * Returns the longest straight of all roads. 
+ * 
+ * A straight is defined as the longest coherent road where the curve radius does not 
+ * drop below the given radius threshold 
+ * 
+ * @param {OdrReader} odrReader 
+ * @param {number} radiusThreshold the minimum radius to consider a road a straight
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
+ *                                 If left undefined, all available roads will be considered
+ * @returns {number} the longest straight identified
+ */
+function getMaximumStraightLength(odrReader, radiusThreshold, roadSelection) {
+    const ds = 1.0; // [m]
+    const eps = 0.05; // [m]
+    let longestStraight = 0;
+
+    let roads = [];
+
+    if (roadSelection !== undefined) {
+        for (let roadId of roadSelection) {
+            let extractedRoads = odrReader.getRoad(roadId, "road");
+            if (extractedRoads.length > 0)
+                roads.push(...extractedRoads);
+        }
+    }
+    else {
+        roads = odrReader.getAllRoads();
+    }    
+
+    for (let road of roads) {
+        let currentStraight = 0;
+
+        for (let s = 0; s < road.attributes.length - ds; s += ds) {
+            let pose1 = odrReader.getLaneBoundaryPose(road.attributes.id, 0, s);
+            let pose2 = odrReader.getLaneBoundaryPose(road.attributes.id, 0, s + eps);
+            let r = Math.abs(eps / (pose2.heading - pose1.heading));
+
+            if (r > radiusThreshold) {
+                currentStraight += ds;
+            }
+            else {
+                longestStraight = (currentStraight > longestStraight ? currentStraight : longestStraight);
+                currentStraight = 0;
+            }
+        }
+    }
+
+    return longestStraight;
+}
+
+/**
  * Return the cumulated length of all available roads in the map
  * 
  * @param {OdrReader} odrReader 
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {number} the sum of all road lengths in the map
  */
@@ -219,7 +271,7 @@ function getRoadLength(odrReader, roadSelection) {
  * (minimum is therefore always >= 1)
  * 
  * @param {OdrReader} odrReader
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {number[]} [min number of lanes, max number of lanes] of all roads in the map
  */
@@ -265,7 +317,7 @@ function getDrivingLaneRange(odrReader, roadSelection) {
  * Returns the available lane types of all roads in the map
  * 
  * @param {OdrReader} odrReader
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {string[]}
  */
@@ -305,7 +357,7 @@ function getAvailableLaneTypes(odrReader, roadSelection) {
  * attributes of t_road_lanes_laneSection_lcr_lane_roadMark are considered
  * 
  * @param {OdrReader} odrReader
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {LineMarking[]} all line marking types
  */
@@ -351,7 +403,7 @@ function getAvailableLaneMarkingTypes(odrReader, roadSelection) {
  * Returns all available road types in the map
  * 
  * @param {OdrReader} odrReader 
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered
  * @returns {string[]}
  */
@@ -423,7 +475,7 @@ function getAvailableSpeedLimits(odrReader, includeSignals=true) {
  * Returns the minimum and maximum available traction values of all roads
  * 
  * @param {OdrReader} odrReader
- * @param {string} [roadSelection] list of road IDs that shall be considered.
+ * @param {string[]} [roadSelection] list of road IDs that shall be considered.
  *                                 If left undefined, all available roads will be considered 
  * @returns {number[]} [min traction, max traction]
  */

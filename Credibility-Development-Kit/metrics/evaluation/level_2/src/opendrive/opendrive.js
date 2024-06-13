@@ -16,6 +16,8 @@ exports.checkIncludedRoadTypes = checkIncludedRoadTypes;
 exports.checkIncludedLaneMarkingTypes = checkIncludedLaneMarkingTypes;
 exports.checkTractionRange = checkTractionRange;
 exports.checkTrafficRule = checkTrafficRule;
+exports.checkStraightLength = checkStraightLength;
+exports.checkDrivingLaneVariability = checkDrivingLaneVariability;
 
 /**
  * @typedef {import('../../types/types').TargetObject} TargetObject
@@ -422,6 +424,44 @@ function checkDrivingLaneWidthRange(xodrString, roadSelection, thresholdMin, thr
 }
 
 /**
+ * Checks if the variability of the lane width
+ * 
+ * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
+ * @param {string | number} variabilityMin minimum required lane width variability in [m]
+ * @param {string | number} [variabilityMax] maximum allowed lane width variability in [m]
+ * @returns {ResultLog}
+ */
+function checkDrivingLaneVariability(xodrString, roadSelection, variabilityMin, variabilityMax) {
+    variabilityMin = Number(variabilityMin);
+    variabilityMax = variabilityMax !== undefined ? Number(variabilityMax) : Infinity;
+    let odrReader = new OdrReader(xodrString);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+    
+    const laneWidths = req_helper.getDrivingLaneWidthRange(odrReader, roadIds);
+    const variability = Math.abs(laneWidths[1] - laneWidths[0]);
+    
+    if (variability >= variabilityMin && variability <= variabilityMax) {
+        return {
+            result: true,
+            log: "The lanes of the map fulfill the required variability for at least one lane."
+        };
+    }
+    else {
+        return {
+            result: false,
+            log: `The lane width variability must be within ${variabilityMin} and ${variabilityMax} m, but is evaluated to be ${variability} m.`
+        };
+    }
+}
+
+/**
  * Checks if all road elevations are within the allowed range
  * 
  * @param {string} xodrString 
@@ -529,6 +569,47 @@ function checkRoadLength(xodrString, roadSelection, minLength) {
             log: `The length of the road must be at least ${minLength} m, but is evaluated to be ${length} m.`
         };
     }
+}
+
+/**
+ * Checks if the longest straight of all given roads is sufficiently long.
+ * 
+ * A straight is defined as the longest coherent road where the curve radius does not 
+ * drop below the given radius threshold
+ * 
+ * @param {string} xodrString 
+ * @param {string} roadSelection stringified array of roadIds that need to be considered for the check. If
+ *                               the array is empty, all roads in the map will be checked
+ * @param {string | number} curveRadiusThreshold the minimum radius to consider a road a straight 
+ * @param {string | number} minLength the minimum required length of a straight, given in [m] (quality criterion)
+ * @returns {ResultLog}
+ */
+function checkStraightLength(xodrString, roadSelection, curveRadiusThreshold, minLength) {
+    curveRadiusThreshold = Number(curveRadiusThreshold);
+    minLength = Number(minLength);
+
+    let odrReader = new OdrReader(xodrString);
+
+    roadSelection = JSON.parse(roadSelection);
+    let roadIds;
+    if (roadSelection.length > 0)
+        roadIds = roadSelection;
+        // if no road seletion defined, let roadIds undefined to check ALL roads
+
+    const maxStraightLength = req_helper.getMaximumStraightLength(odrReader, curveRadiusThreshold, roadIds);
+
+    if (maxStraightLength >= minLength) {
+        return {
+            result: true,
+            log: `The map cotains at least one road with a straight of at least ${minLength} m.`
+        };
+    }
+    else {
+        return {
+            result: false,
+            log: `The map must contain at least one straight of at least ${minLength} m, but the longest straight of all roads is ${maxStraightLength} m.`
+        };
+    }    
 }
 
 /**
