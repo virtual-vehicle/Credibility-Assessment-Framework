@@ -1412,7 +1412,7 @@ exports.OdrReader = class OdrReader {
 
         // cap to -180°...180°
         if (angle > Math.PI) {
-            angle = Math.PI - angle;
+            angle = angle - 2 * Math.PI;
         }
         else if (angle < -Math.PI) {
             angle = 2 * Math.PI + angle;
