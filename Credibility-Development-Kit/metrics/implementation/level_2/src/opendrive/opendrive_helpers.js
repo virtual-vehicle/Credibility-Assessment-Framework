@@ -55,12 +55,28 @@ function checkPoseOffsetsSuccessingRoad(odrReader, road, successingRoad, thresho
     else 
         laneIdPairs = lanelink_helpers.getLaneLinksRoadToSuccessingRoadJunction(road, successingRoad, odrReader);
 
+    let laneRoad, laneSuccessingRoad;
+
     for (let laneId of laneIdPairs) {
         let poseFirstBoundary, poseOtherBoundary, poseSuccFirstBoundary, poseSuccOtherBoundary;
 
         if (direction == "same") {
             // reference lines are pointing in same direction
             // ----->|----->
+            laneRoad = odrReader.getLane(road, road.attributes.length, laneId[0]);
+            laneSuccessingRoad = odrReader.getLane(successingRoad, 0, laneId[1]);
+    
+            // exclude shoulder, border, sidewalk and curb from the check as they are allowed to have discontinuities 
+            if (laneRoad.attributes.type == "shoulder" || 
+                laneRoad.attributes.type == "border" || 
+                laneRoad.attributes.type == "sidewalk" || 
+                laneRoad.attributes.type == "curb") continue;
+    
+            if (laneSuccessingRoad.attributes.type == "shoulder" || 
+                laneSuccessingRoad.attributes.type == "border" || 
+                laneSuccessingRoad.attributes.type == "sidewalk" || 
+                laneSuccessingRoad.attributes.type == "curb") continue;
+
             poseFirstBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[0], road.attributes.length, "left");
             poseOtherBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[0], road.attributes.length, "right");
             poseSuccFirstBoundary = odrReader.getLaneBoundaryPose(successingRoad.attributes.id, laneId[1], 0, "left");
@@ -69,6 +85,20 @@ function checkPoseOffsetsSuccessingRoad(odrReader, road, successingRoad, thresho
         else {
             // reference lines are pointing in oppposite direction
             // ----->|<-----
+            laneRoad = odrReader.getLane(road, road.attributes.length, laneId[0]);
+            laneSuccessingRoad = odrReader.getLane(successingRoad, successingRoad.attributes.length, laneId[1]);
+    
+            // exclude shoulder, border, sidewalk and curb from the check as they are allowed to have discontinuities 
+            if (laneRoad.attributes.type == "shoulder" || 
+                laneRoad.attributes.type == "border" || 
+                laneRoad.attributes.type == "sidewalk" || 
+                laneRoad.attributes.type == "curb") continue;
+    
+            if (laneSuccessingRoad.attributes.type == "shoulder" || 
+                laneSuccessingRoad.attributes.type == "border" || 
+                laneSuccessingRoad.attributes.type == "sidewalk" || 
+                laneSuccessingRoad.attributes.type == "curb") continue;
+            
             poseFirstBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[0], road.attributes.length, "left");
             poseOtherBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[0], road.attributes.length, "right");
             poseSuccFirstBoundary = odrReader.getLaneBoundaryPose(successingRoad.attributes.id, laneId[1], successingRoad.attributes.length, "right");
@@ -78,9 +108,13 @@ function checkPoseOffsetsSuccessingRoad(odrReader, road, successingRoad, thresho
         let diffPoseFirst = subtractPose(poseFirstBoundary, poseSuccFirstBoundary, true);
         let diffPoseOther = subtractPose(poseOtherBoundary, poseSuccOtherBoundary, true);
 
-        if (comparePose(diffPoseFirst, "<=", thresholdPose) === false || comparePose(diffPoseOther, "<=", thresholdPose) === false) {
+        if (comparePose(diffPoseFirst, "<=", thresholdPose) === false) {
             result = false;
-            log += `Offset in road transition greater than allowed threshold (for transition from road ${road.attributes.id}, lane ${laneId[0]} to road ${successingRoad.attributes.id}, , lane ${laneId[1]}). `
+            log += `Offset in road transition greater than allowed threshold (for transition from road ${road.attributes.id}, lane ${laneId[0]} to road ${successingRoad.attributes.id}, lane ${laneId[1]}): Offset is (dx: ${diffPoseFirst.x} m, dy: ${diffPoseFirst.y} m, dz: ${diffPoseFirst.z} m, dheading: ${diffPoseFirst.heading*180/3.1416}°, dpitch: ${diffPoseFirst.pitch*180/3.1416}°, droll: ${diffPoseFirst.roll*180/3.1416}°).`
+        }
+        if (comparePose(diffPoseOther, "<=", thresholdPose) === false) {
+            result = false;
+            log += `Offset in road transition greater than allowed threshold (for transition from road ${road.attributes.id}, lane ${laneId[0]} to road ${successingRoad.attributes.id}, lane ${laneId[1]}): Offset is (dx: ${diffPoseOther.x} m, dy: ${diffPoseOther.y} m, dz: ${diffPoseOther.z} m, dheading: ${diffPoseOther.heading*180/3.1416}°, dpitch: ${diffPoseOther.pitch*180/3.1416}°, droll: ${diffPoseOther.roll*180/3.1416}°).`
         }
     }
 
@@ -116,20 +150,50 @@ function checkPoseOffsetsPredecessingRoad(odrReader, road, predecessingRoad, thr
     else 
         laneIdPairs = lanelink_helpers.getLaneLinksPredecessingRoadToRoadJunction(road, predecessingRoad, odrReader);
 
+    let lanePredecessingRoad, laneRoad;
+
     for (let laneId of laneIdPairs) {
         let poseFirstBoundary, poseOtherBoundary, posePreFirstBoundary, posePreOtherBoundary;
 
         if (direction == "same") {
             // reference lines are pointing in same direction
             // ----->|----->
+            lanePredecessingRoad = odrReader.getLane(predecessingRoad, predecessingRoad.attributes.length, laneId[0]);
+            laneRoad = odrReader.getLane(road, 0, laneId[1]);
+    
+            // exclude shoulder, border, sidewalk and curb from the check as they are allowed to have discontinuities 
+            if (laneRoad.attributes.type == "shoulder" || 
+                laneRoad.attributes.type == "border" || 
+                laneRoad.attributes.type == "sidewalk" || 
+                laneRoad.attributes.type == "curb") continue;
+    
+            if (lanePredecessingRoad.attributes.type == "shoulder" || 
+                lanePredecessingRoad.attributes.type == "border" || 
+                lanePredecessingRoad.attributes.type == "sidewalk" || 
+                lanePredecessingRoad.attributes.type == "curb") continue;
+
             posePreFirstBoundary = odrReader.getLaneBoundaryPose(predecessingRoad.attributes.id, laneId[0], predecessingRoad.attributes.length, "left");
             posePreOtherBoundary = odrReader.getLaneBoundaryPose(predecessingRoad.attributes.id, laneId[0], predecessingRoad.attributes.length, "right");
             poseFirstBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[1], 0, "left");
-            poseOtherBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[1], 0, "right");
+            poseOtherBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[1], 0, "right");   
         }
         else {
             // reference lines are pointing in diverging direction
             // <-----|----->
+            lanePredecessingRoad = odrReader.getLane(predecessingRoad, 0, laneId[0]);
+            laneRoad = odrReader.getLane(road, 0, laneId[1]);
+    
+            // exclude shoulder, border, sidewalk and curb from the check as they are allowed to have discontinuities 
+            if (laneRoad.attributes.type == "shoulder" || 
+                laneRoad.attributes.type == "border" || 
+                laneRoad.attributes.type == "sidewalk" || 
+                laneRoad.attributes.type == "curb") continue;
+    
+            if (lanePredecessingRoad.attributes.type == "shoulder" || 
+                lanePredecessingRoad.attributes.type == "border" || 
+                lanePredecessingRoad.attributes.type == "sidewalk" || 
+                lanePredecessingRoad.attributes.type == "curb") continue;
+
             posePreFirstBoundary = odrReader.getLaneBoundaryPose(predecessingRoad.attributes.id, laneId[0], 0, "right");
             posePreOtherBoundary = odrReader.getLaneBoundaryPose(predecessingRoad.attributes.id, laneId[0], 0, "left");
             poseFirstBoundary = odrReader.getLaneBoundaryPose(road.attributes.id, laneId[1], 0, "left");
@@ -139,9 +203,13 @@ function checkPoseOffsetsPredecessingRoad(odrReader, road, predecessingRoad, thr
         let diffPoseFirst = subtractPose(poseFirstBoundary, posePreFirstBoundary, true);
         let diffPoseOther = subtractPose(poseOtherBoundary, posePreOtherBoundary, true);
 
-        if (comparePose(diffPoseFirst, "<=", thresholdPose) === false || comparePose(diffPoseOther, "<=", thresholdPose) === false) {
+        if (comparePose(diffPoseFirst, "<=", thresholdPose) === false) {
             result = false;
-            log += `Offset in road transition greater than allowed threshold (for transition from road ${predecessingRoad.attributes.id}, lane ${laneId[0]} to road ${road.attributes.id}, lane ${laneId[1]}). `
+            log += `Offset in road transition greater than allowed threshold (for transition from road ${predecessingRoad.attributes.id}, lane ${laneId[0]} to road ${road.attributes.id}, lane ${laneId[1]}). Offset is (dx: ${diffPoseFirst.x} m, dy: ${diffPoseFirst.y} m, dz: ${diffPoseFirst.z} m, dheading: ${diffPoseFirst.heading*180/3.1416}°, dpitch: ${diffPoseFirst.pitch*180/3.1416}°, droll: ${diffPoseFirst.roll*180/3.1416}°).`
+        }
+        if (comparePose(diffPoseOther, "<=", thresholdPose) === false) {
+            result = false;
+            log += `Offset in road transition greater than allowed threshold (for transition from road ${predecessingRoad.attributes.id}, lane ${laneId[0]} to road ${road.attributes.id}, lane ${laneId[1]}). Offset is (dx: ${diffPoseOther.x} m, dy: ${diffPoseOther.y} m, dz: ${diffPoseOther.z} m, dheading: ${diffPoseOther.heading*180/3.1416}°, dpitch: ${diffPoseOther.pitch*180/3.1416}°, droll: ${diffPoseOther.roll*180/3.1416}°).`
         }
     }
 
@@ -153,22 +221,21 @@ function checkPoseOffsetsPredecessingRoad(odrReader, road, predecessingRoad, thr
 
 /**
  * @param {OdrReader} odrReader
- * @param {t_road_planView} planView 
- * @param {number} thresholdDistance
- * @param {number} thresholdHeading
+ * @param {string} roadId 
+ * @param {internal_pose3d} thresholdPose
  * @returns {ResultLog}
  */
 function checkGeometryTransitions(odrReader, roadId, thresholdPose) {
     let road = odrReader.getRoad(roadId, "road");
 
     if (road.length > 0) {
-        return {
-            result: false,
-            log: "road with ID " + roadId + " does not exist."
-        }
+        road = road[0];
     }
     else {
-        road = road[0];
+        return {
+            result: false,
+            log: "Road with ID " + roadId + " does not exist. "
+        }
     }
 
     if (road.planView.geometry.length < 2)
@@ -213,7 +280,7 @@ function checkGeometryTransitions(odrReader, roadId, thresholdPose) {
  * @returns {ResultLog}
  */
 function checkElevationTransitions(odrReader, roadId, thresholdPose) {
-    const road = odrReader.getRoad(roadId, "road");
+    let road = odrReader.getRoad(roadId, "road");
 
     if (road.length > 0) {
         road = road[0];
@@ -270,7 +337,7 @@ function checkElevationTransitions(odrReader, roadId, thresholdPose) {
  * @returns {ResultLog}
  */
 function checkSuperElevationTransitions(odrReader, roadId, thresholdPose) {
-    const road = odrReader.getRoad(roadId, "road");
+    let road = odrReader.getRoad(roadId, "road");
 
     if (road.length > 0) {
         road = road[0];
@@ -326,7 +393,7 @@ function checkSuperElevationTransitions(odrReader, roadId, thresholdPose) {
  * @returns {ResultLog}
  */
 function checkShapeTransitions(odrReader, roadId, thresholdPose) {
-    const road = odrReader.getRoad(roadId, "road");
+    let road = odrReader.getRoad(roadId, "road");
 
     if (road.length > 0) {
         road = road[0];
@@ -367,95 +434,113 @@ function checkShapeTransitions(odrReader, roadId, thresholdPose) {
 
 /**
  * @param {OdrReader} odrReader 
- * @param {t_road} road 
+ * @param {t_junction} junction 
  * @returns {ResultLog}
  */
-function checkJunctionRefs(odrReader, road) {
+function checkJunctionRefs(odrReader, junction) {
     let result = true;
     let log = "";
 
-    if (road.attributes.junction !== "-1") {
-        // check if junction exists
-        let junction = odrReader.getJunction(road.attributes.junction);
-        if (junction === undefined) {
-            result = false;
-            log += "Junction with ID " + road.attributes.junction + " is not defined, although referenced in road with ID " + road.attributes.id + ". ";
+    for (let connection of junction.connection) {
+        let roadToCheck;
+
+        // check incoming road to junction
+        if (connection.attributes.incomingRoad !== undefined) {
+            roadToCheck = odrReader.getRoad(connection.attributes.incomingRoad, "road");
+            if (roadToCheck.length > 0) {
+                // if road exists, also check referenced lanes
+                roadToCheck = roadToCheck[0];
+
+                if (roadToCheck.link !== undefined) {
+                    let laneSection;
+
+                    if (roadToCheck.link.predecessor !== undefined) {
+                        if (roadToCheck.link.predecessor.attributes.elementId.localeCompare(junction.attributes.id) == 0) {
+                            laneSection = roadToCheck.lanes.laneSection[0];
+                        }
+                    }
+
+                    if (roadToCheck.link.successor !== undefined && laneSection === undefined) {
+                        if (roadToCheck.link.successor.attributes.elementId.localeCompare(junction.attributes.id) == 0) {
+                            laneSection = roadToCheck.lanes.laneSection[roadToCheck.lanes.laneSection.length - 1];
+                        }
+                    }
+                    
+                    // check if referenced lanes exist in incomingRoad
+                    for (let link of connection.laneLink) {
+                        if (link.attributes.from > 0) {                           
+                            if (laneSection.left.lane.find(lane => lane.attributes.id === link.attributes.from) === undefined) {
+                                result = false;
+                                log += "Lane with ID " + link.attributes.from + " in road with ID " + roadToCheck.attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
+                            }
+                        }
+                        else {
+                            if (laneSection.right.lane.find(lane => lane.attributes.id === link.attributes.from) === undefined) {
+                                result = false;
+                                log += "Lane with ID " + link.attributes.from + " in road with ID " + roadToCheck.attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
+                            }
+                        }                                                                  
+                    }
+                }
+                else {
+                    result = false;
+                    log += "Road with ID " + roadToCheck.attributes.id + " doesn't contain road linkage. This may lead to ambiguity.";
+                }
+            }
+            else {
+                result = false;
+                log += "Road with ID " + connection.attributes.incomingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
+            }
         }
-        else {
-            // check if incomingRoad and connectingRoad exist
-            for (let connection of junction.connection) {
-                let roadToCheck;
 
-                if (connection.attributes.incomingRoad !== undefined) {
-                    roadToCheck = odrReader.getRoad(connection.attributes.incomingRoad, "road");
-                    if (roadToCheck.length == 0) {
-                        result = false;
-                        log += "Road with ID " + connection.attributes.incomingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
-                    }
-                    else {
-                        // check if referenced lanes exist in incomingRoad
-                        for (let link of connection.laneLink) {
-                            laneSection = roadToCheck[0].lanes.laneSection[roadToCheck[0].lanes.laneSection.length - 1];
-                            if (link.attributes.from > 0) {
-                                if (laneSection.left.lane.find(lane => lane.attributes.id === link.attributes.from) === undefined) {
-                                    result = false;
-                                    log += "Lane with ID " + link.attributes.from + " in road with ID " + roadToCheck[0].attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
-                                }
-                            }
-                            else {
-                                if (laneSection.right.lane.find(lane => lane.attributes.id === link.attributes.from) === undefined) {
-                                    result = false;
-                                    log += "Lane with ID " + link.attributes.from + " in road with ID " + roadToCheck[0].attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
-                                }
-                            }                                                                  
+        // check connecting road of junction
+        if (connection.attributes.connectingRoad !== undefined) {
+            roadToCheck = odrReader.getRoad(connection.attributes.connectingRoad, "road");
+            if (roadToCheck.length == 0) {
+                result = false;
+                log += "Road with ID " + connection.attributes.connectingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
+            }
+            else {
+                let laneSection;
+                roadToCheck = roadToCheck[0];
+
+                // check if referenced lanes exist in connectingRoad
+                for (let link of connection.laneLink) {
+                    laneSection = connection.attributes.contactPoint === "end" ? roadToCheck.lanes.laneSection[roadToCheck.lanes.laneSection.length - 1] : roadToCheck.lanes.laneSection[0];
+                    if (link.attributes.to > 0) {
+                        if (laneSection.left.lane.find(lane => lane.attributes.id === link.attributes.to) === undefined) {
+                            result = false;
+                            log += "Lane with ID " + link.attributes.to + "in road with ID " + roadToCheck.attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
                         }
                     }
-                }
-
-                if (connection.attributes.connectingRoad !== undefined) {
-                    roadToCheck = odrReader.getRoad(connection.attributes.connectingRoad, "road");
-                    if (roadToCheck.length == 0) {
-                        result = false;
-                        log += "Road with ID " + connection.attributes.connectingRoad + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
-                    }
                     else {
-                        // check if referenced lanes exist in connectingRoad
-                        for (let link of connection.laneLink) {
-                            laneSection = connection.attributes.contactPoint === "end" ? roadToCheck[0].lanes.laneSection[roadToCheck[0].lanes.laneSection.length - 1] : roadToCheck[0].lanes.laneSection[0];
-                            if (link.attributes.to > 0) {
-                                if (laneSection.left.lane.find(lane => lane.attributes.id === link.attributes.to) === undefined) {
-                                    result = false;
-                                    log += "Lane with ID " + link.attributes.to + "in road with ID " + roadToCheck[0].attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
-                                }
-                            }
-                            else {
-                                if (laneSection.right.lane.find(lane => lane.attributes.id === link.attributes.to) === undefined) {
-                                    result = false;
-                                    log += "Lane with ID " + link.attributes.to + "in road with ID " + roadToCheck[0].attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
-                                }
-                            }                                    
+                        if (laneSection.right.lane.find(lane => lane.attributes.id === link.attributes.to) === undefined) {
+                            result = false;
+                            log += "Lane with ID " + link.attributes.to + "in road with ID " + roadToCheck.attributes.id + " is not defined in at least one lane section, although referenced in junction with ID " + junction.attributes.id + ". ";
                         }
-                    }
-                }
-
-                if (connection.predecessor !== undefined) {
-                    roadToCheck = odrReader.getRoad(connection.predecessor.attributes.elementId, "road");
-                    if (roadToCheck.length == 0) {
-                        result = false;
-                        log += "Road with ID " + connection.predecessor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
-                    }
-                }
-
-                if (connection.successor !== undefined) {
-                    roadToCheck = odrReader.getRoad(connection.successor.attributes.elementId, "road");
-                    if (roadToCheck.length == 0) {
-                        result = false;
-                        log += "Road with ID " + connection.successor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
-                    }
+                    }                                    
                 }
             }
         }
+
+        if (connection.predecessor !== undefined) {
+            roadToCheck = odrReader.getRoad(connection.predecessor.attributes.elementId, "road");
+            if (roadToCheck.length == 0) {
+                result = false;
+                log += "Road with ID " + connection.predecessor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
+            }
+        }
+
+        if (connection.successor !== undefined) {
+            roadToCheck = odrReader.getRoad(connection.successor.attributes.elementId, "road");
+            if (roadToCheck.length == 0) {
+                result = false;
+                log += "Road with ID " + connection.successor.attributes.elementId + " is not defined, although referenced in junction with ID " + junction.attributes.id + ". ";
+            }
+        }
     }
+        
+    
 
     return {
         result: result,

@@ -3,6 +3,7 @@
  * @typedef {import('./specification').t_road_planView_geometry_paramPoly3_attributes} t_road_planView_geometry_paramPoly3_attributes
  * @typedef {import('./specification').t_road_planView_geometry_arc_attributes} t_road_planView_geometry_arc_attributes
  * @typedef {import('./specification').t_road_planView_geometry_spiral_attributes} t_road_planView_geometry_spiral_attributes
+ * @typedef {import('./specification').t_road_lanes_laneSection_lr_lane_height_attributes} t_road_lanes_laneSection_lr_lane_height_attributes
  */
 
 /**
@@ -11,6 +12,14 @@
  * @typedef {object} internal_geometry_parameters_paramPoly3
  * @property {t_road_planView_geometry_attributes} init
  * @property {t_road_planView_geometry_paramPoly3_attributes} parameters
+ */
+
+/**
+ * internal_lane_height
+ * @typedef {object} internal_lane_height
+ * @property {t_road_lanes_laneSection_lr_lane_height_attributes} laneHeightAttributes
+ * @property {number} tInner
+ * @property {number} tOuter
  */
 
 /**
@@ -47,5 +56,6 @@ module.exports = {
      * @type {internal_geometry_parameters_arc}
      * @type {internal_geometry_parameters_spiral}
      * @type {internal_pose3d}
+     * @type {internal_lane_height}
      */
 }

@@ -29,9 +29,11 @@ const ROOT_ELEMENT = "OpenDRIVE";
  * @typedef {import('../types/specification').t_road_lanes_laneOffset_attributes} t_road_lanes_laneOffset_attributes
  * @typedef {import('../types/specification').t_road_lanes_laneSection} t_road_lanes_laneSection
  * @typedef {import('../types/specification').t_road_lanes_laneSection_lr_lane_width_attributes} t_road_lanes_laneSection_lr_lane_width_attributes
+ * @typedef {import("../types/specification").t_road_lanes_laneSection_lr_lane_height_attributes} t_road_lanes_laneSection_lr_lane_height_attributes
  * @typedef {import('../types/specification').t_road_objects_object} t_road_objects_object
  * @typedef {import('../types/specification').t_road_signals_signal} t_road_signals_signal
  * @typedef {import('../types/internal').internal_pose3d} internal_pose3d
+ * @typedef {import('../types/internal').internal_lane_height} internal_lane_height
  */
 
 // helper methods for arrays to find last index according to a condition
@@ -267,12 +269,22 @@ exports.OdrReader = class OdrReader {
     }
     
     /**
+     * Returns the junction with the given junction ID
      * 
      * @param {string} junctionId 
      * @returns {t_junction | undefined}
      */
     getJunction(junctionId) {
         return this.#getJunction(junctionId);
+    }
+
+    /**
+     * Returns all available junctions
+     * 
+     * @returns {t_junction[]}
+     */
+    getAllJunctions() {
+        return this.#junctions;
     }
 
     /**
@@ -467,6 +479,34 @@ exports.OdrReader = class OdrReader {
     }
 
     /**
+     * Get the lane of the road at the specified point with the specified lane ID
+     * 
+     * @param {t_road} road 
+     * @param {number} s
+     * @param {number} laneId 
+     * @returns {t_road_lanes_laneSection_left_lane | t_road_lanes_laneSection_center_lane | t_road_lanes_laneSection_right_lane | undefined}
+     */
+    getLane(road, s, laneId) {
+        const laneSection = this.#getLaneSection(road, s);
+
+        if (laneSection === undefined)
+            return undefined;
+
+        const availableLaneIds = this.#getAvailableLaneIds(laneSection);
+
+        if (!availableLaneIds.includes(laneId)) {
+            return undefined;
+        }
+
+        if (laneId > 0) 
+            return laneSection.left.lane.find(lane => lane.attributes.id == laneId);
+        else if (laneId < 0)
+            return laneSection.right.lane.find(lane => lane.attributes.id == laneId);
+        else
+            return laneSection.center.lane;
+    }
+
+    /**
      * 
      * @param {t_road} road 
      * @param {number} s 
@@ -478,6 +518,7 @@ exports.OdrReader = class OdrReader {
         const parametersElevation = this.#getElevationProfileParameters(road, s);
         const parametersSuperElevation = this.#getSuperElevationParameters(road, s);
         const parametersShape = this.#getLateralShapeParameters(road, s);
+        const laneHeightParameters = this.#getLaneHeightParameters(road, s, t);
 
         var parametersPlanView;
         var pose;
@@ -485,20 +526,20 @@ exports.OdrReader = class OdrReader {
         switch (modelingApproach) {
             case "paramPoly3":
                 parametersPlanView = this.#getParamPoly3Parameters(road, s);
-                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, laneHeightParameters, s, t);
                 break;
             case "line":
                 parametersPlanView = this.#getLineParameters(road, s);
                 // line is interpreted as paramPoly3 parameters
-                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                pose = this.#getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, laneHeightParameters, s, t);
                 break;
             case "arc":
                 parametersPlanView = this.#getArcParameters(road, s);
-                pose = this.#getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                pose = this.#getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, laneHeightParameters, s, t);
                 break;
             case "spiral":
                 parametersPlanView = this.#getSpiralParameters(road, s);
-                pose = this.#getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t);
+                pose = this.#getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, laneHeightParameters, s, t);
                 break;
             case "poly3":
                 throw("cubic polynoms are not supported");
@@ -512,15 +553,16 @@ exports.OdrReader = class OdrReader {
      * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
      * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
      * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {internal_lane_height} parametersLaneHeight
      * @param {number} s
      * @param {number} t
      * @returns {internal_pose3d} 
      */
-    #getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
+    #getPoseParamPoly3(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t) {
         return {
             x: this.#xParamPoly3(parametersPlanView, s, t),
             y: this.#yParamPoly3(parametersPlanView, s, t),
-            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t),
             heading: this.#hdgParamPoly3(parametersPlanView, s),
             pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
             roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
@@ -532,15 +574,16 @@ exports.OdrReader = class OdrReader {
      * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
      * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
      * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {internal_lane_height} parametersLaneHeight
      * @param {number} s 
      * @param {number} t 
      * @returns {internal_pose3d} 
      */
-    #getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
+    #getPoseArc(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t) {
         return {
             x: this.#xArc(parametersPlanView, s, t),
             y: this.#yArc(parametersPlanView, s, t),
-            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t),
             heading: this.#hdgArc(parametersPlanView, s),
             pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
             roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
@@ -552,15 +595,16 @@ exports.OdrReader = class OdrReader {
      * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
      * @param {t_road_lateralProfile_shape_attributes[]} parametersShape
      * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {internal_lane_height} parametersLaneHeight
      * @param {number} s 
      * @param {number} t 
      * @returns {internal_pose3d} 
      */
-    #getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, s, t) {
+    #getPoseSpiral(parametersPlanView, parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t) {
         return {
             x: this.#xSpiral(parametersPlanView, s, t),
             y: this.#ySpiral(parametersPlanView, s, t),
-            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, s, t),
+            z: this.#z(parametersElevation, parametersShape, parametersSuperElevation, parametersLaneHeight, s, t),
             heading: this.#hdgSpiral(parametersPlanView, s),
             pitch: this.#pitch(parametersElevation, parametersShape, parametersSuperElevation, s, t),
             roll: this.#roll(parametersSuperElevation, parametersShape, s, t)
@@ -770,6 +814,171 @@ exports.OdrReader = class OdrReader {
         }
 
         return [road.lateralProfile.shape[idxShape].attributes, road.lateralProfile.shape[idxShapeNext].attributes];
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {internal_lane_height}
+     */
+    #getLaneHeightParameters(road, s, t = 0) {
+        const lane = this.#getLaneByT(road, s, t);
+        let laneHeightAttributes;
+
+        if (lane === undefined) console.log(road.attributes.id, s, t);
+
+        if (lane.height.length > 0) {
+            const idxHeightEl = lane.height.findLastIndex(height => s >= height.attributes.sOffset);
+            laneHeightAttributes = lane.height[idxHeightEl].attributes;
+        }
+        else {
+            laneHeightAttributes = {
+                sOffset: 0,
+                inner: 0,
+                outer: 0
+            };
+        }
+
+        
+
+        const tValues = this.#getLaneBoundaries(road, s, lane.attributes.id);
+
+        return {
+            laneHeightAttributes: laneHeightAttributes,
+            tInner: tValues.inner,
+            tOuter: tValues.outer
+        };
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @param {number} laneId 
+     * @returns 
+     */
+    #getLaneBoundaries(road, s, laneId) {
+        const tLaneBoundaries = this.#getLaneBoundaryTValues(road, s);
+        const laneSection = this.#getLaneSection(road, s);
+        let laneIds = this.#getAvailableLaneIds(laneSection);
+        laneIds.splice(laneIds.indexOf(0), 1); // removes the 0, for easier handling
+        
+        if (laneId < 0)
+            return {
+                outer: tLaneBoundaries[laneIds.indexOf(laneId)],
+                inner: tLaneBoundaries[laneIds.indexOf(laneId) + 1]
+            };
+        else
+            return {
+                inner: tLaneBoundaries[laneIds.indexOf(laneId)],
+                outer: tLaneBoundaries[laneIds.indexOf(laneId) + 1]
+            };
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {t_road_lanes_laneSection_left_lane | t_road_lanes_laneSection_right_lane}
+     */
+    #getLaneByT(road, s, t) {
+        const laneId = this.#getLaneIdByT(road, s, t);
+        const laneSection = this.#getLaneSection(road, s);
+
+        if (laneId > 0) {
+            return laneSection.left.lane.find(lane => lane.attributes.id == laneId);
+        }
+        else {
+            return laneSection.right.lane.find(lane => lane.attributes.id == laneId);
+        }
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @param {number} t 
+     * @returns {number}
+     */
+    #getLaneIdByT(road, s, t) {
+        const laneSection = this.#getLaneSection(road, s);
+        let laneIds = this.#getAvailableLaneIds(laneSection);
+        laneIds.splice(laneIds.indexOf(0), 1); // removes the 0, for easier handling
+        const tLaneBoundaries = this.#getLaneBoundaryTValues(road, s);
+
+        let idxLaneId = Math.min(tLaneBoundaries.findLastIndex(tLb => util.roundToDigit(t, 3) >= util.roundToDigit(tLb, 3)), laneIds.length - 1);
+
+        return laneIds[idxLaneId];
+    }
+
+    /**
+     * @param {t_road} road 
+     * @param {number} s 
+     * @returns {number[]}
+     */
+    #getLaneBoundaryTValues(road, s) {
+        let tValues = [];
+
+        const laneSection = this.#getLaneSection(road, s);
+        const sOffset = s - laneSection.attributes.s;
+        const parametersLaneOffset = this.#getLaneOffsetParameters(road, s);
+        const tOffset = this.#tLaneOffset(parametersLaneOffset, s);
+
+        const laneIds = this.#getAvailableLaneIds(laneSection);
+        const laneIdMin = Math.min(...laneIds);
+        const laneIdMax = Math.max(...laneIds);
+
+        let lane, laneWidthParameters;
+
+        let width = 0;
+        // get right-hand boundary
+        if (laneIdMin < 0) {
+            for (let id = -1; id >= laneIdMin; id--) {
+                lane = this.#getLane(laneSection, id);
+                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
+                width -= this.#width(laneWidthParameters, sOffset);
+                tValues.push(width);
+            }
+        }
+
+        tValues.push(0); // center-line = lh boundary of -1 resp. rh boundary of 1
+
+        width = 0;
+        // get left-hand boundary
+        if (laneIdMax > 0) {
+            for (let id = 1; id <= laneIdMax; id++) {
+                lane = this.#getLane(laneSection, id);
+                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
+                width += this.#width(laneWidthParameters, sOffset);
+                tValues.push(width);
+            }
+        }
+
+        tValues = tValues.map(t => t + tOffset);
+        tValues.sort((a, b) => a - b);
+
+        return tValues;
+    }
+
+    /**
+     * @param {t_road_lanes_laneSection} laneSection 
+     * @returns {number[]} available lane IDs
+     */
+    #getAvailableLaneIds(laneSection) {
+        let laneIds = [0];
+
+        if (laneSection.left !== undefined) {
+            for (let lane of laneSection.left.lane)
+                laneIds.push(lane.attributes.id);
+        }
+        
+        if (laneSection.right !== undefined) {
+            for (let lane of laneSection.right.lane)
+                laneIds.push(lane.attributes.id);
+        }
+
+        laneIds.sort((a, b) => a - b);
+
+        return laneIds;        
     }
 
     /**
@@ -1012,16 +1221,18 @@ exports.OdrReader = class OdrReader {
      * @param {t_road_elevationProfile_elevation_attributes} parametersElevation
      * @param {t_road_lateralProfile_shape_attributes[]} parametersShapes
      * @param {t_road_lateralProfile_superelevation_attributes} parametersSuperElevation
+     * @param {internal_lane_height} parametersLaneHeight
      * @param {number} s 
      * @returns {number}
      */
-    #z(parametersElevation, parametersShapes, parametersSuperElevation, s, t = 0) {
+    #z(parametersElevation, parametersShapes, parametersSuperElevation, parametersLaneHeight, s, t = 0) {
         const zOffset = this.#header.offset !== undefined ? this.#header.offset.attributes.z : 0;
         const zShape = parametersShapes.length > 0 ? this.#hShape(parametersShapes, s, t) : 0;
         const zElevation = this.#hElevation(parametersElevation, s);
         const zSuperElevation = this.#hSuperElevation(parametersSuperElevation, s, t);
+        const zLaneHeight = this.#hLaneHeight(parametersLaneHeight, t);
 
-        return zOffset + zShape + zElevation + zSuperElevation;
+        return zOffset + zShape + zElevation + zSuperElevation + zLaneHeight;
     }
 
     /**
@@ -1296,6 +1507,15 @@ exports.OdrReader = class OdrReader {
         const roll = parametersSuperElevation.a + parametersSuperElevation.b * ds + parametersSuperElevation.c * Math.pow(ds, 2) + parametersSuperElevation.d * Math.pow(ds, 3);
         
         return Math.sin(roll) * t;
+    }
+
+    /**
+     * @param {internal_lane_height} parametersLaneHeight 
+     * @param {number} s 
+     * @param {number} t 
+     */
+    #hLaneHeight(parametersLaneHeight, t) {
+        return parametersLaneHeight.laneHeightAttributes.inner + (t - parametersLaneHeight.tInner)*(parametersLaneHeight.laneHeightAttributes.outer - parametersLaneHeight.laneHeightAttributes.inner)/(parametersLaneHeight.tOuter - parametersLaneHeight.tInner);
     }
 
     /**

@@ -18,6 +18,10 @@ exports.checkPlanViewModelingApproach = checkPlanViewModelingApproach;
  * @typedef {import('../../types/types').ResultLog} ResultLog
  */
 
+Array.prototype.unique = function () {
+    return this.filter((val, i, self) => self.indexOf(val) === i);
+}
+
 /**
  * Checks, if the transitions (for all lane boundaries) between connected roads are smooth enough,
  * according to the given threshold.
@@ -77,6 +81,7 @@ function checkRoadTransitions(xodrString, offsetThreshold, roadSelection) {
     
     let roads = [];
     if (roadSelection !== undefined) {
+        roadSelection = JSON.parse(roadSelection);
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
             if (extractedRoads.length > 0)
@@ -108,7 +113,7 @@ function checkRoadTransitions(xodrString, offsetThreshold, roadSelection) {
     }
 
     if (result === true) {
-        log = "All road transitions are in the "
+        log = "All road transitions are in the expected deviation range."
     }
 
     return {
@@ -136,8 +141,8 @@ function checkRoadInternalReferenceLineTransitions(xodrString, offsetThreshold, 
 
     let roadIds = [];
 
-    if (roadSelection !== undefined) 
-        roadIds = roadSelection;
+    if (roadSelection !== undefined)
+        roadIds = JSON.parse(roadSelection);
     else
         roadIds = odrReader.getAllRoads().map(road => road.attributes.id);
 
@@ -180,7 +185,10 @@ function checkReferences(xodrString, roadSelection) {
     let odrReader = new OdrReader(xodrString);
 
     let roads = [];
+    let junctionIds = [];
+
     if (roadSelection !== undefined) {
+        roadSelection = JSON.parse(roadSelection);
         for (let roadId of roadSelection) {
             let extractedRoads = odrReader.getRoad(roadId, "road");
             if (extractedRoads.length > 0)
@@ -198,9 +206,9 @@ function checkReferences(xodrString, roadSelection) {
         if (road.link === undefined)
             continue;
 
-        let resultLogJunction = helper.checkJunctionRefs(odrReader, road);
-        result = result && resultLogJunction.result;
-        log += resultLogJunction.log;
+        if (road.attributes.junction !== "-1") {
+            junctionIds.push(road.attributes.junction);
+        }
 
         let resultLogRoadLinks = helper.checkRoadLinkRefs(odrReader, road);
         result = result && resultLogRoadLinks.result;
@@ -209,6 +217,16 @@ function checkReferences(xodrString, roadSelection) {
         let resultLogLaneSections = helper.checkLaneSectionRefs(odrReader, road);
         result = result && resultLogLaneSections.result;
         log += resultLogLaneSections.log;
+    }
+
+    junctionIds = junctionIds.unique();
+    
+    for (let junctionId of junctionIds) {
+        let junction = odrReader.getJunction(junctionId);
+        let resultLogJunction = helper.checkJunctionRefs(odrReader, junction);
+
+        result = result && resultLogJunction.result;
+        log += resultLogJunction.log;
     }
 
     if (result === true)

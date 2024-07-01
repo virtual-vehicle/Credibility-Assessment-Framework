@@ -88,7 +88,7 @@ function getRoadDirections(road, relatedRoad, odrReader) {
  */
 function getLaneLinksRoadToSuccessingRoadImplicite(road, successingRoad, odrReader) {
     let pairs = [];
-    let direction = getRoadOrder(road, successingRoad, odrReader);
+    let direction = getRoadDirections(road, successingRoad, odrReader);
 
     if (direction == "same") {
         // => normal linkage, ref-lines have same direction
@@ -179,7 +179,7 @@ function getLaneLinksRoadToSuccessingRoadImplicite(road, successingRoad, odrRead
  */
 function getLaneLinksPredecessingRoadToRoadImplicite(road, predecessingRoad, odrReader) {
     let pairs = [];
-    let direction = getRoadOrder(road, predecessingRoad, odrReader);
+    let direction = getRoadDirections(road, predecessingRoad, odrReader);
 
     if (direction == "same") {
         // => normal linkage, ref-lines have same direction
@@ -410,19 +410,23 @@ function getLaneLinksRoadToSuccessingRoadJunction(road, successingRoad, odrReade
         junction = odrReader.getJunction(road.attributes.junction);
         let connection = junction.connection.find(con => con.attributes.incomingRoad == successingRoad.attributes.id 
                                     && con.attributes.connectingRoad == road.attributes.id);
-                                    
-        for (let laneLink of connection.laneLink) {
-            pairs.push([laneLink.attributes.to, laneLink.attributes.from]);
-            // [to, from] is correct here, as "to" belongs to road and "from" belongs to the successing road
-        }
+
+        if (connection !== undefined) {
+            for (let laneLink of connection.laneLink) {
+                pairs.push([laneLink.attributes.to, laneLink.attributes.from]);
+                // [to, from] is correct here, as "to" belongs to road and "from" belongs to the successing road
+            }
+        }    
     }
     else {
         // successingRoad belongs to junction
         junction = odrReader.getJunction(successingRoad.attributes.junction);
         let connection = junction.connection.find(con => con.attributes.incomingRoad == road.attributes.id 
                                                       && con.attributes.connectingRoad == successingRoad.attributes.id);
-        for (let laneLink of connection.laneLink)
-            pairs.push([laneLink.attributes.from, laneLink.attributes.to]);
+        if (connection !== undefined) {
+            for (let laneLink of connection.laneLink)
+                pairs.push([laneLink.attributes.from, laneLink.attributes.to]);
+        }        
     }
 
     return pairs;
@@ -443,17 +447,21 @@ function getLaneLinksPredecessingRoadToRoadJunction(road, predecessingRoad, odrR
         junction = odrReader.getJunction(road.attributes.junction);
         let connection = junction.connection.find(con => con.attributes.incomingRoad == predecessingRoad.attributes.id 
                                     && con.attributes.connectingRoad == road.attributes.id);
-        for (let laneLink of connection.laneLink)
-            pairs.push([laneLink.attributes.from, laneLink.attributes.to]);
+        if (connection !== undefined) {
+            for (let laneLink of connection.laneLink)
+                pairs.push([laneLink.attributes.from, laneLink.attributes.to]);
+        }
     }
     else {
         // predecessingRoad belongs to junction
         junction = odrReader.getJunction(predecessingRoad.attributes.junction);
-        let connection = junction.connection.find(con => con.attributes.incomingRoad == road.attributes.id 
-                                    && con.attributes.connectingRoad == predecessingRoad.attributes.id);
-        for (let laneLink of connection.laneLink) {
-            pairs.push([laneLink.attributes.to, laneLink.attributes.from]);
-            // [to, from] is correct here, as "to" belongs to the predecessingRoad and "from" belongs to road
+        let connection = junction.connection.find(con => con.attributes.incomingRoad == road.attributes.id
+                                                    && con.attributes.connectingRoad == predecessingRoad.attributes.id);
+        if (connection !== undefined) {
+            for (let laneLink of connection.laneLink) {
+                pairs.push([laneLink.attributes.to, laneLink.attributes.from]);
+                // [to, from] is correct here, as "to" belongs to the predecessingRoad and "from" belongs to road
+            }
         }
     }
 
