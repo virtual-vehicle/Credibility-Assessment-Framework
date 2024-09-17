@@ -34,6 +34,7 @@ const ROOT_ELEMENT = "OpenDRIVE";
  * @typedef {import('../types/specification').t_road_signals_signal} t_road_signals_signal
  * @typedef {import('../types/internal').internal_pose3d} internal_pose3d
  * @typedef {import('../types/internal').internal_lane_height} internal_lane_height
+ * @typedef {import('../types/internal').internal_sectionLaneIds} internal_sectionLaneIds
  */
 
 // helper methods for arrays to find last index according to a condition
@@ -458,11 +459,17 @@ exports.OdrReader = class OdrReader {
     /**
      * Get all the driving lane IDs of a specific lane section
      * 
-     * @param {t_road} road 
+     * @param {t_road | string} road 
      * @param {number} s 
      * @returns {number[]} all available driving lane IDs of the lane section
      */
     getDrivingLaneIds(road, s) {
+        if (typeof(road) == "string") {
+            road = this.#getRoadByRoadId(road);
+            if (road === undefined)
+                return [];
+        }
+
         let laneIds = [];
 
         const laneSection = this.#getLaneSection(road, s);
@@ -481,12 +488,18 @@ exports.OdrReader = class OdrReader {
     /**
      * Get the lane of the road at the specified point with the specified lane ID
      * 
-     * @param {t_road} road 
+     * @param {t_road | string} road road or road ID
      * @param {number} s
      * @param {number} laneId 
      * @returns {t_road_lanes_laneSection_left_lane | t_road_lanes_laneSection_center_lane | t_road_lanes_laneSection_right_lane | undefined}
      */
     getLane(road, s, laneId) {
+        if (typeof(road) == "string") {
+            road = this.#getRoadByRoadId(road);
+            if (road === undefined)
+                return [];
+        }
+
         const laneSection = this.#getLaneSection(road, s);
 
         if (laneSection === undefined)
@@ -504,6 +517,64 @@ exports.OdrReader = class OdrReader {
             return laneSection.right.lane.find(lane => lane.attributes.id == laneId);
         else
             return laneSection.center.lane;
+    }
+
+    /**
+     * Returns the lane IDs of each laneSection
+     * 
+     * @param {t_road | string} road road or road ID
+     * @returns {internal_sectionLaneIds}
+     */
+    getLaneIdsOfLaneSegments(road) {
+        if (typeof(road) == "string") {
+            road = this.#getRoadByRoadId(road);
+            if (road === undefined)
+                return [];
+        }
+
+        let laneIdsOfSection = [];
+
+        const laneSections = road.lanes.laneSection;
+
+        for (let i = 0; i < laneSections.length; i++) {
+            let laneIds = this.#getAvailableLaneIds(laneSections[i]);
+            laneIdsOfSection.push({
+                start: laneSections[i].attributes.s,
+                end: i < laneSections.length - 1 ? laneSections[i+1].attributes.s : road.attributes.length,
+                laneIds: laneIds
+            });
+        }
+
+        return laneIdsOfSection;
+    }
+
+    /**
+     * Returns all lane IDs of the given road at the specified point road length s
+     * 
+     * @param {t_road | string} road road or road ID
+     * @param {number} s 
+     * @returns {number[]}
+     */
+    getLaneIds(road, s) {
+        if (typeof(road) == "string") {
+            road = this.#getRoadByRoadId(road);
+            if (road === undefined)
+                return [];
+        }
+
+        let laneIds = [];
+
+        const laneSection = this.#getLaneSection(road, s);
+
+        if (laneSection.left !== undefined) {
+            laneIds.push(...laneSection.left.lane.map(lane => lane.attributes.id));
+        }
+
+        if (laneSection.right !== undefined) {
+            laneIds.push(...laneSection.right.lane.map(lane => lane.attributes.id));
+        }
+
+        return laneIds.sort((a, b) => a - b);
     }
 
     /**

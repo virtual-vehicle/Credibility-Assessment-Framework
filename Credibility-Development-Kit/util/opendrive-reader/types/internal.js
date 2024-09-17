@@ -50,6 +50,15 @@
  * @property {number} roll
  */
 
+/**
+ * internal_sectionLaneIds
+ * 
+ * @typedef {object} internal_sectionLaneIds
+ * @property {number} start
+ * @property {number} end
+ * @property {number[]} laneIds
+ */
+
 module.exports = {
     /**
      * @type {internal_geometry_parameters_paramPoly3}
@@ -57,5 +66,6 @@ module.exports = {
      * @type {internal_geometry_parameters_spiral}
      * @type {internal_pose3d}
      * @type {internal_lane_height}
+     * @type {internal_sectionLaneIds}
      */
 }
