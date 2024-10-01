@@ -59,6 +59,27 @@
  * @property {number[]} laneIds
  */
 
+/**
+ * internal_position
+ * 
+ * @typedef {object} internal_position
+ * @property {number} x
+ * @property {number} y
+ * @property {number} z
+ */
+
+/**
+ * internal_roadMark
+ * 
+ * @typedef {object} internal_roadMark
+ * @property {internal_position} position
+ * @property {number} width
+ * @property {string} color
+ * @property {number} height
+ * @property {string} type
+ * @property {number} id
+ */
+
 module.exports = {
     /**
      * @type {internal_geometry_parameters_paramPoly3}
@@ -67,5 +88,6 @@ module.exports = {
      * @type {internal_pose3d}
      * @type {internal_lane_height}
      * @type {internal_sectionLaneIds}
+     * @type {internal_roadMark}
      */
 }

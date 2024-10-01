@@ -50,7 +50,8 @@ const PARSE_AS_ARRAY = [
     'control',
     'switch',
     'platform',
-    'segment'
+    'segment',
+    'line'
 ];
 
 /**

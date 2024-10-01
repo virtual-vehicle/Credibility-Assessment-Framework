@@ -30,11 +30,14 @@ const ROOT_ELEMENT = "OpenDRIVE";
  * @typedef {import('../types/specification').t_road_lanes_laneSection} t_road_lanes_laneSection
  * @typedef {import('../types/specification').t_road_lanes_laneSection_lr_lane_width_attributes} t_road_lanes_laneSection_lr_lane_width_attributes
  * @typedef {import("../types/specification").t_road_lanes_laneSection_lr_lane_height_attributes} t_road_lanes_laneSection_lr_lane_height_attributes
+ * @typedef {import("../types/specification").t_road_lanes_laneSection_lcr_lane_roadMark} t_road_lanes_laneSection_lcr_lane_roadMark
+ * @typedef {import("../types/specification").t_road_lanes_laneSection_lcr_lane_roadMark_type_line} t_road_lanes_laneSection_lcr_lane_roadMark_type_line
  * @typedef {import('../types/specification').t_road_objects_object} t_road_objects_object
  * @typedef {import('../types/specification').t_road_signals_signal} t_road_signals_signal
  * @typedef {import('../types/internal').internal_pose3d} internal_pose3d
  * @typedef {import('../types/internal').internal_lane_height} internal_lane_height
  * @typedef {import('../types/internal').internal_sectionLaneIds} internal_sectionLaneIds
+ * @typedef {import('../types/internal').internal_roadMark} internal_roadMark
  */
 
 // helper methods for arrays to find last index according to a condition
@@ -331,35 +334,72 @@ exports.OdrReader = class OdrReader {
             return undefined;
         }
        
-        const laneSection = this.#getLaneSection(road, s);
-        const sOffset = s - laneSection.attributes.s;
-        const parametersLaneOffset = this.#getLaneOffsetParameters(road, s);
-        const tOffset = this.#tLaneOffset(parametersLaneOffset, s);
-
-        let t, lane, laneWidthParameters;
-        let width = 0;
-        if (laneId < 0) {
-            for (let id = laneId; id <= -1; id++) {
-                lane = this.#getLane(laneSection, id);
-                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
-                // if left boundary is requested, don't add the width of the requested lane
-                width += (leftOrRight == "left" && id == laneId) ? 0 : this.#width(laneWidthParameters, sOffset);
-            }
-            t = tOffset - width;
-        }
-        else if (laneId > 0) {
-            for (let id = laneId; id >= 1; id--) {
-                lane = this.#getLane(laneSection, id);
-                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
-                // if left boundary is requested, don't add the width of the requested lane
-                width += (leftOrRight == "left" && id == laneId) ? 0 : this.#width(laneWidthParameters, sOffset);
-            }
-            t = tOffset + width;
-        }
-        else 
-            t = tOffset;
+        const t = this.#getLaneBoundaryTCoordinate(road, laneId, s, leftOrRight);
 
         return this.#getPose(road, s, t);
+    }
+
+    /**
+     * Get lane mark points of the specified lane section
+     * 
+     * Each point has a ID to enable allocation to its lane according to the follwing schema:
+     * <road ID>_<laneSection index>_<lane ID>_<road mark index>_<line index>
+     * 
+     * Note: In most cases, you will only have one road mark per lane (except for a lane within a road cross section, 
+     * multiple road mark elements may be defined) and only one line (except for double lines like "broken solid").
+     * 
+     * @param {string} roadId 
+     * @param {number} sStart 
+     * @param {number} sEnd 
+     * @param {number} ds 
+     * @param {number} laneId 
+     * @returns {internal_roadMark[]}
+     */
+    getLaneMarkingPoints(roadId, sStart, sEnd, ds, laneId) {
+        let road = this.#getRoadByRoadId(roadId);
+        if (road === undefined)
+            return [];
+
+        if (sStart < 0 || sStart > road.attributes.length) {
+            console.log("The road with the given ID is not defined for the given sStart");
+            return [];
+        }
+        if (sEnd < 0 || sEnd > road.attributes.length) {
+            console.log("The road with the given ID is not defined for the given sEnd");
+            return [];
+        }
+        if (ds == 0) {
+            console.log("ds must not be equal to 0");
+            return [];
+        }
+        if (ds < 0) {
+            ds = -ds;
+        }
+        if (sStart > sEnd) {
+            let sTemp = sStart;
+            sStart = sEnd;
+            sEnd = sTemp;
+        }
+
+        let points = [];
+
+        for (let s = sStart; s < sEnd + ds; s += ds) {
+            let laneSection = this.#getLaneSection(road, s);
+            let idxLaneSection = road.lanes.laneSection.findIndex(ls => ls.attributes.s == laneSection.attributes.s);
+            let lane = this.#getLane(laneSection, laneId);
+
+            if (lane === undefined)
+                continue;
+
+            let iRoadMark = 0;
+            for (let roadMark of lane.roadMark) {
+                let baseId = roadId + "_" + String(idxLaneSection) + "_" + String(laneId) + "_" + String(iRoadMark++);
+                let newPoints = this.#getRoadMarkPoints(roadId, lane.attributes.id, roadMark, s, baseId);
+                points.push(...newPoints);
+            }
+        }
+
+        return points;
     }
 
     /**
@@ -897,8 +937,6 @@ exports.OdrReader = class OdrReader {
         const lane = this.#getLaneByT(road, s, t);
         let laneHeightAttributes;
 
-        if (lane === undefined) console.log(road.attributes.id, s, t);
-
         if (lane.height.length > 0) {
             const idxHeightEl = lane.height.findLastIndex(height => s >= height.attributes.sOffset);
             laneHeightAttributes = lane.height[idxHeightEl].attributes;
@@ -1028,6 +1066,126 @@ exports.OdrReader = class OdrReader {
         tValues.sort((a, b) => a - b);
 
         return tValues;
+    }
+
+    /**
+     * @param {string} roadId
+     * @param {laneId} laneId
+     * @param {t_road_lanes_laneSection_lcr_lane_roadMark} roadMark 
+     * @param {number} s 
+     * @param {string} baseId
+     * @param {internal_roadMark[]}
+     */
+    #getRoadMarkPoints(roadId, laneId, roadMark, s, baseId) {
+        const road = this.#getRoadByRoadId(roadId);
+        if (road === undefined)
+            return [];
+        if (s < roadMark.attributes.sOffset)
+            return [];
+
+        const laneSection = this.#getLaneSection(road, s);
+
+        let roadMarkPoints = []; // in case of "broken solid" etc. more than one road mark may be be returned
+
+        if (roadMark.type === undefined) {
+            roadMarkPoints.push(this.#getSimpleRoadMarkPoint(road, laneId, roadMark, s, baseId));
+        }
+        else {
+            for (let roadMarkLine of roadMark.type.line) {
+                let point = this.#getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, laneSection.attributes.s, baseId);
+                if (point !== undefined) {
+                    roadMarkPoints.push(point);
+                }
+            }
+        }
+
+        return roadMarkPoints;
+    }
+
+    /**
+     * @param {t_road} road
+     * @param {number} laneId
+     * @param {t_road_lanes_laneSection_lcr_lane_roadMark} roadMark 
+     * @param {number} s 
+     * @param {string} baseId
+     * @returns {internal_roadMark}
+     */
+    #getSimpleRoadMarkPoint(road, laneId, roadMark, s, baseId) {
+        // the roadMark element always reflects the LEFT lane boundary
+        const laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, "left");
+
+        return {
+            position: {
+                x: laneBoundaryPose.x,
+                y: laneBoundaryPose.y,
+                z: laneBoundaryPose.z
+            },
+            width: roadMark.attributes.width,
+            color: roadMark.attributes.color,
+            height: roadMark.attributes.height !== undefined ? roadMark.attributes.height : 0,
+            type: roadMark.attributes.type,
+            id: baseId + "_0"
+        };
+    }
+
+    /**
+     * @param {t_road} road
+     * @param {number} laneId 
+     * @param {t_road_lanes_laneSection_lcr_lane_roadMark} roadMark 
+     * @param {t_road_lanes_laneSection_lcr_lane_roadMark_type_line} roadMarkLine
+     * @param {number} s 
+     * @param {number} sLaneSection
+     * @param {string} baseId
+     * @returns {internal_roadMark | undefined}
+     */
+    #getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, sLaneSection, baseId) {
+        // the roadMark element always indicates the LEFT lane boundary
+        const t = this.#getLaneBoundaryTCoordinate(road, laneId, s, "left");
+        const tLine = t + roadMarkLine.attributes.tOffset;
+
+        const lineStart = sLaneSection + roadMark.attributes.sOffset + roadMarkLine.attributes.sOffset;
+        const segmentLength = roadMarkLine.attributes.length + roadMarkLine.attributes.space; // length of line + space
+        const distanceToLineStart = s - lineStart;
+        const positionOnSegment = distanceToLineStart % segmentLength;
+
+        if (positionOnSegment > roadMarkLine.attributes.length) // s is located in the space between the lines 
+            return undefined;
+
+        const laneMarkingPose = this.#getPose(road, s, tLine);
+
+        var type;
+
+        switch (roadMark.attributes.type) {
+            case "solid solid":
+                type = "solid";
+                break;
+            case "broken broken":
+                type = "broken";
+                break;
+            case "solid broken":
+                type = roadMarkLine.attributes.space > 0 ? "broken" : "solid";
+            case "broken solid":
+                type = roadMarkLine.attributes.space > 0 ? "broken" : "solid";
+            default:
+                type = roadMark.attributes.type;
+        }
+
+        // sort lines from left to right
+        const linesLeftToRight = roadMark.type.line.sort((a, b) => a.attributes.tOffset - b.attributes.tOffset);
+        const idxLine = linesLeftToRight.findIndex(line => line.attributes.tOffset == roadMarkLine.attributes.tOffset);
+
+        return {
+            position: {
+                x: laneMarkingPose.x,
+                y: laneMarkingPose.y,
+                z: laneMarkingPose.z
+            },
+            width: roadMarkLine.attributes.width !== undefined ? roadMarkLine.attributes.width : roadMark.attributes.width,
+            color: roadMarkLine.attributes.color !== undefined ? roadMarkLine.attributes.color : roadMark.attributes.color,
+            height: roadMark.attributes.height !== undefined ? roadMark.attributes.height : 0, 
+            type: type,
+            id: baseId + "_" + String(idxLine)
+        };
     }
 
     /**
@@ -1711,5 +1869,63 @@ exports.OdrReader = class OdrReader {
 
         return angle;
     }
-    
+
+    /**
+     * Identify the lateral coordinate t of a lane boundary
+     * 
+     * @param {t_road} road 
+     * @param {number} laneId 
+     * @param {number} s 
+     * @param {string} leftOrRight 
+     * @returns {number}
+     */
+    #getLaneBoundaryTCoordinate(road, laneId, s, leftOrRight) {
+        const laneSection = this.#getLaneSection(road, s);
+        const sOffset = s - laneSection.attributes.s;
+        const parametersLaneOffset = this.#getLaneOffsetParameters(road, s);
+        const tOffset = this.#tLaneOffset(parametersLaneOffset, s);
+
+        let t, lane, laneWidthParameters;
+        let width = 0;
+        if (laneId < 0) {
+            for (let id = laneId; id <= -1; id++) {
+                lane = this.#getLane(laneSection, id);
+                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
+                // if left boundary is requested, don't add the width of the requested lane
+                width += (leftOrRight == "left" && id == laneId) ? 0 : this.#width(laneWidthParameters, sOffset);
+            }
+            t = tOffset - width;
+        }
+        else if (laneId > 0) {
+            for (let id = laneId; id >= 1; id--) {
+                lane = this.#getLane(laneSection, id);
+                laneWidthParameters = this.#getLaneWidthParameters(lane, sOffset);
+                // if left boundary is requested, don't add the width of the requested lane
+                width += (leftOrRight == "left" && id == laneId) ? 0 : this.#width(laneWidthParameters, sOffset);
+            }
+            t = tOffset + width;
+        }
+        else 
+            t = tOffset;
+
+        return t;
+    }
+
+    /**
+     * 
+     * @param {internal_pose3d} pose 
+     * @param {number} height 
+     * @returns {internal_pose3d} 
+     */
+    #addHeight(pose, height) {
+        const dx = height * Math.cos(pose.heading)*Math.sin(pose.pitch)*Math.cos(pose.roll) + Math.sin(pose.heading)*Math.sin(pose.roll);
+        const dy = height * Math.sin(pose.heading)*Math.sin(pose.pitch)*Math.cos(pose.roll) - Math.cos(pose.heading)*Math.sin(pose.roll);
+        const dz = height * Math.cos(pose.pitch)*Math.cos(pose.roll);
+
+        pose.x += dx;
+        pose.y += dy;
+        pose.z += dz;
+
+        return pose;
+    }    
 }

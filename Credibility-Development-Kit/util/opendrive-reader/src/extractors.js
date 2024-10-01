@@ -597,7 +597,7 @@ function transformRoadPlanViewGeometry(geometries) {
                 hdg: Number(geometry['@_hdg']),
                 length: Number(geometry['@_length'])
             },
-            line: geometry['line'] !== undefined ? transformRoadPlanViewGeometryLine(geometry['line']) : undefined,
+            line: geometry['line'] !== undefined ? transformRoadPlanViewGeometryLine(geometry['line'][0]) : undefined,
             spiral: geometry['spiral'] !== undefined ? transformRoadPlanViewGeometrySpiral(geometry['spiral']) : undefined,
             arc: geometry['arc'] !== undefined ? transformRoadPlanViewGeometryArc(geometry['arc']) : undefined,
             poly3: geometry['poly3'] !== undefined ? transformRoadPlanViewGeometryPoly3(geometry['poly3']) : undefined,
@@ -606,6 +606,7 @@ function transformRoadPlanViewGeometry(geometries) {
             userData: geometry['userData'] !== undefined ? transformUserData(geometry['userData']) : [],
             dataQuality: geometry['dataQuality'] !== undefined ? transformDataQuality(geometry['dataQuality']) : undefined,
         })
+        // note: any element called "line" always is parsed as array, although the "line" in "planView" is not an array, therefore the index accessor is used
     }
 
     return transformedGeometries;
@@ -879,7 +880,7 @@ function transformRoadLanesLaneSectionLrLaneWidth(widths) {
 function transformRoadLanesLaneSectionLcrRoadMark(roadMarks) {
     let transformedRoadMarks = [];
 
-    for (let roadMark of roadMarks) {
+    for (let roadMark of roadMarks) {        
         transformedRoadMarks.push({
             attributes: {
                 sOffset: Number(roadMark['@_sOffset']),
@@ -892,12 +893,12 @@ function transformRoadLanesLaneSectionLcrRoadMark(roadMarks) {
                 height: roadMark['@_height'] !== undefined ? Number(roadMark['@_height']) : undefined,
             },
             sway: roadMark['sway'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkSway(roadMark['sway']) : [],
-            type: roadMark['type'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkType(roadMark['type']) : undefined,
+            type: roadMark['type'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkType(roadMark['type'][0]) : undefined,
             explicit: roadMark['explicit'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkExplicit(roadMark['explicit']) : undefined,
             include: roadMark['include'] !== undefined ? transformInclude(roadMark['include']) : [],
             userData: roadMark['userData'] !== undefined ? transformUserData(roadMark['userData']) : [],
             dataQuality: roadMark['dataQuality'] !== undefined ? transformDataQuality(roadMark['dataQuality']) : undefined,
-
+            // note: any element called "type" always is parsed as array, although the "type" in "roadMark" is not an array, therefore the index accessor is used
         })
     }
 
@@ -928,7 +929,7 @@ function transformRoadLanesLaneSectionLcrLaneRoadMarkType(type) {
             name: type['@_name'],
             width: Number(type['@_width'])
         },
-        line: type['line'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkTypeLine(type['line']) : undefined,
+        line: type['line'] !== undefined ? transformRoadLanesLaneSectionLcrLaneRoadMarkTypeLine(type['line']) : [],
         include: type['include'] !== undefined ? transformInclude(type['include']) : [],
         userData: type['userData'] !== undefined ? transformUserData(type['userData']) : [],
         dataQuality: type['dataQuality'] !== undefined ? transformDataQuality(type['dataQuality']) : undefined,
@@ -936,18 +937,24 @@ function transformRoadLanesLaneSectionLcrLaneRoadMarkType(type) {
     }
 }
 
-function transformRoadLanesLaneSectionLcrLaneRoadMarkTypeLine(line) {
-    return {
-        attributes: {
-            length: Number(line['@_length']),
-            space: Number(line['@_space']),
-            tOffset: Number(line['@_tOffset']),
-            sOffset: Number(line['@_sOffset']),
-            rule: line['@_rule'],
-            width: line['@_width'] !== undefined ? Number(line['@_width']) : undefined,
-            color: line['@_color']
-        }
-    };
+function transformRoadLanesLaneSectionLcrLaneRoadMarkTypeLine(lines) {
+    let transformedLines = [];
+
+    for (let line of lines) {
+        transformedLines.push({
+            attributes: {
+                length: Number(line['@_length']),
+                space: Number(line['@_space']),
+                tOffset: Number(line['@_tOffset']),
+                sOffset: Number(line['@_sOffset']),
+                rule: line['@_rule'],
+                width: line['@_width'] !== undefined ? Number(line['@_width']) : undefined,
+                color: line['@_color']
+            }
+        });
+    }
+
+    return transformedLines;
 }
 
 function transformRoadLanesLaneSectionLcrLaneRoadMarkExplicit(explicit) {
