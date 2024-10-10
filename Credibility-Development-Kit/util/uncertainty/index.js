@@ -1,6 +1,6 @@
 const helper = require('./src/uncertainty_helper');
-const util = require("../util-common");
-const { Signal } = require('../signal');
+const util = require("util-common");
+const { Signal } = require('cdk-signal');
 
 exports.createEmpiricalDistribution = createEmpiricalDistribution;
 exports.createPBoxes = createPBoxes;

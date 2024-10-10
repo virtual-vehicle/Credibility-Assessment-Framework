@@ -1,5 +1,5 @@
 const helper = require('./uncertainty_helper');
-const util = require("../../../../util/util-common");
+const util = require("util-common");
 const schemas = require("../types/schemas");
 
 exports.evaluateAvm = evaluateAvm;

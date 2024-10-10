@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const helper = require('./helper');
-const common = require('../util-common');
+const common = require('util-common');
 const schemas = require('./types/schemas');
 
  /**
@@ -16,6 +16,8 @@ const schemas = require('./types/schemas');
 exports.checkExpertStatement = checkExpertStatement;
 exports.sign = sign;
 exports.verify = verify;
+exports.SIGNED_STATEMENT = schemas.SIGNED_STATEMENT;
+exports.EXPERT_STATEMENT = schemas.EXPERT_STATEMENT;
 
 /**
  * This metric takes a signed expert statement, checks if the signature of the expert is valid (against a given

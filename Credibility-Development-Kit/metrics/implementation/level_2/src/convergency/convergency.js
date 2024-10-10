@@ -1,6 +1,4 @@
-const util = require('../../../../../util/util-common');
-const { Signal } = require('../../../../../util/signal');
-const schemas = require('../../types/schemas');
+const { Signal } = require('cdk-signal');
 
 /**
  * @typedef {import('../../types/types').ResultLog} ResultLog

@@ -18,6 +18,8 @@
       "mocha": "^10.0.0"
     },
     "dependencies": {
+      "cdk-signal": "../../../util/signal",
+      "opendrive-reader": "../../../util/opendrive-reader",
       "proj4": "^2.9.2"
     }
   }

@@ -1,5 +1,5 @@
 const schemas = require("../../types/schemas");
-const util = require("../../../../../util/util-common");
+const util = require("util-common");
 const system_structure_helpers = require("./system_structure_helpers");
 
 /**

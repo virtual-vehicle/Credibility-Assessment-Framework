@@ -1,4 +1,4 @@
-const { OdrReader } = require('../../../../../util/opendrive-reader');
+const { OdrReader } = require('opendrive-reader');
 const lanelink_helpers = require('./opendrive_lanelink_helpers');
 
 /**

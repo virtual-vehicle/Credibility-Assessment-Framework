@@ -1,4 +1,4 @@
-const verisign = require("../../../util/veri-sign");
+const verisign = require("veri-sign");
 const { SIGNED_STATEMENT } = require("./types/schemas");
 
 /**

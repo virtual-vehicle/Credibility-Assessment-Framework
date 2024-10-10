@@ -1,5 +1,5 @@
 const helper = require('./time_domain_helper');
-const {Signal} = require('../../../../util/signal');
+const {Signal} = require('cdk-signal');
 
 /**
  * @typedef {import('../types/types').ResultLog} ResultLog 

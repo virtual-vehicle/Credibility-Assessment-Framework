@@ -1,5 +1,5 @@
-const { Signal } = require("../../signal");
-const util = require("../../util-common");
+const { Signal } = require("cdk-signal");
+const util = require("util-common");
 const mathjs = require("mathjs");
 
 /**

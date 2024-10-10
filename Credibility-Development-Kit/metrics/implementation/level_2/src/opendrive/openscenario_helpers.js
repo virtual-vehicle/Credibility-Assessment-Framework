@@ -1,7 +1,7 @@
 const { XMLParser } = require("fast-xml-parser");
 const fs = require('fs');
 const path = require('path');
-const util = require("../../../../../util/util-common");
+const util = require("util-common");
 
 /**
  * @typedef {import('../../types/types').MapLocation} MapLocation

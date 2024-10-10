@@ -1,4 +1,4 @@
-const { OdrReader } = require('../../../../../util/opendrive-reader');
+const { OdrReader } = require('opendrive-reader');
 const req_helper = require('./opendrive_requirement_helpers');
 const proj4 = require('proj4');
 

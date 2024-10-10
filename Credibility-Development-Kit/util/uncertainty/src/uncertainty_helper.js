@@ -1,4 +1,4 @@
-const util = require("../../util-common");
+const util = require("util-common");
 
 exports.calcEmpiricalDistribution = calcEmpiricalDistribution;
 exports.checkEdfArray = checkEdfArray;

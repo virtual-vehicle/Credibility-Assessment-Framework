@@ -1,5 +1,5 @@
 const uncertainty = require("./src/uncertainty");
-const uncertainty_util = require("../../../util/uncertainty");
+const uncertainty_util = require("uncertainty");
 
 /**
  * @module metrics/evaluation/level_3

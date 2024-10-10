@@ -1,5 +1,4 @@
-const { OdrReader } = require('../../../../../util/opendrive-reader');
-const util = require('../../../../../util/util-common');
+const { OdrReader } = require('opendrive-reader');
 
 exports.getRoadLength = getRoadLength;
 exports.getDrivingLaneWidthRange = getDrivingLaneWidthRange;

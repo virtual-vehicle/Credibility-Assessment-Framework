@@ -1,4 +1,4 @@
-const util = require("../util-common");
+const util = require("util-common");
 const mathjs = require("mathjs");
 const schemas = require("./types/schemas");
 

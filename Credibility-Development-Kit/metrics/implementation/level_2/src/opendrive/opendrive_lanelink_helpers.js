@@ -1,4 +1,4 @@
-const { OdrReader } = require('../../../../../util/opendrive-reader');
+const { OdrReader } = require('opendrive-reader');
 
 /**
  * @typedef {import("../../types/types").t_road} t_road

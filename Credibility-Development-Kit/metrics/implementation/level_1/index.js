@@ -1,5 +1,4 @@
-const schemasVerisign = require("../../../util/veri-sign/types/schemas")
-const verisign = require("../../../util/veri-sign");
+const verisign = require("veri-sign");
 const systemStructureCheck = require("./src/system_structure/verifySystemStructure");
 const plausibilityCheck = require("./src/plausibility_check/plausibility");
 const opendrive = require("./src/opendrive/opendrive");
@@ -24,7 +23,7 @@ const opendrive = require("./src/opendrive/opendrive");
  * @level 1
  * @phase implementation
  * @step [models, parameters, environment, test cases, integration]
- * @param {String} signedExpertStatement stringified JSON implement the {@link schemasVerisign.SIGNED_STATEMENT} schema
+ * @param {String} signedExpertStatement stringified JSON implement the {@link verisign.SIGNED_STATEMENT} schema
  * @param {String|Buffer} x509Certificate PEM- or DER-encoded X509 certificate. If PEM is used, a string is expected, if DER is used, a Buffer is expected
  * @returns {ResultLog} result and logging information
  */

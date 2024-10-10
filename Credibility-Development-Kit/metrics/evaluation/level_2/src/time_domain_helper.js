@@ -1,4 +1,4 @@
-const { Signal } = require('../../../../util/signal');
+const { Signal } = require('cdk-signal');
 
 /**
  * @typedef {import('../types/types').SignalsCollection} SignalsCollection

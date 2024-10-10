@@ -1,7 +1,7 @@
 
 const parser = require("./parser");
 const extractors = require("./extractors");
-const util = require("../../util-common");
+const util = require("util-common");
 
 const ROOT_ELEMENT = "OpenDRIVE";
 

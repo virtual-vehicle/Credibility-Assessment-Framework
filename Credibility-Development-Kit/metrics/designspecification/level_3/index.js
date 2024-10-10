@@ -1,6 +1,5 @@
 const linkage_check = require("./src/linkage_check_syntax");
-const verisign = require("../../../util/veri-sign");
-const { SIGNED_STATEMENT } = require("../../../util/veri-sign/types/schemas");
+const verisign = require("veri-sign");
 
 /**
  * @module metrics/designspecification/level_2
@@ -42,7 +41,7 @@ const checkLinkageSyntax = linkage_check.linkageCheckSyntax
  * @level 3
  * @phase designspecification
  * @step [models, parameters, environment, test Cases, integration]
- * @param {String} signedExpertStatement  stringified JSON implement the {@link SIGNED_STATEMENT} schema
+ * @param {String} signedExpertStatement  stringified JSON implement the {@link verisign.SIGNED_STATEMENT} schema
  * @param {String|Buffer} x509Certificate PEM- or DER-encoded X509 certificate. If PEM is used, a string is expected, if DER is used, a Buffer is expected
  * @returns {ResultLog} result and logging information
  */

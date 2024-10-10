@@ -13,6 +13,9 @@
     ],
     "author": "localhorst87",
     "license": "CC-BY-4.0",
+    "dependencies": {
+      "veri-sign": "../../../util/veri-sign"
+    },
     "devDependencies": {
       "chai": "^4.3.6",
       "mocha": "^10.0.0"

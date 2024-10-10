@@ -1,4 +1,4 @@
-const util = require("../../../../../util/util-common");
+const util = require("util-common");
 
 /**
  * @typedef {import('../types/types').ResultLog} ResultLog

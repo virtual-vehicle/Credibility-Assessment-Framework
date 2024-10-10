@@ -1,4 +1,4 @@
-const util = require("../../../../util/util-common");
+const util = require("util-common");
 const path = require('path');
 
 exports.formatCheck = formatCheck;

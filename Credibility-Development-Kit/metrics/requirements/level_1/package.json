@@ -14,5 +14,6 @@
       "prompt-sync": "^4.2.0"
     },
     "dependencies": {
+      "veri-sign": "../../../util/veri-sign"
     }
   }
