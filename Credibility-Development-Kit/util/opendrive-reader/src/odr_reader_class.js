@@ -330,7 +330,7 @@ exports.OdrReader = class OdrReader {
             return undefined;
 
         if (s < 0 || s > road.attributes.length) {
-            console.log("The road with the given ID is not defined for the given spline length");
+            console.log(`The road with ID ${roadId} is not defined for the given spline length ${s}`);
             return undefined;
         }
        
@@ -383,7 +383,7 @@ exports.OdrReader = class OdrReader {
 
         let points = [];
 
-        for (let s = sStart; s < sEnd + ds; s += ds) {
+        for (let s = sStart; s < sEnd; s += ds) {
             let laneSection = this.#getLaneSection(road, s);
             let idxLaneSection = road.lanes.laneSection.findIndex(ls => ls.attributes.s == laneSection.attributes.s);
             let lane = this.#getLane(laneSection, laneId);
@@ -1111,8 +1111,9 @@ exports.OdrReader = class OdrReader {
      * @returns {internal_roadMark}
      */
     #getSimpleRoadMarkPoint(road, laneId, roadMark, s, baseId) {
-        // the roadMark element always reflects the LEFT lane boundary
-        const laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, "left");
+        // the roadMark element always reflects the RIGHT lane boundary for lane IDs < 0 and LEFT lane boundary for lane IDs > 0
+        const side = laneId < 0 ? "right" : "left";
+        const laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, side);
 
         return {
             position: {
