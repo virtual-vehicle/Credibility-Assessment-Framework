@@ -662,7 +662,7 @@
  * 
  * @version 1.6 
  * 
- * @typedef {object} t_road_lanes_laneSection_right_lane
+ * @typedef {object} t_road_lanes_laneSection_right_lane_attributes
  * @property {number} id
  * @property {string} type 
  * @property {boolean} [level]

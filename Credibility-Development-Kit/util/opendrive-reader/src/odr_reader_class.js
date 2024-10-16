@@ -393,8 +393,7 @@ exports.OdrReader = class OdrReader {
 
             let iRoadMark = 0;
             for (let roadMark of lane.roadMark) {
-                let baseId = roadId + "_" + String(idxLaneSection) + "_" + String(laneId) + "_" + String(iRoadMark++);
-                let newPoints = this.#getRoadMarkPoints(roadId, lane.attributes.id, roadMark, s, baseId);
+                let newPoints = this.#getRoadMarkPoints(roadId, lane.attributes.id, roadMark, s, idxLaneSection);
                 points.push(...newPoints);
             }
         }
@@ -1076,7 +1075,7 @@ exports.OdrReader = class OdrReader {
      * @param {string} baseId
      * @param {internal_roadMark[]}
      */
-    #getRoadMarkPoints(roadId, laneId, roadMark, s, baseId) {
+    #getRoadMarkPoints(roadId, laneId, roadMark, s, sectionIdx) {
         const road = this.#getRoadByRoadId(roadId);
         if (road === undefined)
             return [];
@@ -1088,11 +1087,11 @@ exports.OdrReader = class OdrReader {
         let roadMarkPoints = []; // in case of "broken solid" etc. more than one road mark may be be returned
 
         if (roadMark.type === undefined) {
-            roadMarkPoints.push(this.#getSimpleRoadMarkPoint(road, laneId, roadMark, s, baseId));
+            roadMarkPoints.push(this.#getSimpleRoadMarkPoint(road, laneId, roadMark, s, sectionIdx));
         }
         else {
             for (let roadMarkLine of roadMark.type.line) {
-                let point = this.#getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, laneSection.attributes.s, baseId);
+                let point = this.#getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, laneSection.attributes.s, sectionIdx);
                 if (point !== undefined) {
                     roadMarkPoints.push(point);
                 }
@@ -1107,13 +1106,22 @@ exports.OdrReader = class OdrReader {
      * @param {number} laneId
      * @param {t_road_lanes_laneSection_lcr_lane_roadMark} roadMark 
      * @param {number} s 
-     * @param {string} baseId
+     * @param {number} sectionIdx
      * @returns {internal_roadMark}
      */
-    #getSimpleRoadMarkPoint(road, laneId, roadMark, s, baseId) {
+    #getSimpleRoadMarkPoint(road, laneId, roadMark, s, sectionIdx) {
         // the roadMark element always reflects the RIGHT lane boundary for lane IDs < 0 and LEFT lane boundary for lane IDs > 0
-        const side = laneId < 0 ? "right" : "left";
-        const laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, side);
+        let laneBoundaryPose;
+
+        if (laneId > 0) {
+            laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, "left");
+        }
+        else if (laneId < 0) {
+            laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s, "right");
+        }
+        else {
+            laneBoundaryPose = this.getLaneBoundaryPose(road.attributes.id, laneId, s);
+        }
 
         return {
             position: {
@@ -1125,7 +1133,10 @@ exports.OdrReader = class OdrReader {
             color: roadMark.attributes.color,
             height: roadMark.attributes.height !== undefined ? roadMark.attributes.height : 0,
             type: roadMark.attributes.type,
-            id: baseId + "_0"
+            roadId: road.attributes.id,
+            sectionIdx: sectionIdx,
+            laneId: laneId,
+            lateralOffset: 0
         };
     }
 
@@ -1136,12 +1147,13 @@ exports.OdrReader = class OdrReader {
      * @param {t_road_lanes_laneSection_lcr_lane_roadMark_type_line} roadMarkLine
      * @param {number} s 
      * @param {number} sLaneSection
-     * @param {string} baseId
+     * @param {number} sectionIdx
      * @returns {internal_roadMark | undefined}
      */
-    #getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, sLaneSection, baseId) {
-        // the roadMark element always indicates the LEFT lane boundary
-        const t = this.#getLaneBoundaryTCoordinate(road, laneId, s, "left");
+    #getComplexRoadMarkPoint(road, laneId, roadMark, roadMarkLine, s, sLaneSection, sectionIdx) {
+        // the roadMark element always reflects the RIGHT lane boundary for lane IDs < 0 and LEFT lane boundary for lane IDs > 0
+        let side = laneId > 0 ? "left" : "right";
+        const t = this.#getLaneBoundaryTCoordinate(road, laneId, s, side);
         const tLine = t + roadMarkLine.attributes.tOffset;
 
         const lineStart = sLaneSection + roadMark.attributes.sOffset + roadMarkLine.attributes.sOffset;
@@ -1171,10 +1183,6 @@ exports.OdrReader = class OdrReader {
                 type = roadMark.attributes.type;
         }
 
-        // sort lines from left to right
-        const linesLeftToRight = roadMark.type.line.sort((a, b) => a.attributes.tOffset - b.attributes.tOffset);
-        const idxLine = linesLeftToRight.findIndex(line => line.attributes.tOffset == roadMarkLine.attributes.tOffset);
-
         return {
             position: {
                 x: laneMarkingPose.x,
@@ -1185,7 +1193,10 @@ exports.OdrReader = class OdrReader {
             color: roadMarkLine.attributes.color !== undefined ? roadMarkLine.attributes.color : roadMark.attributes.color,
             height: roadMark.attributes.height !== undefined ? roadMark.attributes.height : 0, 
             type: type,
-            id: baseId + "_" + String(idxLine)
+            roadId: road.attributes.id,
+            sectionIdx: sectionIdx,
+            laneId: laneId,
+            lateralOffset: roadMarkLine.attributes.tOffset
         };
     }
 

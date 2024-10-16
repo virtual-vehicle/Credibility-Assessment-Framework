@@ -77,7 +77,10 @@
  * @property {string} color
  * @property {number} height
  * @property {string} type
- * @property {number} id
+ * @property {string} roadId
+ * @property {number} sectionIdx
+ * @property {number} laneId
+ * @property {number} lateralOffset
  */
 
 module.exports = {
