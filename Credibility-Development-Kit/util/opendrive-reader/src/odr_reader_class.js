@@ -562,7 +562,7 @@ exports.OdrReader = class OdrReader {
      * Returns the lane IDs of each laneSection
      * 
      * @param {t_road | string} road road or road ID
-     * @returns {internal_sectionLaneIds}
+     * @returns {internal_sectionLaneIds[]}
      */
     getLaneIdsOfLaneSegments(road) {
         if (typeof(road) == "string") {
