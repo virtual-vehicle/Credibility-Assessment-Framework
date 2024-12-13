@@ -2,11 +2,132 @@
 
 A collection of metrics that can be used for assessing the credibility of simulation model implementation, according to Credibility Level 1:
 
+* [`check_fmu_model_description`](#check_fmu_model_description): Checks the modelDescription.xml of an FMU
 * [`checkExpertCodeReview`](#checkexpertcodereview): Checks if an artifact has passed the expert review (e.g., code verification) and if the signed expert statement is valid
 * [`checkSystemStructure`](#checksystemstructure): Static code check, if a system structure (including all components, connectors and connections of the system) is well-defined
 * [`checkPlausibility`](#checkplausibility): Dynamic code check, if a parameter change will be resulting in the expected behaivor of the simulation 
 
 ---
+
+## `check_fmu_model_description`
+
+Static code check, that checks the modelDescription.xml of a Functional Mockup Unit (FMU). It uses the [FMPy module](https://pypi.org/project/FMPy/), which is also used by the official FMU Validator of the [Modelica Association](https://fmi-standard.org/validation/).
+
+The metric checks the modelDescription.xml of a Functional Mockup Unit (FMU):
+- validation against the XML schema, uniqueness and validity of variable names
+- completeness and integrity of the ModelStructure
+- required start values
+- combinations of causality and variability
+- units
+
+### I. METADATA
+---------------------------
+
+Metric properties ||
+------------------------|---------------
+Domains                 | Domain-independent
+Model types             | FMU (1.x, 2.x, 3.x)
+CSP phase               | Implementation
+CSP step                | Models
+Level                   | 1
+Purpose                 | Checks the modelDescription.xml for syntactical correctness
+Implements              | Static Code Check
+Acceptance criteria     | Logic Check
+Implementations         | Python
+
+### II. USAGE
+--------------------------- 
+
+To use the `check_fmu_model_description`, install the `cdk_implementation_level_1` package using pip.
+
+```bash
+# hint: We consider the Crediblity-Assessment-Framework as root folder
+cd ./Credibility-Development-Kit/metrics/implementation/level_1/python
+pip install .
+```
+
+```python
+import fmu_checker
+
+fmu_path = '/path/to/my/model.fmu'
+result = fmu_checker.check_fmu_model_description(fmu_path) 
+# result is a string like '{"result": true, "log": "The modelDescription.xml of the FMU does not contain any errors."}'
+```
+
+### III. INPUTS
+---------------------------
+
+fmu_path || 
+------------------------|---------------
+data type               | string
+Implements schema       | The "file" URI scheme [RFC 8089](https://datatracker.ietf.org/doc/html/rfc8089.html)
+Interpretation          | The file path to the FMU file
+
+### IV. OUTPUTS
+---------------------------
+
+**The following is an excerpt:**
+
+|| modelDescription.xml syntactically correct
+------------------------|---------------
+Event                   | The modelDescription fulfills the criteria (see above)
+Result                  | true
+Log                     | The modelDescription.xml of the FMU does not contain any errors.
+
+|| FMU path missing
+------------------------|---------------
+Event                   | The path to the FMU is not given, altough it is required
+Result                  | true
+Log                     | The path to the FMU is missing
+
+|| FMU not found
+------------------------|---------------
+Event                   | The given path to the FMU is not correct
+Result                  | true
+Log                     | For the given path to the FMU, no FMU could be found
+
+|| Variable name not unique
+------------------------|---------------
+Event                   | Variable name is not unique
+Result                  | false
+Log                     | The variable name "..." (line xx) is not unique.
+
+|| Prohibited combination of causality and variability
+------------------------|---------------
+Event                   | A given combination of causality and variability is not allowed
+Result                  | false
+Log                     | The combination causality="..." and variability="..." in variable "..." (line xx) is not allowed.
+
+|| Prohibited provision of start value (1/2)
+------------------------|---------------
+Event                   | A start value is given, altough the initial value is calculated
+Result                  | false
+Log                     | The variable "..." (line xx) has initial="calculated" but provides a start value.
+
+|| Prohibited provision of start value (2/2)
+------------------------|---------------
+Event                   | A start value is given, altough the initial value is independent
+Result                  | false
+Log                     | The variable "..." (line xx) has causality="independent" but provides a start value.
+
+|| Undefined unit
+------------------------|---------------
+Event                   | A specific unit is utilized but not defined
+Result                  | false
+Log                     | The unit "..." of variable "..." (line xx) is not defined.
+
+|| Missing independent variable (FMU 3)
+------------------------|---------------
+Event                   | At least on independent variable must be defined, but it's not defined
+Result                  | false
+Log                     | Exactly one independent variable must be defined.
+
+|| Prohibited reusage of value reference (FMU 3)
+------------------------|---------------
+Event                   | Value reference is reused by another variable
+Result                  | false
+Log                     | Variable "..." (line xx) has the same value reference as variable "..." (line yy).
+
 ## `checkExpertCodeReview`
 
 *Static code check, if any produced code to build and run simulations passes certain quality criterions (e.g., IEEE 730). This is done by an expert wo needs to give a statement about this action*.
@@ -24,6 +145,7 @@ Level                   | 1
 Purpose                 | Checks if an artifact has passed the expert review (e.g., code verification) and if the signed expert statement is valid
 Implements              | Static Code Check
 Acceptance criteria     | Expert Statement
+Implementations         | Node.JS
 
 ### II. USAGE
 ---------------------------
@@ -187,6 +309,7 @@ Level                   | 1
 Purpose                 | Checks, if a system structure is well-defined
 Implements              | Static Code Check
 Acceptance criteria     | Logic check
+Implementations         | Node.JS
 
 ### II. USAGE
 --------------------------- 
@@ -415,6 +538,7 @@ Level                   | 1
 Purpose                 | Checks, if a parameter change will be resulting in the expected behaivor of the simulation 
 Implements              | Dynamic Code Check
 Acceptance criteria     | Logic check
+Implementations         | Node.JS
 
 ### II. USAGE
 --------------------------- 
