@@ -1,6 +1,6 @@
 const schemas = require("../types/schemas");
-const util = require("../../../../util/util-common");
-const stmd_crud = require("../../../../util/stmd-crud");
+const util = require("util-common");
+const stmd_crud = require("stmd-crud");
 
 const KEYWORD_DERIVED = "derived-from";
 const KEYWORD_IMPLEMENTATION = "has-implementation";

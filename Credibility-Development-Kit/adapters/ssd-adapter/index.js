@@ -1,6 +1,7 @@
 const Types = require("./types/types");
 const fs = require('fs');
 const helper = require('./src/helper');
+const path = require('path');
 
 const SSD_SPEC_FOLDER = "./types/spec/";
 const SSD_SPEC_FILE = "SystemStructureDescription.xsd";
@@ -22,19 +23,19 @@ exports.translate = translate;
 /**
 * Transforms an SSD into a JSON structure, according to the given elements to extract
 * @author   localhorst87
-* @param    {String} ssdPath    path of the SSD file to transform
-* @return   {String}            returns the transformed and stringified SystemStructure object
+* @param    {String} ssdFilePath  string of the SSD file to transform
+* @return   {String} returns the transformed and stringified SystemStructure object
 */
-function translate(ssdPath) {
+function translate(ssdFilePath) {
     try {
-        var ssdString = fs.readFileSync(ssdPath, 'utf8');
+        var ssdString = fs.readFileSync(ssdFilePath, 'utf-8');
     }
     catch (err) {
         return JSON.stringify({error : "Could not open specified SSD file"});
     }
-
     try {
-        var xsdString = fs.readFileSync(SSD_SPEC_FOLDER + SSD_SPEC_FILE, 'utf8');
+        var specFile = path.resolve(__dirname+"/"+SSD_SPEC_FOLDER+SSD_SPEC_FILE);
+        var xsdString = fs.readFileSync(specFile, 'utf8');
     }
     catch (err) {
         return JSON.stringify({error : "Could not open specified XSD file"});
@@ -43,7 +44,7 @@ function translate(ssdPath) {
     if (!helper.validateXml(ssdString)) {
         return JSON.stringify({error : "Parsing of SSD not possible, due to invalid XML structure"});
     }
-    if (!helper.validateSsd(ssdString, xsdString, SSD_SPEC_FOLDER)) {
+    if (!helper.validateSsd(ssdString, xsdString, __dirname+"/"+SSD_SPEC_FOLDER)) {
         return JSON.stringify({error : "Parsing of SSD not possible, due to invalid implementation of the given XSD structure"});   
     }
 

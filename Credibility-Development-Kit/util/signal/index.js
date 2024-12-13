@@ -1,7 +1,6 @@
-const util = require("../util-common");
+const util = require("util-common");
 const mathjs = require("mathjs");
 const schemas = require("./types/schemas");
-const Types = require('./types/types');
 
  /**
  * @module util/signal
@@ -50,8 +49,9 @@ exports.Signal = class Signal {
      * @return {Signal} The instance of a Signal
      */
     constructor(time, values, config) {
-        // is first argument is a Signal, return a deep copy of the Signal!
         if (time.constructor.name == "Signal") {
+            // if first argument is a Signal, return a deep copy of the Signal!
+
             let signalToCopy = time;
             this.name = signalToCopy.name;
             this.#time = signalToCopy.time;
@@ -61,10 +61,34 @@ exports.Signal = class Signal {
             this.#history = signalToCopy.history;
             return;
         }
-        else if (!values && !config && time.constructor.name != "Signal") {
+        else if (values === undefined && config === undefined && typeof(time) == "string") {
+            // if first argument is a string, check if this string is a stringified JSON
+            // and if it fulfills the scehma, returned by the export method
+            var signalJson;
+
+            try {
+                signalJson = JSON.parse(time);
+            }
+            catch (err) {
+                throw("JSON notation of Signal can not be parsed:");
+            }
+
+            if (!util.isStructureValid(signalJson, schemas.SIGNAL_JSON))
+                throw("JSON notation of Signal does not fulfill the required schema");
+
+            this.name = signalJson.name;
+            this.#time = signalJson.time;
+            this.#values = signalJson.values;
+            this.#units = signalJson.units;
+            this.#precision = signalJson.precision;
+            this.#history = signalJson.history;
+        }
+        else if (values === undefined && config === undefined && time.constructor.name != "Signal") {
             throw("if only one argument is given, the argument must be a Signal instance!");
         }
-        else {  // interprete as tuple of time, value, configuration 
+        else {
+            // interprete as tuple of time, value, configuration 
+
             let timeArray = time;
             
             // check arrays
@@ -91,7 +115,7 @@ exports.Signal = class Signal {
 
             if (config.unit_values) {
                 if (!this.#isUnitValid(config.unit_values))
-                    throw("Unit " + config.unit_values + " is unknown or not supported");
+                    throw("Unit %s is unknown or not supported", config.unit_values);
             }
             else {
                 config.unit_values = DEFAULT_VALUES_UNIT;
@@ -267,6 +291,23 @@ exports.Signal = class Signal {
     }
 
     /**
+     * Returns a JSON string as a serializied export/import version of the Signal
+     * 
+     * @author localhorst87
+     * @returns {string}
+     */
+    export() {
+        return JSON.stringify({
+            name: this.name,
+            time: this.#time,
+            values: this.#values,
+            units: this.#units,
+            precision: this.#precision,
+            history: this.#history
+        });
+    }
+
+    /**
      * Returns a deep copy of this Signal instance
      *
      * @author localhorst87
@@ -360,7 +401,7 @@ exports.Signal = class Signal {
         let startIdx = this.#time.findIndex(startPredicate);
         let endIdx = this.#time.findLastIndex(endPredicate);
 
-        if (startIdx >= endIdx)
+        if (startIdx > endIdx)
             throw("slicing would result in empty vectors");
 
         this.#time = this.#time.slice(startIdx, endIdx + 1);

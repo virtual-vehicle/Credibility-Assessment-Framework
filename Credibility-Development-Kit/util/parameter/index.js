@@ -1,9 +1,7 @@
-const util = require("../util-common");util
+const util = require("util-common");
 const mathjs = require("mathjs");
 const schemas = require("./types/schemas");
 const helper = require("./src/helper");
-
-exports.createSamples = createSamples;
 
 /**
  * @module util/parameter
@@ -22,9 +20,7 @@ const DEFAULT_UNIT = "-";
 const VALID_SOURCES = ["unknown", "estimated", "provided", "computed", "measured", "calibrated"];
 const N_SAMPLES_MAX = 1e4;
 
-exports.N_SAMPLES_MAX = N_SAMPLES_MAX;
-
-exports.ScalarParameter = class ScalarParameter {
+class ScalarParameter {
     name;
     #data; 
     #uncertainty; 
@@ -35,16 +31,11 @@ exports.ScalarParameter = class ScalarParameter {
      *
      * @author localhorst87
      * @constructor
-     * @param {number} nominal The nominal value of the parameter
-     * @param {ParameterConfig} config Additional configuration to describe the parameter
+     * @param {number | string} nominalOrJson The nominal value of the parameter or the exported JSON notation
+     * @param {ParameterConfig} [config] Additional configuration to describe the parameter
      * @return {ScalarParameter} The instance of a ScalarParameter
      */
-    constructor(nominal, config) {
-        // check argument correctness first
-        if (typeof(nominal) != "number")
-            throw("nominal value must be a numeric value!");
-        this.#checkConfig(nominal, config);
-
+    constructor(nominalOrJson, config) {
         // init property structure
         this.#data = {
             nominal: undefined,
@@ -64,24 +55,53 @@ exports.ScalarParameter = class ScalarParameter {
             uncertainty: undefined
         };
 
-        // extract and write property values
-        this.name = config.name;
-        this.interval = config.interval !== undefined ? config.interval : 1e-3;
-        this.nominal_value = nominal;
-        this.unit = config.unit !== undefined ? config.unit : DEFAULT_UNIT;
-        this.#uncertainty.type = this.#extractUncertaintyType(config);
-        this.source_value = config.source_value != undefined ? config.source_value : "unknown";
+        // check if one argument (JSON export notation) or two arguments (nominal + config) is used
+        if (config === undefined) {
+            if (typeof(nominalOrJson) !== "string")
+                throw("stringified JSON of parameter expected");
 
-        if (this.#uncertainty.type != "fixed") {
-            let limits = this.#extractLimits(nominal, config);
-            this.lower_limit = limits.lower;
-            this.upper_limit = limits.upper;
-            this.source_uncertainty = config.source_uncertainty != undefined ? config.source_uncertainty : "unknown";
+            try {
+                nominalOrJson = JSON.parse(nominalOrJson);
+            }
+            catch (err) {
+                throw("JSON notation of parameter can not be parsed");
+            }
+
+            let paramJson = nominalOrJson;
+
+            if (!util.isStructureValid(paramJson, schemas.PARAMETER_JSON))
+                throw("JSON notation of parameter does not fulfill the required schema");
+
+            this.name = paramJson.name;
+            this.#data = paramJson.data;
+            this.#uncertainty = paramJson.uncertainty !== undefined ? paramJson.uncertainty : this.#uncertainty,
+            this.#source = paramJson.source !== undefined ? paramJson.source : this.#source;
         }
-        if (this.#uncertainty.type == "truncated normal") {
-            let stdDev = this.#extractStandardDeviation(nominal, config);
-            this.standard_deviation = stdDev;
-        }
+        else {
+            const nominal = nominalOrJson;
+            if (typeof(nominal) !== "number")
+                throw("nominal value must be a numeric value!");
+            this.#checkConfig(nominal, config);
+
+            // extract and write property values using the setters
+            this.name = config.name;
+            this.interval = config.interval !== undefined ? config.interval : 1e-3;
+            this.nominal_value = nominal;
+            this.unit = config.unit !== undefined ? config.unit : DEFAULT_UNIT;
+            this.#uncertainty.type = this.#extractUncertaintyType(config);
+            this.source_value = config.source_value != undefined ? config.source_value : "unknown";
+
+            if (this.#uncertainty.type != "fixed") {
+                let limits = this.#extractLimits(nominal, config);
+                this.lower_limit = limits.lower;
+                this.upper_limit = limits.upper;
+                this.source_uncertainty = config.source_uncertainty != undefined ? config.source_uncertainty : "unknown";
+            }
+            if (this.#uncertainty.type == "truncated normal") {
+                let stdDev = this.#extractStandardDeviation(nominal, config);
+                this.standard_deviation = stdDev;
+            }
+        }    
     }
 
     /**
@@ -438,6 +458,23 @@ exports.ScalarParameter = class ScalarParameter {
     }
 
     /**
+     * Export parameter to a JSON notation.
+     * 
+     * This notation can be used to recreate the same parameter using the one-argument constructor
+     * 
+     * @author localhorst87
+     * @param {string}
+     */
+    toJson() {
+        return JSON.stringify({
+            name: this.name,
+            data: this.#data,
+            uncertainty: this.#uncertainty,
+            source: this.#source
+        });
+    }
+
+    /**
      * Calculates a discrete Probability Density Function (PDF) of the Truncated 
      * Normal Distribution of this parameter. 
      * 
@@ -528,7 +565,6 @@ exports.ScalarParameter = class ScalarParameter {
         }
 
         return cdf;
-        
     }
 
     /**
@@ -727,14 +763,23 @@ exports.ScalarParameter = class ScalarParameter {
 }
 
 /**
- * Description
+ * Creates a DoE for the given parameters according to the given configuration
  * 
  * @author localhorst87
- * @param {ScalarParameter | ScalarParameter[]} parameters 
- * @param {SamplingConfig} config 
+ * @param {ScalarParameter | ScalarParameter[] | string} parameters 
+ * @param {SamplingConfig | string} config
  * @returns {ParameterSampling}
  */
 function createSamples(parameters, config) {
+    if (typeof(parameters) === "string") {
+        parameters = JSON.parse(parameters);
+        if (Array.isArray(parameters))
+            parameters = parameters.map(parameterString => new ScalarParameter(parameterString));
+    }
+    
+    if (typeof(config) === "string")
+        config = JSON.parse(config);
+
     if (!Array.isArray(parameters))
         parameters = [parameters];
     
@@ -752,7 +797,7 @@ function createSamples(parameters, config) {
 
     let samplesDiscrete = parametersDiscrete.map(par => par.nominal_value);
 
-    let samples = []
+    let samples = [];
 
     for (let xA of samplesEpistemic) {
         samples.push([]);
@@ -770,3 +815,7 @@ function createSamples(parameters, config) {
         values: samples,
     };
 }
+
+exports.createSamples = createSamples;
+exports.ScalarParameter = ScalarParameter;
+exports.N_SAMPLES_MAX = N_SAMPLES_MAX;

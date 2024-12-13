@@ -1,0 +1,16 @@
+{
+  "name": "openmcx-csv-adapter",
+  "version": "0.1.0",
+  "description": "adapter for simulation results from openmcx, represented as comma-separated values",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [
+    "adapter",
+    "csv",
+    "results"
+  ],
+  "author": "localhorst87",
+  "license": "CC-BY-4.0"
+}

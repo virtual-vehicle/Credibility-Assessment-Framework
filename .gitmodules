@@ -1,0 +1,6 @@
+[submodule "Credibility-Development-Kit/workflows/run-openmcx"]
+	path = Credibility-Development-Kit/workflows/run-openmcx
+	url = https://github.com/localhorst87/run-openmcx
+[submodule "Credibility-Development-Kit/workflows/run-esmini"]
+	path = Credibility-Development-Kit/workflows/run-esmini
+	url = https://github.com/localhorst87/run-esmini

@@ -13,6 +13,7 @@ The Signal class is a wrapper for timeseries data. It allows for uniform and rep
     - [Utilities](#utilities)
         - [`copy`](#copy)
         - [`print`](#print)
+        - [`export`](#export)
         - [`revert`](#revert)
     - [Calculus](#calculus)
         - [`value`](#value)
@@ -269,6 +270,17 @@ signalJsonVerbose = signal.print(true); // provides precision and history on top
         "processing": "manual change of values"
     }]
 }
+```
+
+#### `export`
+
+To serialize the Signal for transportability, use the `export` method.
+
+The resulting string can be used to import the Signal again:
+
+```javascript
+signalExported = signalToExport.export(); // signalExported is of type string
+signalImported = new Signal(signalExported); // will reconstruct signalToExport
 ```
 
 #### `revert`

@@ -1,6 +1,6 @@
 const schemas = require("../types/schemas");
-const util = require("../../../../util/util-common");
-const stmd_reader = require("../../../../util/stmd-reader");
+const util = require("util-common");
+const stmd_reader = require("stmd-crud");
 
 const KEYWORD_DERIVED = "derived-from";
 const KEYWORD_VALIDATED = "validated-by";
@@ -67,7 +67,7 @@ function linkageCheckSyntax(namedGraph, resourceIri, stmd) {
         };  
     }
 
-    var stmdReader = new stmd_reader.StmdReader(stmd);
+    var stmdReader = new stmd_reader.StmdCrud(stmd);
 
     var checkResourceIriExisted = isResourceInPhase(resourceIri, 'stmd:RequirementsPhase', stmdReader);
 

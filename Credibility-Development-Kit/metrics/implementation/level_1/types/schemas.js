@@ -211,5 +211,133 @@ const MODEL_DESCRIPTION = {
     }
 };
 
+/**
+ * JSON schema for defining a parameter modification, including the modified parameter and an expectation on
+ * which variable will change and how it will change, compared to the baseline
+ *
+ * @author localhorst87
+ * @readonly
+ * @constant {Object}
+*/
+const PARAMETER_MODIFICATION = {
+    "type": "object",
+    "properties": {
+        "model_source": {
+            "type": "string"
+        },
+        "modified_parameter": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "model_reference": {
+                    "type": "string"
+                },
+                "action": {
+                    "type": "string",
+                    "enum": ["increase", "equal", "decrease"]
+                },
+                "modification": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "number",
+                        },
+                        "unit": {
+                            "type": "string",
+                        }
+                    },
+                    "required": ["value"]
+                }
+            },
+            "required": ["name", "model_reference", "action"]
+        },
+        "influenced_variable": {
+            "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "model_reference": {
+                        "type": "string"
+                    },
+                    "expectation": {
+                        "type": "string",
+                        "enum": [">", ">=", "==", "<>", "<=", "<"],
+                    },
+                    "timepoints_to_check": {
+                        "type": "object",
+                        "properties": {
+                            "start": {
+                                "type": "number"
+                            },
+                            "end": {
+                                "type": "number"
+                            }
+                        },
+                        "required": ["start"]
+                    },
+                    "comparison": {
+                        "type": "string",
+                        "enum": ["absolute", "relative"],
+                    },
+                    "threshold" : {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "number",
+                                "minimum": 0,
+                            },
+                            "unit": {
+                                "type": "string",
+                            }
+                        },
+                        "required": ["value"],
+                    },
+                    "tolerance" : {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "number",
+                                "minimum": 0,
+                            },
+                            "unit": {
+                                "type": "string",
+                            }
+                        },
+                        "required": ["value"],
+                    },
+                },
+                // tolerance and threshold are optional, but mutually exclusive!
+                "oneOf": [
+                    {
+                        "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison", "threshold"],
+                        "not": {"required": ["tolerance"]}
+                    },
+                    {
+                        "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison", "tolerance"],
+                        "not": {"required": ["threshold"]}
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "required": ["name", "model_reference", "expectation", "timepoints_to_check", "comparison"],
+                            },
+                            {
+                                "not": {"required": ["threshold"]}
+                            },
+                            {
+                                "not": {"required": ["tolerance"]}
+                            }
+                        ]
+                    }
+                ]                    
+        }
+    },
+    "required": ["modified_parameter", "influenced_variable"]
+}
+
 exports.SYSTEM_STRUCTURE = SYSTEM_STRUCTURE;
 exports.MODEL_DESCRIPTION = MODEL_DESCRIPTION;
+exports.PARAMETER_MODIFICATION = PARAMETER_MODIFICATION;

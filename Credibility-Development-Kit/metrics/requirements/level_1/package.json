@@ -1,10 +1,10 @@
 {
-    "name": "metrics_systemsimulation_requirements_level1",
+    "name": "cdk_requirements_level1",
     "version": "0.1",
     "description": "level 1 quality metrics for requirements",
     "main": "index.js",
     "scripts": {
-      "test": "mocha --reporter spec",
+      "test": "mocha --reporter spec"
     },
     "author": "localhorst87",
     "license": "BSD-2-Clause",
@@ -14,5 +14,6 @@
       "prompt-sync": "^4.2.0"
     },
     "dependencies": {
+      "veri-sign": "../../../util/veri-sign"
     }
   }

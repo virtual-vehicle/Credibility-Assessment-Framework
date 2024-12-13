@@ -13,6 +13,8 @@
   "author": "localhorst87",
   "license": "CC-BY-4.0",
   "dependencies": {
+    "cdk-signal": "../signal",
+    "util-common": "../util-common",
     "mathjs": "^10.4.3"
   },
   "devDependencies": {

@@ -19,8 +19,21 @@
  * GeneralInformationType 
  * 
  * @typedef {object} GeneralInformationType 
+ * @property {GeneralInformationTypeAttributes} attributes
  * @property {DerivationChain} [DerivationChain]
+ * @property {ResourceType[]} [Resource]
+ * @property {ResourceReference[]} [ResourceReference]
  * @property {LinksType} [Links]
+ * @property {Classification[]} [Classification]
+ * @property {Annotations} [Annotations]
+ */
+
+/**
+ * GeneralInformationTypeAttributes
+ * 
+ * @typedef {object} GeneralInformationTypeAttributes
+ * @property {string} [id]
+ * @property {string} [description]
  */
 
 /**

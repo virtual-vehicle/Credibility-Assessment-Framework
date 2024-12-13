@@ -1,7 +1,7 @@
 {
-  "name": "cdk_implementation_models_l1",
+  "name": "cdk_implementation_l1",
   "version": "1.0.0",
-  "description": "level 1 quality metrics for simulation models",
+  "description": "level 1 quality metrics for implementation",
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "ajv": "^8.10.0",
-    "ajv-keywords": "^5.1.0"
+    "ajv-keywords": "^5.1.0",
+    "cdk-signal": "../../../util/signal",
+    "util-common": "../../../util/util-common",
+    "veri-sign": "../../../util/veri-sign"    
   }
 }
