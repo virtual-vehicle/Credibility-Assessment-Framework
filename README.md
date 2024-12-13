@@ -1,7 +1,5 @@
 # Credibility-Assessment-Framework
 
-## This is the *main branch*, containing only highly validated contents. As the Framework is currently in development, we propose to visit the [*dev-branch*](https://github.com/virtual-vehicle/Credibility-Assessment-Framework/tree/dev), where much more activity is going on!
-
 The *Credibility Assessment Framework* is a systematic approach to assess the **credibility** of Models and Simulations.
 
 The **credibility** of Models and Simulations is achieved by its collected evidence through ...
