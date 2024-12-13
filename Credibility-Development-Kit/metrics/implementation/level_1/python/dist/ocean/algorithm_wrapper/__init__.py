@@ -16,7 +16,7 @@ def _write_result(directory, result):
     f.write(result)
     f.close()
 
-def wrap_check_fmu_modeldesc(metric_fcn):
+def ocean_wrapper_check_fmu_model_description(metric_fcn):
     def get_inputs_write_output():
         # get location of FMU file(s)
         fmu_files = _find_fmu_files(INPUT_DIR)

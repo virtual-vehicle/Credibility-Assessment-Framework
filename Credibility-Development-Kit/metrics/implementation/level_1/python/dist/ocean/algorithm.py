@@ -5,7 +5,7 @@ USE THIS FILE AS THE ALGORITHM IN THE OCEAN ECOSYSTEM, BASED ON THE DOCKER IMAGE
 '''
 
 from fmpy.validation import validate_fmu
-from algorithm_wrapper import wrap_check_fmu_modeldesc
+from algorithm_wrapper import ocean_wrapper_check_fmu_model_description
 import json
 import os
 
@@ -13,8 +13,8 @@ import os
 # - it searches for the FMU in the mounted /data/inputs/ and provides it as fmu_path for check_model_description
 # - it writes the output to the mounted /data/outputs/
 # Therefore, check_model_description must be called without arguments!
-@wrap_check_fmu_modeldesc
-def check_model_description(fmu_path=None):
+@ocean_wrapper_check_fmu_model_description
+def check_fmu_model_description(fmu_path=None):
     """
     Checks the modelDescription.xml of a Functional Mockup Unit (FMU):
         - validation against the XML schema, uniqueness and validity of variable names
@@ -78,4 +78,4 @@ def check_model_description(fmu_path=None):
     return json.dumps(reslog)
 
 # execute metric
-check_model_description()
+check_fmu_model_description()
