@@ -6,7 +6,6 @@ IMAGE, CREATED WITH THE ATTACHED DOCKERFILE
 '''
 
 from fmpy.validation import validate_fmu
-from algorithm_wrapper import ocean_wrapper_check_fmu_model_description
 import json
 import os
 
