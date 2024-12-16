@@ -1,7 +1,8 @@
 '''
-------------------------------------------------------------------------------------------------------------------------
-USE THIS FILE AS THE ALGORITHM IN THE OCEAN ECOSYSTEM, BASED ON THE DOCKER IMAGE, CREATED WITH THE ATTACHED DOCKERFILE
-------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+USE THIS FILE AS THE ALGORITHM IN THE OCEAN ECOSYSTEM, BASED ON THE DOCKER 
+IMAGE, CREATED WITH THE ATTACHED DOCKERFILE
+--------------------------------------------------------------------------------
 '''
 
 from fmpy.validation import validate_fmu
@@ -9,15 +10,53 @@ from algorithm_wrapper import ocean_wrapper_check_fmu_model_description
 import json
 import os
 
+########## wrapper for seamless interaction with the OCEAN ecosystem ##########
+
+INPUT_DIR = './data/inputs/'
+OUTPUT_DIR = './data/outputs/'
+
+def _find_fmu_files(directory):
+    fmu_files = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.fmu'):
+                fmu_files.append(os.path.join(root, file))
+    return fmu_files
+
+def _write_result(directory, result):
+    f = open(directory + "result.json", "w")
+    f.write(result)
+    f.close()
+
+def ocean_wrapper_check_fmu_model_description(metric_fcn):
+    def get_inputs_write_output():
+        # get location of FMU file(s)
+        fmu_files = _find_fmu_files(INPUT_DIR)
+
+        # if FMU is available, use its path, otherwise return a negative result
+        if len(fmu_files) > 0:
+            result_log = metric_fcn(fmu_files[0])
+        else:
+            result_log = json.dumps({ "result": False, "log": "No FMU file provided"})
+
+        # write results to target location
+        _write_result(OUTPUT_DIR, result_log)
+
+    return get_inputs_write_output
+
+################################ core algorithm ################################
+
 # Decorator does the following:
-# - it searches for the FMU in the mounted /data/inputs/ and provides it as fmu_path for check_model_description
+# - it searches for the FMU in the mounted /data/inputs/ and provides it as
+#    fmu_path for check_model_description
 # - it writes the output to the mounted /data/outputs/
-# Therefore, check_model_description must be called without arguments!
+# -> Therefore, check_model_description must be called without arguments!
 @ocean_wrapper_check_fmu_model_description
 def check_fmu_model_description(fmu_path=None):
     """
     Checks the modelDescription.xml of a Functional Mockup Unit (FMU):
-        - validation against the XML schema, uniqueness and validity of variable names
+        - validation against the XML schema, uniqueness and validity of variable
+           names
         - completeness and integrity of the ModelStructure
         - required start values-
         - combinations of causality and variability-
@@ -56,7 +95,8 @@ def check_fmu_model_description(fmu_path=None):
         fmu_path (str): The absolute path of the FMU to check
 
     Returns:
-        str: A stringified dictionary with the attributes 'result' (giving information if the quality metric has been
+        str: A stringified dictionary with the attributes 'result' (giving 
+             information if the quality metric has been
              passed or not) and 'log' (providing additional information)
     """
     if fmu_path == None:
