@@ -10,8 +10,33 @@ const ddosInputData = inputDataDids.map(did => {
     return JSON.parse(ddoString.replace(/\n/g, ' '));
 });
 
+const userParametersString = fs.readFileSync('/data/inputs/algoCustomData.json', 'utf8')
+const userParameters = JSON.parse(userParametersString);
+
 const result = fs.readFileSync('/data/outputs/result.txt', 'utf8').trim() === 'true';
 const log = fs.readFileSync('/data/outputs/log.txt', 'utf8');
+
+function getConsumerParameterMetadata(parameterName) {
+    return ddoAlgorithm.metadata.algorithm.consumerParameters.find(consumerParameter => consumerParameter.name === parameterName);
+}
+
+function consumerParameterType2XsdType(consumerParameter) {
+    switch (consumerParameter.type) {
+        case 'text':
+            return 'xsd:string';
+        case 'number':
+            if (Number.isInteger(userParameters[consumerParameter.name])) {
+                return 'xsd:integer';
+            }
+            else {
+                return 'xsd:double';
+            }
+        case 'boolean':
+            return 'xsd:boolean';
+        default:
+            return 'xsd:string';
+    }
+}
 
 let evaluation = {
     "@type": "vv-report:Evaluation",
@@ -41,6 +66,23 @@ let evaluation = {
                 "@type": "xsd:anyURI"
             }
         };
+    }),
+    "vv-report:parameters": Object.keys(userParameters).map(paramName => {
+        return {
+            "@type": "vv-report:Parameter",
+            "vv-report:parameterName": {
+                "@value": paramName,
+                "@type": "xsd:string"
+            },
+            "vv-report:parameterDescription": {
+                "@value": getConsumerParameterMetadata(paramName)["description"],
+                "@type": "xsd:string"
+            },
+            "vv-report:parameterValue": {
+                "@value": userParameters[paramName],
+                "@type": consumerParameterType2XsdType(getConsumerParameterMetadata(paramName))
+            }
+        }
     }),
     "vv-report:result": {
         "@type": "vv-report:Result",
