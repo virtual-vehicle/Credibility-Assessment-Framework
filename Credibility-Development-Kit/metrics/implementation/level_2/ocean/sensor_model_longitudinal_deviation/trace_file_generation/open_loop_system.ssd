@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssd:SystemStructureDescription 
+    xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+    xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
+    xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
+    xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" name="Open Loop System"
+    generationDateAndTime="2025-01-08T13:19:00Z"
+    xsi:schemaLocation="http://ssp-standard.org/SSP1/SystemStructureDescription http://ssp-standard.org/SSP1/SSP/1.0/SystemStructureDescription.xsd">
+    <ssd:System name="Root">
+        <ssd:Elements>
+            <ssd:Component name="trace file player" source="/trace_file_generation/sl-5-5-osi-trace-file-player.fmu" type="application/x-fmu-sharedlibrary">
+                <ssd:Connectors>
+                    <ssd:Connector name="OSMPSensorViewOut.base.lo" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorViewOut.base.hi" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorViewOut.size" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="Internal Parameter-Set">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="trace_path">
+                                        <ssv:String value="trace_file_generation"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="trace_name">
+                                        <ssv:String value="2025_sv_370_361_1000.osi"/>
+                                    </ssv:Parameter>                                    
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component name="sensor model" source="/trace_file_generation/sensormodel.fmu" type="application/x-fmu-sharedlibrary">
+                <ssd:Connectors>
+                    <ssd:Connector name="OSMPSensorViewIn.base.lo" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorViewIn.base.hi" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorViewIn.size" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorDataOut.base.lo" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorDataOut.base.hi" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSMPSensorDataOut.size" kind="output">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="Sensor mounting position">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="mounting_position_x">
+                                        <ssv:Real value="$_x_$"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="mounting_position_y">
+                                        <ssv:Real value="$_y_$"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="mounting_position_z">
+                                        <ssv:Real value="$_z_$"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="mounting_position_yaw">
+                                        <ssv:Real value="$_yaw_$"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="mounting_position_pitch">
+                                        <ssv:Real value="$_pitch_$"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="mounting_position_roll">
+                                        <ssv:Real value="$_roll_$"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component name="trace file writer" source="/trace_file_generation/sl-5-6-osi-trace-file-writer.fmu" type="application/x-fmu-sharedlibrary">
+                <ssd:Connectors>
+                    <ssd:Connector name="OSIIn.base.lo" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSIIn.base.hi" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                    <ssd:Connector name="OSIIn.size" kind="input">
+                        <ssc:Integer/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="Internal Parameter-Set">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="trace_path">
+                                        <ssv:String value="/data/outputs/raw/simulation"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="protobuf_version">
+                                        <ssv:String value="361"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="message_type">
+                                        <ssv:String value="sd"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="file_format">
+                                        <ssv:String value="osi"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>    
+        </ssd:Elements>
+        <ssd:Connections>
+            <ssd:Connection startElement="trace file player" startConnector="OSMPSensorViewOut.base.lo" endElement="sensor model" endConnector="OSMPSensorViewIn.base.lo" suppressUnitConversion="false"/>  
+            <ssd:Connection startElement="trace file player" startConnector="OSMPSensorViewOut.base.hi" endElement="sensor model" endConnector="OSMPSensorViewIn.base.hi" suppressUnitConversion="false"/>
+            <ssd:Connection startElement="trace file player" startConnector="OSMPSensorViewOut.size" endElement="sensor model" endConnector="OSMPSensorViewIn.size" suppressUnitConversion="false"/>
+            <ssd:Connection startElement="sensor model" startConnector="OSMPSensorDataOut.base.lo" endElement="trace file writer" endConnector="OSIIn.base.lo" suppressUnitConversion="false"/>
+            <ssd:Connection startElement="sensor model" startConnector="OSMPSensorDataOut.base.hi" endElement="trace file writer" endConnector="OSIIn.base.hi" suppressUnitConversion="false"/>
+            <ssd:Connection startElement="sensor model" startConnector="OSMPSensorDataOut.size" endElement="trace file writer" endConnector="OSIIn.size" suppressUnitConversion="false"/>
+        </ssd:Connections> 
+    </ssd:System>
+    <ssd:DefaultExperiment startTime="0.0" stopTime="11.66">
+        <ssd:Annotations>
+            <!-- additional OpenMCx specific simulation parameters -->
+            <ssc:Annotation type="com.avl.model.connect.ssp.task"
+                            xmlns:mc="com.avl.model.connect.ssp.task">
+                <!-- sequential execution of component steps -->
+                <!-- synchronization time step size of 0.001 -->
+                <!-- simulation will end when the stopTime is reached -->
+                <mc:Task stepType="sequential" deltaTime="0.01" endType="first_component"/>
+            </ssc:Annotation>
+        </ssd:Annotations>
+    </ssd:DefaultExperiment>
+</ssd:SystemStructureDescription>

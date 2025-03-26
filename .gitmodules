@@ -4,3 +4,9 @@
 [submodule "Credibility-Development-Kit/workflows/run-esmini"]
 	path = Credibility-Development-Kit/workflows/run-esmini
 	url = https://github.com/localhorst87/run-esmini
+[submodule "Credibility-Development-Kit/metrics/implementation/level_2/ocean/sensor_model_longitudinal_deviation/open-simulation-interface"]
+	path = Credibility-Development-Kit/metrics/implementation/level_2/ocean/sensor_model_longitudinal_deviation/open-simulation-interface
+	url = https://github.com/OpenSimulationInterface/open-simulation-interface.git
+[submodule "Credibility-Development-Kit/metrics/implementation/level_2/ocean/sensor_model_longitudinal_deviation/openmcx"]
+	path = Credibility-Development-Kit/metrics/implementation/level_2/ocean/sensor_model_longitudinal_deviation/openmcx
+	url = https://github.com/eclipse-openmcx/openmcx.git
