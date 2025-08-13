@@ -105,7 +105,7 @@ let evaluation = {
                 "@type": "xsd:string"
             },
             "vv-report:resultVerificationReference": {
-                "@value": "https://gaiax4plcaad.dlr.de/history/addJobIdHere",
+                "@value": "https://gaiax4plcaad.dlr.de/history/",
                 "@type": "xsd:anyURI"
             }
         }

@@ -55,7 +55,7 @@ def main():
     file_found = False
     if dataset_dids is not None:
         for did in dataset_dids:
-            filename = './data/ddos/' + did
+            filename = '/data/ddos/' + did
             with open(filename) as ddo_file:
                 ddo = json.load(ddo_file)
                 if args.name is not None and args.name.lower() in ddo['metadata']['name'].lower():

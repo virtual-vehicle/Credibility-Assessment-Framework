@@ -1,0 +1,2 @@
+- `sensor_data.moving_object.base.position.x`
+- `sensor_data.moving_object.header.ground_truth_id`

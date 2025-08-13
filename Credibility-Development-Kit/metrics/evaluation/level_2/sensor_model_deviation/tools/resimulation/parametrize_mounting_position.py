@@ -1,5 +1,6 @@
 import argparse
 import sys
+from lxml import etree
 
 sys.path.append("./open-simulation-interface/osi3trace")
 from osi3trace.osi_trace import OSITrace
@@ -28,13 +29,7 @@ def command_line_arguments():
 
     return parser.parse_args()
 
-def main():
-    # Handling of command line arguments
-    args = command_line_arguments()
-
-    # Initialize the OSI trace class
-    trace = OSITrace(args.osisensordata, "SensorData")
-
+def get_mounting_position(sensor_data_trace):
     # Init mounting position
     mp_x = 0.0
     mp_y = 0.0
@@ -44,7 +39,7 @@ def main():
     mp_roll = 0.0
 
     # Get mounting position if available
-    for sensor_data in trace:
+    for sensor_data in sensor_data_trace:
         if sensor_data.mounting_position:
             mp_x = sensor_data.mounting_position.position.x
             mp_y = sensor_data.mounting_position.position.y
@@ -54,19 +49,34 @@ def main():
             mp_roll = sensor_data.mounting_position.orientation.roll
         break
 
+    return { "x": mp_x, "y": mp_y, "z": mp_z, "yaw": mp_yaw, "pitch": mp_pitch, "roll": mp_roll }
+    
+def replace_parameter(root, mounting_position, quantity):
+    for elem in root.xpath('//ssv:Parameter[@name="mounting_position_' + quantity + '"]/ssv:Real', namespaces={'ssv': 'http://ssp-standard.org/SSP1/SystemStructureParameterValues'}):
+        elem.attrib['value'] = str(mounting_position[quantity])
+
+def main():
+    # Handling of command line arguments
+    args = command_line_arguments()
+
+    # Initialize the OSI trace class
+    trace = OSITrace(args.osisensordata, "SensorData")
+    mounting_position = get_mounting_position(trace)
     trace.close()
 
+    # replace mounting position in SSD file
     with open(args.ssd, "r") as f:
         ssd = f.read()
-        ssd = ssd.replace('$_x_$', str(mp_x))
-        ssd = ssd.replace('$_y_$', str(mp_y))
-        ssd = ssd.replace('$_z_$', str(mp_z))
-        ssd = ssd.replace('$_yaw_$', str(mp_yaw))
-        ssd = ssd.replace('$_pitch_$', str(mp_pitch))
-        ssd = ssd.replace('$_roll_$', str(mp_roll))
+        ssd_bytestr = ssd.encode('utf-8')
+        parser = etree.XMLParser(encoding='utf-8')
+        root = etree.fromstring(ssd_bytestr, parser=parser)
+
+        for quantity in mounting_position.keys():
+            replace_parameter(root, mounting_position, quantity)
     
-    with open(args.ssd, "w") as f:
-        f.write(ssd)
+    # overwrite SSD file
+    tree = etree.ElementTree(root)
+    tree.write(args.ssd, pretty_print=True, xml_declaration=True, encoding='UTF-8')
 
 if __name__ == "__main__":
     main()

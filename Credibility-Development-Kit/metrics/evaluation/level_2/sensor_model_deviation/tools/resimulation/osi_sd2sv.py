@@ -1,5 +1,5 @@
 """
-This program converts serialized osi trace files into a SensorView OSI file. 
+This program extracts the SensorView messages from OSI SensorData traces and provides a trace from each 
 
 Example usage:
     python3 osi_sd2sv.py -d trace.osi
@@ -8,6 +8,7 @@ Example usage:
 import argparse
 import struct
 import sys
+import os
 
 sys.path.append("./open-simulation-interface/osi3trace")
 from osi3trace.osi_trace import OSITrace
@@ -27,12 +28,11 @@ def command_line_arguments():
         required=True,
     )
     parser.add_argument(
-        "--output",
-        "-o",
-        help="Path to the output file.",
+        "--target",
+        "-t",
+        help="Target folder where to save the SensorView trace.",
         type=str,
         required=True,
-        default="extracted_sv.osi",
     )
 
     return parser.parse_args()
@@ -42,20 +42,27 @@ def main():
     # Handling of command line arguments
     args = command_line_arguments()
 
+    # create output base path
+    sv_path_old_folder = args.data.replace("_sd_", "_sv_")
+    sv_filename = os.path.basename(sv_path_old_folder)
+    sv_path = os.path.join(args.target, sv_filename)
+
     # Initialize the OSI trace class
     trace = OSITrace(args.data, "SensorData")
 
-    # Open the file to write the extracted SensorView data
-    f = open(args.output, "ab")
+    f = open(sv_path, "ab")
 
     for sensor_data in trace:
+        # only 1 SensorView per SensorData expected!
         sensor_view = sensor_data.sensor_view[0]
-        bytes_buffer = sensor_view.SerializeToString()
-        f.write(struct.pack("<L", len(bytes_buffer)))
-        f.write(bytes_buffer)
+        sv_bytes_buffer = sensor_view.SerializeToString()
+        f.write(struct.pack("<L", len(sv_bytes_buffer)))
+        f.write(sv_bytes_buffer)
         
-    f.close()
+    f.close()               
     trace.close()
+
+    print(sv_path)
 
 if __name__ == "__main__":
     main()
