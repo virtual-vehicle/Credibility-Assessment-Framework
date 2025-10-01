@@ -2,14 +2,14 @@
 
 A collection of metrics that can be used for assessing the credibility of simulation model implementation, according to Credibility Level 1:
 
-* [`check_fmu_model_description`](#check_fmu_model_description): Checks the modelDescription.xml of an FMU
+* [`fmuChecker`](#fmu_checker): Checks the modelDescription.xml of an FMU
 * [`checkExpertCodeReview`](#checkexpertcodereview): Checks if an artifact has passed the expert review (e.g., code verification) and if the signed expert statement is valid
 * [`checkSystemStructure`](#checksystemstructure): Static code check, if a system structure (including all components, connectors and connections of the system) is well-defined
 * [`checkPlausibility`](#checkplausibility): Dynamic code check, if a parameter change will be resulting in the expected behaivor of the simulation 
-
+* [`checkOpenDriveSyntax`](#checkopendrivesyntax): Checks if the OpenDRIVE file is fulfilling the given OpenDRIVE schema
 ---
 
-## `check_fmu_model_description`
+## `fmu_checker`
 
 Static code check, that checks the modelDescription.xml of a Functional Mockup Unit (FMU). It uses the [FMPy module](https://pypi.org/project/FMPy/), which is also used by the official FMU Validator of the [Modelica Association](https://fmi-standard.org/validation/).
 
